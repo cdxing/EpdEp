@@ -1,5 +1,5 @@
 //this code is for:
-//conducting the v1 analysis, calculate v1_TPC relative to Psi_1^{EPD_full}, 
+//conducting the v1 analysis, calculate v1_TPC relative to Psi_1^{EPD_full},
 //calculate v1_EPD reative to Psi_1^{TPC_|eta|<0.8}. 11/18/2019 Xiaoyu
 //Add one more dimension to the analysis, e.g low pT and high pT.11/21/2019
 //I want to use the full statistics for the analysis, need a little bit modifications(because mNphibin=200 not 100):
@@ -97,7 +97,7 @@ void PicoAnalyzer::SetPicoDst(TChain* PicoDst){
   mPicoDst->SetBranchStatus("Track*",1,&found);
   cout << "Track Branch returned found= " << found << endl;
   mPicoDst->SetBranchAddress("Track",&mTracks);
-  
+
   mPicoDst->SetBranchStatus("BTofPidTraits*",1,&found);
   cout << "BTofPidTraits Branch returned found= " << found << endl;
   mPicoDst->SetBranchAddress("BTofPidTraits",&mTraits);
@@ -110,7 +110,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   TString EpFinderOutputName = mFileNameBase;
   EpFinderOutputName += "EpFinderCorrectionsOUTPUT.root";
 
-  mEpFinder = new StEpdEpFinder(9,EpFinderOutputName.Data(),"EPDcorrection.root");// EventType:centrality, read the INPUT file: EPDcorrection.root 
+  mEpFinder = new StEpdEpFinder(9,EpFinderOutputName.Data(),"EPDcorrection.root");// EventType:centrality, read the INPUT file: EPDcorrection.root
   mEpFinder->SetnMipThreshold(0.3);
   mEpFinder->SetMaxTileWeight(2.0);
   mEpFinder->SetEpdHitFormat(2);     // 2=pico
@@ -125,7 +125,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     }
   }
   mEpFinder->SetEtaWeights(1,wt);
-  cout<<"etaweight set"<<endl;  
+  cout<<"etaweight set"<<endl;
 
   // --------------------------------------------------------
 
@@ -153,7 +153,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 //---------------Make histograms for checking the flattening of EP---------
 //---------------and calculate the resolution------------------------------
   //mHisto2D[0] = new TH2D("EPDPsiEvsPsiW","EPDPsiEvsPsiW",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
-  
+
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
       mEPDFullPsiWeighted[cent][iorder] = new TH1D(Form("EPDFullPsi%dWeightedCent%d",iorder,cent),Form("EPDFullPsi%dWeightedCent%d",iorder,cent),100,0.0,2.0*TMath::Pi()/(iorder+1.0));
@@ -184,14 +184,14 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     mThreeD[cent][1]->Sumw2();
   }
   */
-  /* 
+  /*
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
       for(int rr=0;rr<2;rr++){
         for(int ivz=0;ivz<16;ivz++){
           //24 delta phi bins 11/15/20
-          mThreeD[cent][0][iorder][rr][ivz] = new TH3D(Form("dNdphidnMIPdetaCent%dEW0Psi%dRR%dVz%d",cent,iorder,rr,ivz),Form("dNdphidnMIPdetaCent%dEW0Psi%dRR%dVz%d",cent,iorder,rr,ivz),24,-1.0*TMath::Pi()/(double)(iorder+1),TMath::Pi()/(double)(iorder+1),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id 
-          mThreeD[cent][1][iorder][rr][ivz] = new TH3D(Form("dNdphidnMIPdetaCent%dEW1Psi%dRR%dVz%d",cent,iorder,rr,ivz),Form("dNdphidnMIPdetaCent%dEW1Psi%dRR%dVz%d",cent,iorder,rr,ivz),24,-1.0*TMath::Pi()/(double)(iorder+1),TMath::Pi()/(double)(iorder+1),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id 
+          mThreeD[cent][0][iorder][rr][ivz] = new TH3D(Form("dNdphidnMIPdetaCent%dEW0Psi%dRR%dVz%d",cent,iorder,rr,ivz),Form("dNdphidnMIPdetaCent%dEW0Psi%dRR%dVz%d",cent,iorder,rr,ivz),24,-1.0*TMath::Pi()/(double)(iorder+1),TMath::Pi()/(double)(iorder+1),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id
+          mThreeD[cent][1][iorder][rr][ivz] = new TH3D(Form("dNdphidnMIPdetaCent%dEW1Psi%dRR%dVz%d",cent,iorder,rr,ivz),Form("dNdphidnMIPdetaCent%dEW1Psi%dRR%dVz%d",cent,iorder,rr,ivz),24,-1.0*TMath::Pi()/(double)(iorder+1),TMath::Pi()/(double)(iorder+1),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id
           mThreeD[cent][0][iorder][rr][ivz]->Sumw2();
           mThreeD[cent][1][iorder][rr][ivz]->Sumw2();
         }
@@ -203,10 +203,10 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   */
 
   for(int ew=0;ew<2;ew++){
-    mThreeD[ew] = new TH3D(Form("dNdphidnMIPdetaCent%dEW%dPsi%dRR%dVz%d",5,ew,0,0,7),Form("dNdphidnMIPdetaCent%dEW%dPsi%dRR%dVz%d",5,ew,0,0,7),24,-1.0*TMath::Pi(),TMath::Pi(),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id 
+    mThreeD[ew] = new TH3D(Form("dNdphidnMIPdetaCent%dEW%dPsi%dRR%dVz%d",5,ew,0,0,7),Form("dNdphidnMIPdetaCent%dEW%dPsi%dRR%dVz%d",5,ew,0,0,7),24,-1.0*TMath::Pi(),TMath::Pi(),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id
     mThreeD[ew]->Sumw2();
     for(int tt=0;tt<24;tt++){
-      mThreeDTile[ew][tt] = new TH3D(Form("dNdphidnMIPdetaTileCent%dEW%dPsi%dRR%dVz%dTT%d",5,ew,0,0,7,tt),Form("dNdphidnMIPdetaTileCent%dEW%dPsi%dRR%dVz%dTT%d",5,ew,0,0,7,tt),24,-1.0*TMath::Pi(),TMath::Pi(),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id 
+      mThreeDTile[ew][tt] = new TH3D(Form("dNdphidnMIPdetaTileCent%dEW%dPsi%dRR%dVz%dTT%d",5,ew,0,0,7,tt),Form("dNdphidnMIPdetaTileCent%dEW%dPsi%dRR%dVz%dTT%d",5,ew,0,0,7,tt),24,-1.0*TMath::Pi(),TMath::Pi(),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id
       mThreeDTile[ew][tt]->Sumw2();
     }
   }
@@ -275,7 +275,7 @@ else{
 void PicoAnalyzer::NewRun(int runId){
   //mRunCollisionSystem = WhichSystem(runId); //tend to cause error.
   mRunId = runId;
-  //mRunEt += 1; 
+  //mRunEt += 1;
 }
 
 //=================================================
@@ -286,12 +286,12 @@ short PicoAnalyzer::Make(int iEvent){
   if (event->runId()!=mRunId){
     NewRun(event->runId());        // some things should be reset when there is a new run loaded
     cout << "New run detected: " << mRunId << " and it is collision system #" << mRunCollisionSystem << endl;
-    //cout<<"RunEntry"<<mRunEt<<endl;  
+    //cout<<"RunEntry"<<mRunEt<<endl;
   }
 
   //----- done getting data; have fun! ------
   if(!(event->isTrigger(610001)||event->isTrigger(610011)||event->isTrigger(610021)||event->isTrigger(610031)||event->isTrigger(610041)||event->isTrigger(610051))) return 0;
-  
+
   //  StThreeVectorF primaryVertex = event->primaryVertex();
   //  TVector3 PV(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
   TVector3 PV = event->primaryVertex();
@@ -306,7 +306,7 @@ short PicoAnalyzer::Make(int iEvent){
 //-----------------Get the multiplicity by the StRefMulCorr class--------------
   int CentId=-1;
   int mRefMult=event->refMult();
-  
+
   bool ISRefMultCorrBadRun=false;
   mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
   //mRefMultCorr = new StRefMultCorr();
@@ -324,9 +324,7 @@ short PicoAnalyzer::Make(int iEvent){
   if (sqrt(pow(PV.X(),2)+pow(PV.Y(),2))>mVtxR) return 0;
   //if (abs(PV.Z()-event->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020
   if (CentId<0) return 0;            // 80-100% - very peripheral
-  
-  if (CentId!=5) return 0;
-  
+
   mVz[CentId]->Fill(PV.Z());
 
   int VzBin;
@@ -338,7 +336,7 @@ short PicoAnalyzer::Make(int iEvent){
     }
   }
 
-  if(VzBin!=7) return 0;
+  // if(VzBin!=7) return 0;
 
   StEpdEpInfo result = mEpFinder->Results(mEpdHits,PV,CentId);  // and now you have all the EP info you could ever want :-)
   //StEpdEpInfo result = mEpFinder->Results(mEpdHits,PV,1);  // testing. and now you have all the EP info you could ever want :-)
@@ -393,7 +391,7 @@ short PicoAnalyzer::Make(int iEvent){
     double TrackPhiWeight=1.0;
     if(mTPCPhiWeightInput!=0) TrackPhiWeight=1.0/mTPCPhiWeightInput->GetBinContent(mTPCPhiWeightInput->FindBin(Tphi,TtrId));
     if(!TMath::Finite(TrackPhiWeight)) continue;
-    
+
     double TPCWeight[_PsiOrderMax];
     TPCWeight[0] = TrackPhiWeight*(-1.0*Teta);//weight the TPC tracks with (-eta) for Psi1
     TPCWeight[1] = TrackPhiWeight*TPt;//weight the TPC tracks with pT for Psi2
@@ -408,7 +406,7 @@ short PicoAnalyzer::Make(int iEvent){
       mTPCvn[CentId][iorder]->Fill(Teta,cos((double)(iorder+1)*(Tphi-EpAngle[iorder][2])));
     }
 
-  }  
+  }
 //-------------End loop over TPC tracks-----------------------
 
 //-------------Now let's play with the EP---------------------
@@ -418,7 +416,7 @@ short PicoAnalyzer::Make(int iEvent){
     TPCPsi[i-1] = atan2(PSinPhi->GetBinContent(i),PCosPhi->GetBinContent(i))/(double)i;
     //atan2 returns angle between -pi and pi, remember to divide by i!!!! 06/16/2020
   }
-  
+
 //--------Fill the histos for Psi-shifting the TPC_EP---------
   for(int k=1;k<=mFourierOrder;k++){
     for(int i=1;i<=_PsiOrderMax;i++){
@@ -442,7 +440,7 @@ short PicoAnalyzer::Make(int iEvent){
       TPCPsiShifted[i-1]+=deltapsi[i-1];
       if(TPCPsiShifted[i-1]<-pi/(double)i) TPCPsiShifted[i-1]+=2*pi/(double)i;
       if(TPCPsiShifted[i-1]>pi/(double)i) TPCPsiShifted[i-1]-=2*pi/(double)i;
-    }  
+    }
   }
 
 //-------------Fill the TProfiles for calculating the Resolution---------
@@ -469,7 +467,7 @@ short PicoAnalyzer::Make(int iEvent){
     PP = epdHit->position();
     ADC = epdHit->adc();
     nMip = epdHit->nMIP();
-    
+
     int TTxyId;
     if(EW==0){
       int OE=(TT%2)?2:1;//odd 2, even 1
@@ -481,7 +479,7 @@ short PicoAnalyzer::Make(int iEvent){
       int PPId=(PP<4)?(PP+8):(PP-4);
       TTxyId=PPId*2+OE;
     }
-    
+
     //if (nMip<mEPDthresh) continue;
     double TileWeight = (nMip<3.0)?nMip:3.0;//Note: here a different nMIPMax from the EpFinder was used
     TVector3 StraightLine = mEpdGeom->RandomPointOnTile(tileId) - PV;
@@ -500,7 +498,7 @@ short PicoAnalyzer::Make(int iEvent){
       deltaphi[iorder][0]=Hphi-TPCPsiShifted[iorder];
       deltaphi[iorder][1]=Hphi-EpAngle[iorder][1-EW];//Note EPD has different EP ranges as TPC or phi
     }
-    
+
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
       for(int rr=0;rr<2;rr++){
         double tmpn=pi/(double)(iorder+1);
@@ -517,14 +515,14 @@ short PicoAnalyzer::Make(int iEvent){
       }
     }
     */
-    mThreeD[EW]->Fill(deltaphi[0][0],nMip,ring); 
-    mThreeDTile[EW][TTxyId-1]->Fill(deltaphi[0][0],nMip,ring); 
-  
+    mThreeD[EW]->Fill(deltaphi[0][0],nMip,ring);
+    mThreeDTile[EW][TTxyId-1]->Fill(deltaphi[0][0],nMip,ring);
+
 
     //double RingId=0.0;
     //if(EW==0) RingId=-1.0*(double)ring;
     //else RingId=(double)ring;
-    //mTwoD[CentId]->Fill(nMip,RingId); 
+    //mTwoD[CentId]->Fill(nMip,RingId);
   }
   //-----------------End looping over EPD hits------------------------
 
@@ -584,7 +582,3 @@ int PicoAnalyzer::FindTrackId(int Trkch,double TrkVz,double TrkEta,double TrkpT)
 
   return TrackId;
 }
-
-
-
-

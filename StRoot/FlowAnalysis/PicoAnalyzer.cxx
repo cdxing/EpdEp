@@ -347,7 +347,7 @@ short PicoAnalyzer::Make(int iEvent){
     EpAngle[iorder][2]=result.FullPhiWeightedAndShiftedPsi(iorder+1);
   }
 
-  mHisto2D[0]->Fill(EpAngle[1],EpAngle[0]);//East vs. West
+  mHisto2D[0]->Fill((double)EpAngle[1],(double)EpAngle[0]);//East vs. West
 
   //-----------Check the flattening of Psi_EPDFull----------
   for(int iorder=0;iorder<_PsiOrderMax;iorder++){

@@ -47,7 +47,7 @@ ClassImp(PicoAnalyzer)                     //  Macro for CINT compatability
 
 //=================================================
 PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNpTbin(20),mNVzbin(4),mNEtabin(60),
-mNPhibin(100),mVzMin(-40.0),mVzMax(40.0),mVtxR(1.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
+mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(1.0),mFourierOrder(8),
 mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(0.012),mProtonSigma(0.012),mEtaMaxv1(1.0),mEtaMinv1(-1.0){
   mFileNameBase = FileNameBase;
 
@@ -152,7 +152,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   mTPCSinShift->Sumw2();
 //---------------Make histograms for checking the flattening of EP---------
 //---------------and calculate the resolution------------------------------
-  //mHisto2D[0] = new TH2D("EPDPsiEvsPsiW","EPDPsiEvsPsiW",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
+  mHisto2D[0] = new TH2D("EPDPsiEvsPsiW","EPDPsiEvsPsiW",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
 
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
@@ -290,7 +290,7 @@ short PicoAnalyzer::Make(int iEvent){
   }
 
   //----- done getting data; have fun! ------
-  if(!(event->isTrigger(610001)||event->isTrigger(610011)||event->isTrigger(610021)||event->isTrigger(610031)||event->isTrigger(610041)||event->isTrigger(610051))) return 0;
+  // if(!(event->isTrigger(610001)||event->isTrigger(610011)||event->isTrigger(610021)||event->isTrigger(610031)||event->isTrigger(610041)||event->isTrigger(610051))) return 0;
 
   //  StThreeVectorF primaryVertex = event->primaryVertex();
   //  TVector3 PV(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
@@ -347,7 +347,7 @@ short PicoAnalyzer::Make(int iEvent){
     EpAngle[iorder][2]=result.FullPhiWeightedAndShiftedPsi(iorder+1);
   }
 
-  //mHisto2D[0]->Fill(EpAngle[1],EpAngle[0]);//East vs. West
+  mHisto2D[0]->Fill(EpAngle[1],EpAngle[0]);//East vs. West
 
   //-----------Check the flattening of Psi_EPDFull----------
   for(int iorder=0;iorder<_PsiOrderMax;iorder++){

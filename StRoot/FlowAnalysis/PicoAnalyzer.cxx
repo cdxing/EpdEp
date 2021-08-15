@@ -46,7 +46,7 @@
 using namespace std;
 
 ClassImp(PicoAnalyzer)                     //  Macro for CINT compatability
-
+int Centrality(int gRefMult );
 
 //=================================================
 PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNpTbin(20),mNVzbin(4),mNEtabin(60),

@@ -40,6 +40,9 @@
 
 #include <iostream>
 #include <fstream>
+
+#include "../run/badrun.h"
+
 using namespace std;
 
 ClassImp(PicoAnalyzer)                     //  Macro for CINT compatability
@@ -312,8 +315,12 @@ short PicoAnalyzer::Make(int iEvent){
   //mRefMultCorr = new StRefMultCorr();
   mRefMultCorr->init(mRunId);
   if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
-  ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
-  if(ISRefMultCorrBadRun) return 0;
+  // ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
+  // if(ISRefMultCorrBadRun) return 0;
+  if(int ii=0;ii<44;ii++)
+  {
+    if mRunId == badrun[ii] return 0;
+  }
   mRefMultCorr->initEvent(mRefMult,PV.Z(),event->ZDCx());
   mRefMult = mRefMultCorr->getRefMultCorr();
   CentId = mRefMultCorr->getCentralityBin9();//An integer between 0 (70-80%) and 8 (0-5%)

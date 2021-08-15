@@ -317,7 +317,7 @@ short PicoAnalyzer::Make(int iEvent){
   // if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
   // ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
   // if(ISRefMultCorrBadRun) return 0;
-  if(int ii=0;ii<44;ii++)
+  for(int ii=0;ii<44;ii++)
   {
     if(mRunId == badrun[ii]) return 0;
   }

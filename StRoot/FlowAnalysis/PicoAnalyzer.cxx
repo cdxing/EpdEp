@@ -310,20 +310,20 @@ short PicoAnalyzer::Make(int iEvent){
   int CentId=-1;
   int mRefMult=event->refMult();
 
-  bool ISRefMultCorrBadRun=false;
-  mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
+  // bool ISRefMultCorrBadRun=false;
+  // mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
   //mRefMultCorr = new StRefMultCorr();
-  mRefMultCorr->init(mRunId);
-  if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
+  // mRefMultCorr->init(mRunId);
+  // if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
   // ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
   // if(ISRefMultCorrBadRun) return 0;
   if(int ii=0;ii<44;ii++)
   {
-    if mRunId == badrun[ii] return 0;
+    if(mRunId == badrun[ii]) return 0;
   }
   mRefMultCorr->initEvent(mRefMult,PV.Z(),event->ZDCx());
   mRefMult = mRefMultCorr->getRefMultCorr();
-  CentId = mRefMultCorr->getCentralityBin9();//An integer between 0 (70-80%) and 8 (0-5%)
+  CentId = Centrality(event->refMult());//An integer between 0 (70-80%) and 8 (0-5%)
   //int CentIdmy = FindCent(event->refMult());   // returns an integer between 0 (70-80%) and 8 (0-5%)
   //-------------remove the pile-up events-----------------
   if(mRefMultCorr->passnTofMatchRefmultCut(1.*event->refMult(), 1.*event->nBTOFMatch())!=1) return 0;
@@ -589,4 +589,22 @@ int PicoAnalyzer::FindTrackId(int Trkch,double TrkVz,double TrkEta,double TrkpT)
   TrackId=chId*mNpTbin*mNVzbin*mNEtabin+VzId*mNpTbin*mNEtabin+EtaId*mNpTbin+pTId+1;
 
   return TrackId;
+}
+
+int Centrality(int gRefMult )
+{
+    int centrality;
+    int centFull[9]={4, 9,17,30,50,78, 116,170,205};
+    if      (gRefMult>=centFull[8]) centrality=8;
+    else if (gRefMult>=centFull[7]) centrality=7;
+    else if (gRefMult>=centFull[6]) centrality=6;
+    else if (gRefMult>=centFull[5]) centrality=5;
+    else if (gRefMult>=centFull[4]) centrality=4;
+    else if (gRefMult>=centFull[3]) centrality=3;
+    else if (gRefMult>=centFull[2]) centrality=2;
+    else if (gRefMult>=centFull[1]) centrality=1;
+    else if (gRefMult>=centFull[0]) centrality=0;
+    else centrality = -1;
+    //else centrality = 9;
+    return centrality;
 }

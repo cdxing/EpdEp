@@ -13,7 +13,7 @@ rm -rf  log
 rm -rf  production
 rm -rf  LocalLibraries.zip
 rm -rf  LocalLibraries.package
-rm sched*
+rm -rf sched*
 rm *.dataset
 rm -r *.session.xml
 mkdir report

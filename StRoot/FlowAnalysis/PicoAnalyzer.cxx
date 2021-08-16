@@ -321,12 +321,12 @@ short PicoAnalyzer::Make(int iEvent){
   {
     if(mRunId == badrun[ii]) return 0;
   }
-  mRefMultCorr->initEvent(mRefMult,PV.Z(),event->ZDCx());
-  mRefMult = mRefMultCorr->getRefMultCorr();
+  //mRefMultCorr->initEvent(mRefMult,PV.Z(),event->ZDCx());
+  //mRefMult = mRefMultCorr->getRefMultCorr();
   CentId = Centrality(event->refMult());//An integer between 0 (70-80%) and 8 (0-5%)
   //int CentIdmy = FindCent(event->refMult());   // returns an integer between 0 (70-80%) and 8 (0-5%)
   //-------------remove the pile-up events-----------------
-  if(mRefMultCorr->passnTofMatchRefmultCut(1.*event->refMult(), 1.*event->nBTOFMatch())!=1) return 0;
+  //if(mRefMultCorr->passnTofMatchRefmultCut(1.*event->refMult(), 1.*event->nBTOFMatch())!=1) return 0;
   if (fabs(PV.Z())>=mVzMax) return 0;
   if (sqrt(pow(PV.X(),2)+pow(PV.Y(),2))>mVtxR) return 0;
   //if (abs(PV.Z()-event->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020

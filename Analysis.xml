@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
- <job minFilesPerProcess="5" maxFilesPerProcess="10" simulateSubmission="false" fileListSyntax="xrootd">
+ <job minFilesPerProcess="5" maxFilesPerProcess="100" filesPerHour="10" simulateSubmission="false" fileListSyntax="xrootd">
   
  <stdout discard="true" />
 
@@ -12,23 +12,23 @@
  <SandBox installer="ZIP">
    <Package>
      <File>file:./Analysis.xml </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/Analysis.C </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/StRoot </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/.sl73_gcc485 </File>
+     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/Analysis.C </File>
+     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/StRoot </File>
+     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/.sl73_gcc485 </File>
    </Package>
   </SandBox>
 
-  <input URL="catalog:star.bnl.gov?production=P19ib,filetype=daq_reco_picoDst,trgsetupname=27GeV_production_2018,filename~st_physics,storage!=HPSS,runnumber[]19144013-19144033" nFiles="all"/>
-    
-  <stdout URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/out/$JOBID.out"/>
-  <stderr URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/err/$JOBID.err"/>
+  <input URL="filelist:/star/u/slan/pwg/fastoffline/7p7gev/list/7p7_fast_pico.list" nFiles="all"/>
+  <stdout URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/out/$JOBID.out"/>
+  <stderr URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/err/$JOBID.err"/>
+
  
-  <output fromScratch="*.root" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/production/" /> 
-  <output fromScratch="*.log" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/log/" />
+  <output fromScratch="*.root" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/production/" /> 
+  <output fromScratch="*.log" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/log/" />
 
   <Generator>
-    <Location>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/list/</Location>
-    <ReportLocation>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/report/</ReportLocation>
+    <Location>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/list/</Location>
+    <ReportLocation>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/EpdEp/report/</ReportLocation>
   </Generator>    
 
 </job>

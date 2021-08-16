@@ -127,9 +127,9 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
       wt.SetBinContent(ix,iy,lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
     }
   }
-  mEpFinder->SetEtaWeights(1,wt);
-  cout<<"etaweight set"<<endl;
-
+  // mEpFinder->SetEtaWeights(1,wt);
+  // cout<<"etaweight set"<<endl;
+  cout<<"etaweight disabled"<<endl;
   // --------------------------------------------------------
 
   TString OutputRootFileName = mFileNameBase;

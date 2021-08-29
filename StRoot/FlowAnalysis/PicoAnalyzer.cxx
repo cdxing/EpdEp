@@ -383,6 +383,18 @@ short PicoAnalyzer::Make(int iEvent){
   if (fabs(vertexPos.Z())>=mVzMax) return 0;
   if (sqrt(pow(vertexPos.X(),2)+pow(vertexPos.Y(),2))>mVtxR) return 0;
   //if (abs(vertexPos.Z()-mPicoEvent->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020
+  if(TMath::Abs(vertexPos.Z()) < 10 ){
+      href_vz->Fill(mPicoEvent->refMult());
+  }
+  href->Fill(mPicoEvent->refMult());
+  hvz->Fill(vertexPos.Z());
+  hvr->Fill(vertexPos.X(),vertexPos.Y());
+  hvzvpdvz->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
+  htofvsref->Fill(refMult,tofMult);
+  htofmatchvsref->Fill(refMult,tofmatch);
+
+  h_runidvstofmult->Fill(runId,tofMult);
+  h_runidvsrefmult->Fill(runId,refMult);
   if (CentId<0) return 0;            // 80-100% - very peripheral
 
   mVz[CentId]->Fill(vertexPos.Z());

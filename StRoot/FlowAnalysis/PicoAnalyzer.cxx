@@ -51,7 +51,7 @@ int Centrality(int gRefMult );
 //=================================================
 PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNpTbin(20),mNVzbin(4),mNEtabin(60),
 mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(1.0),mFourierOrder(8),
-mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(0.012),mProtonSigma(0.012),mEtaMaxv1(1.0),mEtaMinv1(-1.0){
+mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(0.012),mProtonSigma(0.012),mEtaMaxv1(2.0),mEtaMinv1(-2.0){
   mFileNameBase = FileNameBase;
 
   mPicoDst=0;
@@ -148,6 +148,51 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 //--------------Prepare the constant for weighting the TPC tracks------------
   mNumberOfTrackTypes =mNpTbin*mNVzbin*mNEtabin*2;
 
+//----------------Make histograms for QA ----------------------------------
+  href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
+  hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
+  hvzvpdvz_b =new TH2F("h_vz_vpd_b","vz_vs_vpd_b",1000,-150,150,1000,-150,150);
+  hvr_b = new TH2F("h_vr_b","vy_vs_vx_b",1000,-10,10,1000,-10,10);
+  htofvsref_b = new TH2F("htofvsref_b","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
+  htofmatchvsref_b=new TH2F("htofmatchvsref_b","",1500,0.0,1500.0,1500,0.0,1500.0);
+
+  href = new TH1F("h_ref","refmult_dis",1000,0.,1000.);
+  hvz = new TH1F("h_vz","vz_dis",1000,-100,100);
+  hvzvpdvz =new TH2F("h_vz_vpd","vz_vs_vpd",1000,-150,150,1000,-150,150);
+  htofvsref = new TH2F("htofvsref","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
+  htofmatchvsref=new TH2F("htofmatchvsref","",1500,0.0,1500.0,1500,0.0,1500.0);
+  hist_Vr_cut = new TH1D("hist_Vr_cut","V_{R} after cut [cm]",500,0.0,20.0);
+  hvr = new TH2F("h_vr","vy_vs_vx",1000,-10,10,1000,-10,10);
+
+  hbetavsp =new TH2F("hbetavsp","beta_vs_p",1000,0,6,1000,0,10);
+  hmassvsp =new TH2F("hmassvsp","m2_vs_p*q",3000,-6.,6.,2000,-0.2,15.8);
+  hdedxvsp =new TH2F("hdedxvsp","dedx_vs_p*q",4000,-6.,6.,2000,0.,50.);
+
+  h_eta_phi =new TH2F("h_etaphi","eta_vs_phi",1000,-6.3,6.3,300,-1.5,1.5);
+  h_eta_phi_before =new TH2F("h_etaphi_before","eta_vs_phi w/o cut",1000,-6.3,6.3,300,-1.8,1.8);
+
+  h_counter = new TH1F("h_counter","event_counter",58,-8,50.);
+
+  h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 90000, 22031041, 22121041,"");
+  h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 90000, 22031041, 22121041,"");
+
+  h_runidvstofmult = new TProfile("runidvstofmult", "", 90000, 22031041, 22121041,"");
+  h_runidvsrefmult = new TProfile("runidvsrefmult", "", 90000, 22031041, 22121041,"");
+
+  h_pt = new TH1F("h_pt","",1000,0.,10.);
+  h_eta_b= new TH1F("h_eta_b","",1000,-2.,2.);
+  h_eta= new TH1F("h_eta","",1000,-2.,2.);
+  h_nhitfit=new TH1F("h_nhitfit","",80,-0.5,79.5);
+  h_nhitmax=new TH1F("h_nhitmax","",80,-0.5,79.5);
+  h_nhitratio=new TH1F("h_nhitratio","",1000,-0.5,1.5);
+  h_dca = new TH1F("h_dca","",1000,0.,5.);
+  h_phi = new TH1F("h_phi","",1000,-6.28,6.28);
+
+  h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 90000, 22031041, 22121041,"");
+  h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 90000, 22031041, 22121041,"");
+
+  h_runidvstofmult = new TProfile("runidvstofmult", "", 90000, 22031041, 22121041,"");
+  h_runidvsrefmult = new TProfile("runidvsrefmult", "", 90000, 22031041, 22121041,"");
 //----------------Make histograms for shifting Psi_TPC--------------------
   mTPCCosShift = new TProfile3D("TPCCosShift","TPCCosShift",9,-0.5,8.5,mFourierOrder,0.5,0.5+mFourierOrder,_PsiOrderMax,0.5,(double)_PsiOrderMax+0.5);
   mTPCCosShift->Sumw2();
@@ -285,20 +330,20 @@ void PicoAnalyzer::NewRun(int runId){
 short PicoAnalyzer::Make(int iEvent){
   //----------------- get data --------------
   mPicoDst->GetEntry(iEvent);
-  StPicoEvent* event = (StPicoEvent*)((*mEventClonesArray)[0]);
-  if (event->runId()!=mRunId){
-    NewRun(event->runId());        // some things should be reset when there is a new run loaded
+  StPicoEvent* mPicoEvent = (StPicoEvent*)((*mEventClonesArray)[0]);
+  if (mPicoEvent->runId()!=mRunId){
+    NewRun(mPicoEvent->runId());        // some things should be reset when there is a new run loaded
     cout << "New run detected: " << mRunId << " and it is collision system #" << mRunCollisionSystem << endl;
     //cout<<"RunEntry"<<mRunEt<<endl;
   }
 
   //----- done getting data; have fun! ------
-  // if(!(event->isTrigger(610001)||event->isTrigger(610011)||event->isTrigger(610021)||event->isTrigger(610031)||event->isTrigger(610041)||event->isTrigger(610051))) return 0;
+  // if(!(mPicoEvent->isTrigger(610001)||mPicoEvent->isTrigger(610011)||mPicoEvent->isTrigger(610021)||mPicoEvent->isTrigger(610031)||mPicoEvent->isTrigger(610041)||mPicoEvent->isTrigger(610051))) return 0;
 
-  //  StThreeVectorF primaryVertex = event->primaryVertex();
-  //  TVector3 PV(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
-  TVector3 PV = event->primaryVertex();
-  int mRunId = event->runId();
+  //  StThreeVectorF primaryVertex = mPicoEvent->primaryVertex();
+  //  TVector3 vertexPos(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
+  TVector3 vertexPos = mPicoEvent->primaryVertex();
+  int mRunId = mPicoEvent->runId();
   int RUNYear = 2018;
   float RUNEnergy = 27.;
   int RunDay = floor( (mRunId - (RUNYear-2000)*pow(10,6))/pow(10,3) );
@@ -308,7 +353,7 @@ short PicoAnalyzer::Make(int iEvent){
 
 //-----------------Get the multiplicity by the StRefMulCorr class--------------
   int CentId=-1;
-  int mRefMult=event->refMult();
+  int refMult=mPicoEvent->refMult();
 
   // bool ISRefMultCorrBadRun=false;
   // mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
@@ -321,23 +366,31 @@ short PicoAnalyzer::Make(int iEvent){
   {
     if(mRunId == badrun[ii]) return 0;
   }
-  //mRefMultCorr->initEvent(mRefMult,PV.Z(),event->ZDCx());
-  //mRefMult = mRefMultCorr->getRefMultCorr();
-  CentId = Centrality(event->refMult());//An integer between 0 (70-80%) and 8 (0-5%)
-  //int CentIdmy = FindCent(event->refMult());   // returns an integer between 0 (70-80%) and 8 (0-5%)
+  //mRefMultCorr->initEvent(refMult,vertexPos.Z(),mPicoEvent->ZDCx());
+  //refMult = mRefMultCorr->getRefMultCorr();
+  CentId = Centrality(mPicoEvent->refMult());//An integer between 0 (70-80%) and 8 (0-5%)
+  //int CentIdmy = FindCent(mPicoEvent->refMult());   // returns an integer between 0 (70-80%) and 8 (0-5%)
   //-------------remove the pile-up events-----------------
-  //if(mRefMultCorr->passnTofMatchRefmultCut(1.*event->refMult(), 1.*event->nBTOFMatch())!=1) return 0;
-  if (fabs(PV.Z())>=mVzMax) return 0;
-  if (sqrt(pow(PV.X(),2)+pow(PV.Y(),2))>mVtxR) return 0;
-  //if (abs(PV.Z()-event->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020
+  //if(mRefMultCorr->passnTofMatchRefmultCut(1.*mPicoEvent->refMult(), 1.*mPicoEvent->nBTOFMatch())!=1) return 0;
+
+  hvz_b->Fill(vertexPos.Z());
+  hvr_b->Fill(vertexPos.X(),vertexPos.Y());
+  hvzvpdvz_b->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
+  htofvsref_b->Fill(refMult,tofMult);
+  htofmatchvsref_b->Fill(refMult,tofmatch);
+  h_runidvstofmult_b->Fill(runId,tofMult);
+  h_runidvsrefmult_b->Fill(runId,refMult);
+  if (fabs(vertexPos.Z())>=mVzMax) return 0;
+  if (sqrt(pow(vertexPos.X(),2)+pow(vertexPos.Y(),2))>mVtxR) return 0;
+  //if (abs(vertexPos.Z()-mPicoEvent->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020
   if (CentId<0) return 0;            // 80-100% - very peripheral
 
-  mVz[CentId]->Fill(PV.Z());
+  mVz[CentId]->Fill(vertexPos.Z());
 
   int VzBin;
   double VzArr[17]={-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40};
   for(int i=0;i<17;i++){
-    if(PV.Z()>VzArr[i]&&PV.Z()<=VzArr[i+1]){
+    if(vertexPos.Z()>VzArr[i]&&vertexPos.Z()<=VzArr[i+1]){
       VzBin=i;
       break;
     }
@@ -345,8 +398,8 @@ short PicoAnalyzer::Make(int iEvent){
 
   // if(VzBin!=7) return 0;
 
-  StEpdEpInfo result = mEpFinder->Results(mEpdHits,PV,CentId);  // and now you have all the EP info you could ever want :-)
-  //StEpdEpInfo result = mEpFinder->Results(mEpdHits,PV,1);  // testing. and now you have all the EP info you could ever want :-)
+  StEpdEpInfo result = mEpFinder->Results(mEpdHits,vertexPos,CentId);  // and now you have all the EP info you could ever want :-)
+  //StEpdEpInfo result = mEpFinder->Results(mEpdHits,vertexPos,1);  // testing. and now you have all the EP info you could ever want :-)
   double EpAngle[_PsiOrderMax][3];//EP order,east/west/full
   for(int iorder=0;iorder<_PsiOrderMax;iorder++){
     EpAngle[iorder][0]=result.EastPhiWeightedAndShiftedPsi(iorder+1);
@@ -382,8 +435,23 @@ short PicoAnalyzer::Make(int iEvent){
     double Tphi = pMom.Phi();
     double Teta = pMom.Eta();
     double TPt = pMom.Pt();//
-    double dca = track->gDCA(PV).Mag();
+    double dca = track->gDCA(vertexPos).Mag();
+
+    h_pt->Fill(pMom.Perp());
+    h_eta_b->Fill(pMom.PseudoRapidity());
+    h_nhitfit->Fill(track->nHitsFit());
+    h_nhitmax->Fill(track->nHitsMax());
+    h_nhitratio->Fill((float)track->nHitsFit()/(float)track->nHitsMax());
+    h_dca->Fill(dca);
+    h_phi->Fill(pMom.Phi());
+    h_eta_phi_before->Fill(pMom.Phi(),pMom.PseudoRapidity());
+
+    if(pMom.Perp() < 0.15) continue;
+    if(pMom.Mag() > 10.0) continue;
     if (dca>mDCAcut) continue;
+    h_eta_phi->Fill(pMom.Phi(),pMom.PseudoRapidity());
+    h_eta->Fill(pMom.PseudoRapidity());
+
     if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
     //mHisto1D[3]->Fill(TPt);
     int Tch=track->charge();
@@ -392,7 +460,7 @@ short PicoAnalyzer::Make(int iEvent){
 
     if(TPt<=mpTMin||TPt>=mpTMax) continue;//pT range [0.15,2.0] for Psi_TPC
     //----------Prepare Q to calculate the Psi_TPC-----------------
-    int TtrId=FindTrackId(Tch,PV.Z(),Teta,TPt);
+    int TtrId=FindTrackId(Tch,vertexPos.Z(),Teta,TPt);
     if(TtrId<=0||TtrId>mNumberOfTrackTypes){
       cout<<"Ah-oh, invalid TrackId :("<<endl;
     }
@@ -490,7 +558,7 @@ short PicoAnalyzer::Make(int iEvent){
 
     //if (nMip<mEPDthresh) continue;
     double TileWeight = (nMip<3.0)?nMip:3.0;//Note: here a different nMIPMax from the EpFinder was used
-    TVector3 StraightLine = mEpdGeom->RandomPointOnTile(tileId) - PV;
+    TVector3 StraightLine = mEpdGeom->RandomPointOnTile(tileId) - vertexPos;
     double Hphi = StraightLine.Phi();
     double Heta = StraightLine.Eta();
 

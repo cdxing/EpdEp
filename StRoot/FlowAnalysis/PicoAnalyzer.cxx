@@ -353,8 +353,9 @@ short PicoAnalyzer::Make(int iEvent){
 
 //-----------------Get the multiplicity by the StRefMulCorr class--------------
   int CentId=-1;
+  int tofMult=mPicoEvent->btofTrayMultiplicity();
+  int tofmatch=mPicoEvent->nBTOFMatch();
   int refMult=mPicoEvent->refMult();
-
   // bool ISRefMultCorrBadRun=false;
   // mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
   //mRefMultCorr = new StRefMultCorr();
@@ -378,8 +379,8 @@ short PicoAnalyzer::Make(int iEvent){
   hvzvpdvz_b->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
   htofvsref_b->Fill(refMult,tofMult);
   htofmatchvsref_b->Fill(refMult,tofmatch);
-  h_runidvstofmult_b->Fill(runId,tofMult);
-  h_runidvsrefmult_b->Fill(runId,refMult);
+  h_runidvstofmult_b->Fill(mRunId,tofMult);
+  h_runidvsrefmult_b->Fill(mRunId,refMult);
   if (fabs(vertexPos.Z())>=mVzMax) return 0;
   if (sqrt(pow(vertexPos.X(),2)+pow(vertexPos.Y(),2))>mVtxR) return 0;
   //if (abs(vertexPos.Z()-mPicoEvent->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020
@@ -427,10 +428,9 @@ short PicoAnalyzer::Make(int iEvent){
   //------------Begin loop over TPC tracks--------------------------
   for(int itrk=0; itrk<mTracks->GetEntries(); itrk++){
     StPicoTrack* track = (StPicoTrack*)((*mTracks)[itrk]);
-    if ((track->nHitsFit()<mNhitsfit)||(!track->isPrimary())) continue; // I should check DCA too, but am confused how
+    if (!track->isPrimary()) continue; // I should check DCA too, but am confused how
     double nHitsFitRatio = track->nHitsFit()*1.0/track->nHitsMax();
     //cout<<nHitsFitRatio<<endl;
-    //if (nHitsFitRatio<mNhitsfitratio) continue;//get rid of the nhitsfitratio cut, Prithwish said it is a very old cut used by STAR. 06/18/2020
     TVector3 pMom = track->pMom();//track->gMom() if I want to look at the global tracks.
     double Tphi = pMom.Phi();
     double Teta = pMom.Eta();
@@ -449,6 +449,8 @@ short PicoAnalyzer::Make(int iEvent){
     if(pMom.Perp() < 0.15) continue;
     if(pMom.Mag() > 10.0) continue;
     if (dca>mDCAcut) continue;
+    if (track->nHitsFit()<mNhitsfit) continue;
+    if (nHitsFitRatio<mNhitsfitratio) continue;//get rid of the nhitsfitratio cut, Prithwish said it is a very old cut used by STAR. 06/18/2020
     h_eta_phi->Fill(pMom.Phi(),pMom.PseudoRapidity());
     h_eta->Fill(pMom.PseudoRapidity());
 

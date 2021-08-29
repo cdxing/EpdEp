@@ -161,7 +161,6 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hvzvpdvz =new TH2F("h_vz_vpd","vz_vs_vpd",1000,-150,150,1000,-150,150);
   htofvsref = new TH2F("htofvsref","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
   htofmatchvsref=new TH2F("htofmatchvsref","",1500,0.0,1500.0,1500,0.0,1500.0);
-  hist_Vr_cut = new TH1D("hist_Vr_cut","V_{R} after cut [cm]",500,0.0,20.0);
   hvr = new TH2F("h_vr","vy_vs_vx",1000,-10,10,1000,-10,10);
 
   hbetavsp =new TH2F("hbetavsp","beta_vs_p",1000,0,6,1000,0,10);

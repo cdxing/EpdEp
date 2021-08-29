@@ -393,8 +393,8 @@ short PicoAnalyzer::Make(int iEvent){
   htofvsref->Fill(refMult,tofMult);
   htofmatchvsref->Fill(refMult,tofmatch);
 
-  h_runidvstofmult->Fill(runId,tofMult);
-  h_runidvsrefmult->Fill(runId,refMult);
+  h_runidvstofmult->Fill(mRunId,tofMult);
+  h_runidvsrefmult->Fill(mRunId,refMult);
   if (CentId<0) return 0;            // 80-100% - very peripheral
 
   mVz[CentId]->Fill(vertexPos.Z());

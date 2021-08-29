@@ -10,6 +10,7 @@ class TH1D;
 class TH2D;
 class TH3D;
 class TH1F;
+class TH2F;
 class TProfile;
 class TProfile2D;
 class TProfile3D;

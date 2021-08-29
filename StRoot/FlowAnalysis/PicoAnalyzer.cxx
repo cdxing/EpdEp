@@ -51,7 +51,7 @@ int Centrality(int gRefMult );
 //=================================================
 PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNpTbin(20),mNVzbin(4),mNEtabin(60),
 mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(1.0),mFourierOrder(8),
-mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(0.012),mProtonSigma(0.012),mEtaMaxv1(2.0),mEtaMinv1(-2.0){
+mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(0.012),mProtonSigma(0.012),mEtaMaxv1(1.5),mEtaMinv1(-1.5){
   mFileNameBase = FileNameBase;
 
   mPicoDst=0;

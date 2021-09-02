@@ -29,6 +29,9 @@ class StRefMultCorr;
 
 #define _PsiOrderMax 1 //Maximum order of EP to worry about
 
+const Double_t _massKaon     = 0.493677;
+const Double_t _massPhi = 1.019461;
+
 class PicoAnalyzer : public TObject {
  public:
   PicoAnalyzer(TString FileNameBase="MikesStuff");
@@ -113,6 +116,8 @@ class PicoAnalyzer : public TObject {
 
 double mpTMin;
 double mpTMax;
+double mpTMink;
+double mpTMaxk;
 double mEtaMin;//for phi-weighting, used in FindTrackId() and when MakeWeight
 double mEtaMax;////for phi-weighting
 int mNPhibin;
@@ -136,6 +141,8 @@ double mpTbound;//For looking at low/high pT tracks
 double mPionSigma;//1/beta sigma
 double mKaonSigma;//1/beta sigma
 double mProtonSigma;//1/beta sigma
+double d_KaonM2low;//1/beta sigma
+double d_KaonM2high;//1/beta sigma
 double mEtaMaxv1;//for v1 analysis
 double mEtaMinv1;//for v1 analysis
 
@@ -153,6 +160,29 @@ TProfile *h_runidvstofmult_b, *h_runidvsrefmult_b;
 TProfile *h_runidvstofmult, *h_runidvsrefmult;
 
 TH1F *h_pt, *h_eta_b, *h_eta, *h_nhitfit, *h_nhitmax, *h_nhitratio, *h_dca, *h_phi;
+
+// Kaon PID
+TH1D *hist_pt_kaonPlus;
+TH1D *hist_eta_kaonPlus;
+TH1D *hist_y_kaonPlus;
+TH1D *hist_phi_kaonPlus;
+TH2D *hist_rap_eta_kaonPlus;
+TH2D *hist_pt_y_kaonPlus;
+TH2D *hist_pt_eta_kaonPlus;
+TH2D *hist_dEdx_kaonPlus;
+TH2D *hist_beta_kaonPlus;
+TH2D *hist_mass_kaonPlus;
+
+TH1D *hist_pt_kaonMinus;
+TH1D *hist_eta_kaonMinus;
+TH1D *hist_y_kaonMinus;
+TH1D *hist_phi_kaonMinus;
+TH2D *hist_rap_eta_kaonMinus;
+TH2D *hist_pt_y_kaonMinus;
+TH2D *hist_pt_eta_kaonMinus;
+TH2D *hist_dEdx_kaonMinus;
+TH2D *hist_beta_kaonMinus;
+TH2D *hist_mass_kaonMinus;
 
 //histos for checking the phi-weighted eta-phi distribution for the TPC tracks
   TH2D* mEtaPhiDisPhiWeighted[9];//phi-weighted eta phi distribution for 9 centralitites.

@@ -52,9 +52,10 @@ ClassImp(PicoAnalyzer)                     //  Macro for CINT compatability
 int Centrality(int gRefMult );
 
 //=================================================
-PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNpTbin(20),mNVzbin(4),mNEtabin(60),
-mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(1.0),mFourierOrder(8),
-mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(0.012),mProtonSigma(0.012),mEtaMaxv1(2.0),mEtaMinv1(-2.0){
+PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMink(0.2),mpTMaxk(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNpTbin(20),mNVzbin(4),mNEtabin(60),
+mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
+mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(2.0),
+mProtonSigma(0.012),mEtaMaxv1(2.0),d_KaonM2low(0.16),d_KaonM2high(0.36),mEtaMinv1(-2.0){
   mFileNameBase = FileNameBase;
 
   mPicoDst=0;
@@ -193,8 +194,29 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 90000, 22031041, 22121041,"");
   h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 90000, 22031041, 22121041,"");
 
+  //========================= Kaon PID ==========================================
   h_runidvstofmult = new TProfile("runidvstofmult", "", 90000, 22031041, 22121041,"");
   h_runidvsrefmult = new TProfile("runidvsrefmult", "", 90000, 22031041, 22121041,"");
+  hist_pt_kaonPlus = new TH1D("hist_pt_kaonPlus","p_{T} [GeV/c]",1000,0.0,5.0);
+  hist_eta_kaonPlus = new TH1D("hist_eta_kaonPlus","#eta",200,-3.0,0.5);
+  hist_y_kaonPlus = new TH1D("hist_y_kaonPlus","y",200,-3.0,0.5);
+  hist_phi_kaonPlus = new TH1D("hist_phi_kaonPlus","#phi [Radian]",1000,-0.5*TMath::Pi(),2.5*TMath::Pi());
+  hist_rap_eta_kaonPlus = new TH2D("hist_rap_eta_kaonPlus","kaonPlus y versus #eta",250,-2.5,0,250,-2.5,0);
+  hist_pt_y_kaonPlus = new TH2D("hist_pt_y_kaonPlus","p_{T} [GeV/c] vs. y",500,-1.5,1.5,500,0.0,3.5);
+  hist_pt_eta_kaonPlus = new TH2D("hist_pt_eta_kaonPlus","p_{T} [GeV/c] vs. #eta",500,-1.5,1.5,500,0.0,3.5);
+  hist_dEdx_kaonPlus = new TH2D("hist_dEdx_kaonPlus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
+  hist_beta_kaonPlus = new TH2D("hist_beta_kaonPlus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
+  hist_mass_kaonPlus = new TH2D("hist_mass_kaonPlus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
+  hist_pt_kaonMinus = new TH1D("hist_pt_kaonMinus","p_{T} [GeV/c]",1000,0.0,5.0);
+  hist_eta_kaonMinus = new TH1D("hist_eta_kaonMinus","#eta",200,-3.0,0.5);
+  hist_y_kaonMinus = new TH1D("hist_y_kaonMinus","y",200,-3.0,0.5);
+  hist_phi_kaonMinus = new TH1D("hist_phi_kaonMinus","#phi [Radian]",1000,-0.5*TMath::Pi(),2.5*TMath::Pi());
+  hist_rap_eta_kaonMinus = new TH2D("hist_rap_eta_kaonMinus","kaonMinus y versus #eta",250,-2.5,0,250,-2.5,0);
+  hist_pt_y_kaonMinus = new TH2D("hist_pt_y_kaonMinus","p_{T} [GeV/c] vs. y",500,-1.5,1.5,500,0.0,3.5);
+  hist_pt_eta_kaonMinus = new TH2D("hist_pt_eta_kaonMinus","p_{T} [GeV/c] vs. #eta",500,-1.5,1.5,500,0.0,3.5);
+  hist_dEdx_kaonMinus = new TH2D("hist_dEdx_kaonMinus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
+  hist_beta_kaonMinus = new TH2D("hist_beta_kaonMinus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
+  hist_mass_kaonMinus = new TH2D("hist_mass_kaonMinus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
 //----------------Make histograms for shifting Psi_TPC--------------------
   mTPCCosShift = new TProfile3D("TPCCosShift","TPCCosShift",9,-0.5,8.5,mFourierOrder,0.5,0.5+mFourierOrder,_PsiOrderMax,0.5,(double)_PsiOrderMax+0.5);
   mTPCCosShift->Sumw2();
@@ -440,6 +462,8 @@ short PicoAnalyzer::Make(int iEvent){
   PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
 
   float mField = mPicoEvent->bField();
+  std::vector<StPicoTrack *> v_KaonPlus_tracks;
+  std::vector<StPicoTrack *> v_KaonMinus_tracks;
   //------------Begin loop over TPC tracks--------------------------
   for(int itrk=0; itrk<mTracks->GetEntries(); itrk++){
     StPicoTrack* track = (StPicoTrack*)((*mTracks)[itrk]);
@@ -498,6 +522,9 @@ short PicoAnalyzer::Make(int iEvent){
         }
     }
     bool isGoodTof = btofMatchFlag >0 && beta > 0 && fabs(btofYLocal) < 1.8;
+    cout << "btofMatchFlag: "<< btofMatchFlag << endl;
+    cout << "beta: "<< beta << endl;
+    cout << "btofYLocal: "<< btofYLocal << endl;
     if(isGoodTof) mass2 = pMom.Mag()*pMom.Mag()*(1./pow(beta,2)-1); else mass2 = -999;
 
     if(TMath::Abs(beta)>1e-5)  hbetavsp->Fill(pMom.Mag(), 1/beta);
@@ -505,12 +532,52 @@ short PicoAnalyzer::Make(int iEvent){
     hmassvsp->Fill(pMom.Mag()/track->charge(), mass2);
     hdedxvsp->Fill(pMom.Mag()/track->charge(),track->dEdx());
     /* above from Shaowei lan */
-
-    if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
-    //mHisto1D[3]->Fill(TPt);
     int Tch=track->charge();
     double rig=Tch*pMom.Mag();
     double dEdx=track->dEdx();
+    cout << "charge: "<< Tch << endl;
+
+    // Kaons PID: require both TPC and TOF
+    TLorentzVector ltrackk;
+    if(
+      TMath::Abs(track->nSigmaKaon()) < mKaonSigma &&
+      isGoodTof && mass2 > d_KaonM2low && mass2 < d_KaonM2high
+      && TPt >= mpTMink
+      && TPt <= mpTMaxk
+    ){
+      ltrackk.SetXYZM(pMom.X(),pMom.Y(),pMom.Z(),_massKaon);
+      if(Tch > 0){
+        nKaonPlus++;
+        v_KaonPlus_tracks.push_back(track); // push back kp tracks
+        // Fill histograms
+        hist_pt_kaonPlus->Fill(TPt);
+        hist_eta_kaonPlus->Fill(Teta);
+        hist_y_kaonPlus->Fill(ltrackk.Rapidity());
+        hist_phi_kaonPlus->Fill(phi);
+        hist_rap_eta_kaonPlus->Fill(Teta,ltrackk.Rapidity());
+        hist_pt_y_kaonPlus->Fill(ltrackk.Rapidity(),TPt,1);
+        hist_pt_eta_kaonPlus->Fill(Teta,TPt,1);
+        hist_dEdx_kaonPlus->Fill(rig,track->dEdx());
+        hist_beta_kaonPlus->Fill(rig,1.0/beta);
+        hist_mass_kaonPlus->Fill(rig,mass2);
+      } else { // charge < 0
+        nKaonMinus++;
+        v_KaonMinus_tracks.push_back(track); // push back km tracks
+        // Fill histograms
+        hist_pt_kaonMinus->Fill(TPt);
+        hist_eta_kaonMinus->Fill(Teta);
+        hist_y_kaonMinus->Fill(ltrackk.Rapidity());
+        hist_phi_kaonMinus->Fill(phi);
+        hist_rap_eta_kaonMinus->Fill(Teta,ltrackk.Rapidity());
+        hist_pt_y_kaonMinus->Fill(ltrackk.Rapidity(),TPt,1);
+        hist_pt_eta_kaonMinus->Fill(Teta,TPt,1);
+        hist_dEdx_kaonMinus->Fill(rig,track->dEdx());
+        hist_beta_kaonMinus->Fill(rig,1.0/beta);
+        hist_mass_kaonMinus->Fill(rig,mass2);
+      }
+    }
+    if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
+    //mHisto1D[3]->Fill(TPt);
 
     if(TPt<=mpTMin||TPt>=mpTMax) continue;//pT range [0.15,2.0] for Psi_TPC
     //----------Prepare Q to calculate the Psi_TPC-----------------

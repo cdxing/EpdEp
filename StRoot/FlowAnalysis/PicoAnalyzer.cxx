@@ -490,6 +490,7 @@ short PicoAnalyzer::Make(int iEvent){
                 if(tof>0) beta = L/(tof*(TMath::C()/1.e9));
                 else beta = -1;
             }
+            cout << "L = " << L << endl;
             cout << "beta = " << beta << endl;
         }
     }

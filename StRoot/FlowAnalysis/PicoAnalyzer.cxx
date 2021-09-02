@@ -166,6 +166,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   htofvsref = new TH2F("htofvsref","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
   htofmatchvsref=new TH2F("htofmatchvsref","",1500,0.0,1500.0,1500,0.0,1500.0);
   hvr = new TH2F("h_vr","vy_vs_vx",1000,-10,10,1000,-10,10);
+  hbtofYLocal = new TH1F("hbtofYLocal","",500,-5.,5.);
 
   hbetavsp =new TH2F("hbetavsp","beta_vs_p",1000,0,6,1000,0,10);
   hmassvsp =new TH2F("hmassvsp","m2_vs_p*q",3000,-6.,6.,2000,-0.2,15.8);
@@ -522,6 +523,7 @@ short PicoAnalyzer::Make(int iEvent){
         }
     }
     bool isGoodTof = btofMatchFlag >0 && beta > 0 && fabs(btofYLocal) < 1.8;
+    if(btofMatchFlag >0 && beta > 0) hbtofYLocal -> Fill(btofYLocal);
     cout << "btofMatchFlag: "<< btofMatchFlag << endl;
     cout << "beta: "<< beta << endl;
     cout << "btofYLocal: "<< btofYLocal << endl;

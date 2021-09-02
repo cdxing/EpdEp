@@ -491,6 +491,8 @@ short PicoAnalyzer::Make(int iEvent){
                 if(tof>0) beta = L/(tof*(TMath::C()/1.e9));
                 else beta = -1;
             }
+            cout << "time of flight = " <<  tof << endl;
+            cout << "tof xpostion = " <<  tofPid->btofHitPos().X() << endl;
             cout << "tof*(TMath::C()/1.e9 = " << (tof*(TMath::C()/1.e9)) << endl;
             cout << "beta = " << beta << endl;
         }

@@ -476,7 +476,7 @@ short PicoAnalyzer::Make(int iEvent){
     Float_t btofYLocal    =  -999;
     float tof = 0, L=0, beta=0.0, mass2= 0.0;
     if(tofIndex>=0) {
-        StPicoBTofPidTraits *tofPid = mPicoDst->btofPidTraits(tofIndex);
+        StPicoBTofPidTraits *tofPid = (StPicoBTofPidTraits*)((*mTraits)[tofIndex]);
         btofMatchFlag = tofPid->btofMatchFlag();
         btofYLocal    = tofPid->btofYLocal();
         if(tofPid) {

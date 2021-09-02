@@ -547,13 +547,12 @@ short PicoAnalyzer::Make(int iEvent){
     ){
       ltrackk.SetXYZM(pMom.X(),pMom.Y(),pMom.Z(),_massKaon);
       if(Tch > 0){
-        nKaonPlus++;
         v_KaonPlus_tracks.push_back(track); // push back kp tracks
         // Fill histograms
         hist_pt_kaonPlus->Fill(TPt);
         hist_eta_kaonPlus->Fill(Teta);
         hist_y_kaonPlus->Fill(ltrackk.Rapidity());
-        hist_phi_kaonPlus->Fill(phi);
+        hist_phi_kaonPlus->Fill(Tphi);
         hist_rap_eta_kaonPlus->Fill(Teta,ltrackk.Rapidity());
         hist_pt_y_kaonPlus->Fill(ltrackk.Rapidity(),TPt,1);
         hist_pt_eta_kaonPlus->Fill(Teta,TPt,1);
@@ -561,13 +560,12 @@ short PicoAnalyzer::Make(int iEvent){
         hist_beta_kaonPlus->Fill(rig,1.0/beta);
         hist_mass_kaonPlus->Fill(rig,mass2);
       } else { // charge < 0
-        nKaonMinus++;
         v_KaonMinus_tracks.push_back(track); // push back km tracks
         // Fill histograms
         hist_pt_kaonMinus->Fill(TPt);
         hist_eta_kaonMinus->Fill(Teta);
         hist_y_kaonMinus->Fill(ltrackk.Rapidity());
-        hist_phi_kaonMinus->Fill(phi);
+        hist_phi_kaonMinus->Fill(Tphi);
         hist_rap_eta_kaonMinus->Fill(Teta,ltrackk.Rapidity());
         hist_pt_y_kaonMinus->Fill(ltrackk.Rapidity(),TPt,1);
         hist_pt_eta_kaonMinus->Fill(Teta,TPt,1);

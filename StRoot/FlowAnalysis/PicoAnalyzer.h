@@ -149,7 +149,7 @@ double mEtaMinv1;//for v1 analysis
 //histos for QA
 TH1F *href_vz, *hvz_b;
 TH1F *href, *hvz, *hbtofYLocal;
-TH2F *hvzvpdvz_b, *hvr_b, *hvzvpdvz, *hvr, *hmassvsp, *hdedxvsp, *htofvsref_b, *htofvsref;
+TH2F *hvzvpdvz_b, *hvr_b, *hvzvpdvz, *hvr, *hmassvsp, *hdedxvsp, *htofvsref_b, *htofvsref, *hbtofYLocalvsMass2;
 TH2F *htofmatchvsref, *htofmatchvsref_b;
 TH2F *hbetavsp;
 TH2F *h_eta_phi;

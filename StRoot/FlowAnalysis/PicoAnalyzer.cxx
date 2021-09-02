@@ -522,11 +522,15 @@ short PicoAnalyzer::Make(int iEvent){
             // cout << "beta = " << beta << endl;
         }
     }
-    bool isGoodTof = btofMatchFlag >0 && beta > 0 && fabs(btofYLocal) < 1.8;
-    if(btofMatchFlag >0 && beta > 0) hbtofYLocal -> Fill(btofYLocal);
-    cout << "btofMatchFlag: "<< btofMatchFlag << endl;
-    cout << "beta: "<< beta << endl;
-    cout << "btofYLocal: "<< btofYLocal << endl;
+    bool isGoodTof = btofMatchFlag >0 && beta > 0 && ;
+    if(btofMatchFlag >0 && beta > 0){
+      hbtofYLocal -> Fill(btofYLocal);
+      if(fabs(btofYLocal) >= 1.8){
+        cout << "btofMatchFlag: "<< btofMatchFlag << endl;
+        cout << "beta: "<< beta << endl;
+        cout << "btofYLocal: "<< btofYLocal << endl;
+      }
+    }
     if(isGoodTof) mass2 = pMom.Mag()*pMom.Mag()*(1./pow(beta,2)-1); else mass2 = -999;
 
     if(TMath::Abs(beta)>1e-5)  hbetavsp->Fill(pMom.Mag(), 1/beta);

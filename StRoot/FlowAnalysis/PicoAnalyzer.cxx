@@ -482,19 +482,14 @@ short PicoAnalyzer::Make(int iEvent){
         if(tofPid) {
             beta = tofPid->btofBeta();
             tof = tofPid->btof();
-            TVector3 btofHitPos_ = tofPid->btofHitPos();
-            const StThreeVectorF *btofHitPos = new StThreeVectorF(btofHitPos_.X(),btofHitPos_.Y(),btofHitPos_.Z());
-            const StThreeVectorF *vertexPos_ = new StThreeVectorF(vertexPos.X(), vertexPos.Y(), vertexPos.Z());
-            L = tofPathLength(vertexPos_, btofHitPos, helix.curvature());
             if(beta<1e-4) {
+              TVector3 btofHitPos_ = tofPid->btofHitPos();
+              const StThreeVectorF *btofHitPos = new StThreeVectorF(btofHitPos_.X(),btofHitPos_.Y(),btofHitPos_.Z());
+              const StThreeVectorF *vertexPos_ = new StThreeVectorF(vertexPos.X(), vertexPos.Y(), vertexPos.Z());
+              L = tofPathLength(vertexPos_, btofHitPos, helix.curvature());
                 if(tof>0) beta = L/(tof*(TMath::C()/1.e7));
                 else beta = -1;
             }
-            cout << "L = " << L << endl;
-            cout << "time of flight = " <<  tof << endl;
-            cout << "tof xpostion = " <<  tofPid->btofHitPos().X() << endl;
-            cout << "tof*(TMath::C()/1.e7 = " << (tof*(TMath::C()/1.e7)) << endl;
-            cout << "beta = " << beta << endl;
         }
     }
     bool isGoodTof = btofMatchFlag >0 && beta > 0 && fabs(btofYLocal) < 1.8;

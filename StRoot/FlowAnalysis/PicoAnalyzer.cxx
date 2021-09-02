@@ -487,13 +487,13 @@ short PicoAnalyzer::Make(int iEvent){
             const StThreeVectorF *vertexPos_ = new StThreeVectorF(vertexPos.X(), vertexPos.Y(), vertexPos.Z());
             L = tofPathLength(vertexPos_, btofHitPos, helix.curvature());
             if(beta<1e-4) {
-                if(tof>0) beta = L/(tof*(TMath::C()/1.e9));
+                if(tof>0) beta = L/(tof*(TMath::C()/1.e7));
                 else beta = -1;
             }
             cout << "L = " << L << endl;
             cout << "time of flight = " <<  tof << endl;
             cout << "tof xpostion = " <<  tofPid->btofHitPos().X() << endl;
-            cout << "tof*(TMath::C()/1.e9 = " << (tof*(TMath::C()/1.e9)) << endl;
+            cout << "tof*(TMath::C()/1.e7 = " << (tof*(TMath::C()/1.e7)) << endl;
             cout << "beta = " << beta << endl;
         }
     }

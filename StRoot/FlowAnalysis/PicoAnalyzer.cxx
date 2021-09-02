@@ -490,6 +490,7 @@ short PicoAnalyzer::Make(int iEvent){
                 if(tof>0) beta = L/(tof*(C_C_LIGHT/1.e9));
                 else beta = -1;
             }
+            cout << "beta = " << beta << endl;
         }
     }
     bool isGoodTof = btofMatchFlag >0 && beta > 0 && fabs(btofYLocal) < 1.8;

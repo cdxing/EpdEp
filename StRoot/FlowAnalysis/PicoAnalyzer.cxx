@@ -251,7 +251,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     //mTwoD[cent]->Sumw2();
   }
   */
-
+  /*
   for(int ew=0;ew<2;ew++){
     mThreeD[ew] = new TH3D(Form("dNdphidnMIPdetaCent%dEW%dPsi%dRR%dVz%d",5,ew,0,0,7),Form("dNdphidnMIPdetaCent%dEW%dPsi%dRR%dVz%d",5,ew,0,0,7),24,-1.0*TMath::Pi(),TMath::Pi(),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id
     mThreeD[ew]->Sumw2();
@@ -260,7 +260,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
       mThreeDTile[ew][tt]->Sumw2();
     }
   }
-
+  */
   //Making TProfiles for the vn analysis
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
@@ -645,9 +645,10 @@ short PicoAnalyzer::Make(int iEvent){
       }
     }
     */
+    /*
     mThreeD[EW]->Fill(deltaphi[0][0],nMip,ring);
     mThreeDTile[EW][TTxyId-1]->Fill(deltaphi[0][0],nMip,ring);
-
+    */
 
     //double RingId=0.0;
     //if(EW==0) RingId=-1.0*(double)ring;

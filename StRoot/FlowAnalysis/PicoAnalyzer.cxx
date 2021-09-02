@@ -167,7 +167,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   htofmatchvsref=new TH2F("htofmatchvsref","",1500,0.0,1500.0,1500,0.0,1500.0);
   hvr = new TH2F("h_vr","vy_vs_vx",1000,-10,10,1000,-10,10);
   hbtofYLocal = new TH1F("hbtofYLocal","",600,-6.,6.);
-  hbtofYLocalvsMass2 = new TH2F("hbtofYLocalvsMass2","",800,-0.1,1.5,500,-5.,5.);
+  hbtofYLocalvsMass2 = new TH2F("hbtofYLocalvsMass2","",800,-0.1,1.5,600,-6.,6.);
 
   hbetavsp =new TH2F("hbetavsp","beta_vs_p",1000,0,6,1000,0,10);
   hmassvsp =new TH2F("hmassvsp","m2_vs_p*q",3000,-6.,6.,2000,-0.2,15.8);
@@ -200,20 +200,20 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h_runidvstofmult = new TProfile("runidvstofmult", "", 90000, 22031041, 22121041,"");
   h_runidvsrefmult = new TProfile("runidvsrefmult", "", 90000, 22031041, 22121041,"");
   hist_pt_kaonPlus = new TH1D("hist_pt_kaonPlus","p_{T} [GeV/c]",1000,0.0,5.0);
-  hist_eta_kaonPlus = new TH1D("hist_eta_kaonPlus","#eta",200,-3.0,0.5);
-  hist_y_kaonPlus = new TH1D("hist_y_kaonPlus","y",200,-3.0,0.5);
-  hist_phi_kaonPlus = new TH1D("hist_phi_kaonPlus","#phi [Radian]",1000,-0.5*TMath::Pi(),2.5*TMath::Pi());
-  hist_rap_eta_kaonPlus = new TH2D("hist_rap_eta_kaonPlus","kaonPlus y versus #eta",250,-2.5,0,250,-2.5,0);
+  hist_eta_kaonPlus = new TH1D("hist_eta_kaonPlus","#eta",500,-1.5,1.5);
+  hist_y_kaonPlus = new TH1D("hist_y_kaonPlus","y",500,-1.5,1.5);
+  hist_phi_kaonPlus = new TH1D("hist_phi_kaonPlus","#phi [Radian]",1000,-1.5*TMath::Pi(),2.5*TMath::Pi());
+  hist_rap_eta_kaonPlus = new TH2D("hist_rap_eta_kaonPlus","kaonPlus y versus #eta",500,-1.5,1.5,500,-1.5,1.5);
   hist_pt_y_kaonPlus = new TH2D("hist_pt_y_kaonPlus","p_{T} [GeV/c] vs. y",500,-1.5,1.5,500,0.0,3.5);
   hist_pt_eta_kaonPlus = new TH2D("hist_pt_eta_kaonPlus","p_{T} [GeV/c] vs. #eta",500,-1.5,1.5,500,0.0,3.5);
   hist_dEdx_kaonPlus = new TH2D("hist_dEdx_kaonPlus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
   hist_beta_kaonPlus = new TH2D("hist_beta_kaonPlus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
   hist_mass_kaonPlus = new TH2D("hist_mass_kaonPlus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
   hist_pt_kaonMinus = new TH1D("hist_pt_kaonMinus","p_{T} [GeV/c]",1000,0.0,5.0);
-  hist_eta_kaonMinus = new TH1D("hist_eta_kaonMinus","#eta",200,-3.0,0.5);
-  hist_y_kaonMinus = new TH1D("hist_y_kaonMinus","y",200,-3.0,0.5);
-  hist_phi_kaonMinus = new TH1D("hist_phi_kaonMinus","#phi [Radian]",1000,-0.5*TMath::Pi(),2.5*TMath::Pi());
-  hist_rap_eta_kaonMinus = new TH2D("hist_rap_eta_kaonMinus","kaonMinus y versus #eta",250,-2.5,0,250,-2.5,0);
+  hist_eta_kaonMinus = new TH1D("hist_eta_kaonMinus","#eta",500,-1.5,1.5);
+  hist_y_kaonMinus = new TH1D("hist_y_kaonMinus","y",500,-1.5,1.5);
+  hist_phi_kaonMinus = new TH1D("hist_phi_kaonMinus","#phi [Radian]",1000,-1.5*TMath::Pi(),2.5*TMath::Pi());
+  hist_rap_eta_kaonMinus = new TH2D("hist_rap_eta_kaonMinus","kaonMinus y versus #eta",500,-1.5,1.5,500,-1.5,1.5);
   hist_pt_y_kaonMinus = new TH2D("hist_pt_y_kaonMinus","p_{T} [GeV/c] vs. y",500,-1.5,1.5,500,0.0,3.5);
   hist_pt_eta_kaonMinus = new TH2D("hist_pt_eta_kaonMinus","p_{T} [GeV/c] vs. #eta",500,-1.5,1.5,500,0.0,3.5);
   hist_dEdx_kaonMinus = new TH2D("hist_dEdx_kaonMinus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);

@@ -487,7 +487,7 @@ short PicoAnalyzer::Make(int iEvent){
                 const StThreeVectorF *btofHitPos = new StThreeVectorF(btofHitPos_.X(),btofHitPos_.Y(),btofHitPos_.Z());
                 const StThreeVectorF *vertexPos_ = new StThreeVectorF(vertexPos.X(), vertexPos.Y(), vertexPos.Z());
                 L = tofPathLength(vertexPos_, btofHitPos, helix.curvature());
-                if(tof>0) beta = L/(tof*(tof*(TMath::C()/1.e9));
+                if(tof>0) beta = L/(tof*(TMath::C()/1.e9));
                 else beta = -1;
             }
             cout << "beta = " << beta << endl;

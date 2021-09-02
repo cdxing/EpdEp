@@ -12,6 +12,8 @@
 #include "StPicoEvent/StPicoBbcHit.h"
 #include "StPicoEvent/StPicoEvent.h"
 #include "StPicoEvent/StPicoTrack.h"
+#include "StThreeVectorF.hh"
+
 #include "StEpdUtil/StEpdGeom.h"
 #include "StEpdUtil/StBbcGeom.h"
 #include "StEpdUtil/StEpdEpFinder.h"
@@ -25,6 +27,7 @@
 //#include "TTree.h"
 //#include "TLeaf.h"
 #include "TMath.h"
+#include "StBTofUtil/tofPathLength.hh"
 #include "TClonesArray.h"
 #include "TH1D.h"
 #include "TH2D.h"
@@ -436,6 +439,7 @@ short PicoAnalyzer::Make(int iEvent){
   PCosPhi = new TH1D(Form("PCosPhi"),Form("PCosPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
 
+  float mField = mPicoEvent->bField();
   //------------Begin loop over TPC tracks--------------------------
   for(int itrk=0; itrk<mTracks->GetEntries(); itrk++){
     StPicoTrack* track = (StPicoTrack*)((*mTracks)[itrk]);
@@ -443,6 +447,7 @@ short PicoAnalyzer::Make(int iEvent){
     double nHitsFitRatio = track->nHitsFit()*1.0/track->nHitsMax();
     //cout<<nHitsFitRatio<<endl;
     TVector3 pMom = track->pMom();//track->gMom() if I want to look at the global tracks.
+    StPicoPhysicalHelix helix = track->helix(mField);
     double Tphi = pMom.Phi();
     double Teta = pMom.Eta();
     double TPt = pMom.Pt();//

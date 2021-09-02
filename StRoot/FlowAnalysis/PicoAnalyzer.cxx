@@ -465,6 +465,37 @@ short PicoAnalyzer::Make(int iEvent){
     h_eta_phi->Fill(pMom.Phi(),pMom.PseudoRapidity());
     h_eta->Fill(pMom.PseudoRapidity());
 
+    /* from Shaowei lan */
+    int tofIndex = track->bTofPidTraitsIndex();
+    Int_t   btofMatchFlag =  0;
+    Float_t btofYLocal    =  -999;
+    float tof = 0, L=0, beta=0.0, mass2= 0.0;
+    if(tofIndex>=0) {
+        StPicoBTofPidTraits *tofPid = mPicoDst->btofPidTraits(tofIndex);
+        btofMatchFlag = tofPid->btofMatchFlag();
+        btofYLocal    = tofPid->btofYLocal();
+        if(tofPid) {
+            beta = tofPid->btofBeta();
+            tof = tofPid->btof();
+            if(beta<1e-4) {
+                TVector3 btofHitPos_ = tofPid->btofHitPos();
+                const StThreeVectorF *btofHitPos = new StThreeVectorF(btofHitPos_.X(),btofHitPos_.Y(),btofHitPos_.Z());
+                const StThreeVectorF *vertexPos_ = new StThreeVectorF(vertexPos.X(), vertexPos.Y(), vertexPos.Z());
+                L = tofPathLength(vertexPos_, btofHitPos, helix.curvature());
+                if(tof>0) beta = L/(tof*(C_C_LIGHT/1.e9));
+                else beta = -1;
+            }
+        }
+    }
+    bool isGoodTof = btofMatchFlag >0 && beta > 0 && fabs(btofYLocal) < 1.8;
+    if(isGoodTof) mass2 = pMom.Mag()*pMom.Mag()*(1./pow(beta,2)-1); else mass2 = -999;
+
+    if(TMath::Abs(beta)>1e-5)  hbetavsp->Fill(pMom.Mag(), 1/beta);
+    else hbetavsp->Fill(pMom.Mag(), 0);
+    hmassvsp->Fill(pMom.Mag()/track->charge(), mass2);
+    hdedxvsp->Fill(pMom.Mag()/track->charge(),track->dEdx());
+    /* above from Shaowei lan */
+
     if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
     //mHisto1D[3]->Fill(TPt);
     int Tch=track->charge();

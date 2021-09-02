@@ -522,7 +522,7 @@ short PicoAnalyzer::Make(int iEvent){
             // cout << "beta = " << beta << endl;
         }
     }
-    bool isGoodTof = btofMatchFlag >0 && beta > 0 && ;
+    bool isGoodTof = btofMatchFlag >0 && beta > 0 && fabs(btofYLocal) < 1.8;
     if(btofMatchFlag >0 && beta > 0){
       hbtofYLocal -> Fill(btofYLocal);
       if(fabs(btofYLocal) >= 1.8){

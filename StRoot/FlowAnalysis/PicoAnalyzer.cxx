@@ -158,13 +158,16 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
   h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",600,-3.,3.,600,-3.,3.);
   hist_dip_angle = new TH1D("hist_dip_angle","hist_dip_angle",1000,-1,1.0);
-  hist_SE_mass_Phi  = new TH1D("hist_SE_mass_Phi","Same event invariant mass",200,0.98,1.08);
-  hist_rotation_mass_Phi  = new TH1D("hist_rotation_mass_Phi","K+K- rotated invariant mass",200,0.98,1.08);
+  h_Mass  = new TH1D("h_Mass","Same event invariant mass",200,0.98,1.08);
+  h_Mass_rot  = new TH1D("h_Mass_rot","K+K- rotated invariant mass",200,0.98,1.08);
   hist_SE_PhiMeson_pT  = new TH1D("hist_SE_PhiMeson_pT","pT distribution of #phi",200,0.0,10);
   hist_SE_PhiMeson_mT  = new TH1D("hist_SE_PhiMeson_mT","mT distribution of #phi",200,0.0,10);
   hist_SE_PhiMeson_rap  = new TH1D("hist_SE_PhiMeson_rap","y distribution of #phi",200,-10.,10);
   hist_SE_PhiMeson_eta  = new TH1D("hist_SE_PhiMeson_eta","eta distribution of #phi",200,-10.,10);
+  TString HistName = "Mass2_pt", HistName_rot = "Mass2_rot_pt";
   TString HistName_ptEta = "pT_eta", HistName_ptY = "pT_y";
+  h_Mass2 = new TH2F(HistName.Data(),HistName.Data(),20,0.,5.0,200,0.98,1.08);
+  h_Mass2_rot = new TH2F(HistName_rot.Data(),HistName_rot.Data(),20,0.,5.0,200,0.98,1.08);
   h2_pT_eta = new TH2F(HistName_ptEta.Data(),HistName_ptEta.Data(),200,-2.0,2.0,20,0.,5.0);
   h2_pT_y = new TH2F(HistName_ptY.Data(),HistName_ptY.Data(),200,-2.0,2.0,20,0.,5.0);
 
@@ -824,8 +827,10 @@ short PicoAnalyzer::Make(int iEvent){
       Double_t pt_rot = trackAB_rot.Perp();
       Double_t rap_rot =  trackAB_rot.Rapidity(); // Rotation don't  influence y
 
-      hist_SE_mass_Phi    ->Fill(InvMassAB);
-      hist_rotation_mass_Phi    ->Fill(InvMassAB_rot);
+      h_Mass    ->Fill(InvMassAB);
+      h_Mass_rot    ->Fill(InvMassAB_rot);
+      h_Mass2    ->Fill(pt,InvMassAB);
+      h_Mass2_rot    ->Fill(pt,InvMassAB_rot);
       hist_SE_PhiMeson_pT ->Fill(pt);
       h2_pT_eta->Fill(eta,pt);
       h2_pT_y->Fill(rap,pt);

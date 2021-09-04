@@ -761,9 +761,9 @@ short PicoAnalyzer::Make(int iEvent){
     ltrackA.SetXYZM(p_vecA.X(),p_vecA.Y(),p_vecA.Z(),_massKaon);
     double d_chargeA  = picoTrackA->charge();
     h2px  -> Fill(picoTrackA->pMom().X(),p_vecA.X());
-    cout << "pMOM X = " << picoTrackA->pMom().X() <<", " <<"p_vecA X" << p_vecA.X());
-    cout << "pMOM Y = " << picoTrackA->pMom().Y() <<", " <<"p_vecA Y" << p_vecA.Y());
-    cout << "pMOM Z = " << picoTrackA->pMom().Z() <<", " <<"p_vecA Z" << p_vecA.Z());
+    cout << "pMOM X = " << picoTrackA->pMom().X() <<", " <<"p_vecA X" << p_vecA.X();
+    cout << "pMOM Y = " << picoTrackA->pMom().Y() <<", " <<"p_vecA Y" << p_vecA.Y();
+    cout << "pMOM Z = " << picoTrackA->pMom().Z() <<", " <<"p_vecA Z" << p_vecA.Z();
     h2py  -> Fill(picoTrackA->pMom().Y(),p_vecA.Y());
     h2pz  -> Fill(picoTrackA->pMom().Z(),p_vecA.Z());
     Double_t d_ptA = ltrackA.Perp(), d_pzA = ltrackA.Pz(), d_momA = ltrackA.P();

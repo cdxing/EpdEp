@@ -157,7 +157,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h2px = new TH2D("h2px","pMomX vs. P_vecX",600,-3.,3.,600,-3.,3.);
   h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
   h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",600,-3.,3.,600,-3.,3.);
-  hist_dip_angle = new TH1D("hist_dip_angle","hist_dip_angle",1000,-1,1.0);
+  hist_dip_angle = new TH1D("hist_dip_angle","hist_dip_angle",1000,-1.,9.);
   h_Mass  = new TH1D("h_Mass","Same event invariant mass",200,0.98,1.08);
   h_Mass_rot  = new TH1D("h_Mass_rot","K+K- rotated invariant mass",200,0.98,1.08);
   hist_SE_PhiMeson_pT  = new TH1D("hist_SE_PhiMeson_pT","pT distribution of #phi",200,0.0,10);
@@ -172,13 +172,13 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h2_pT_y = new TH2F(HistName_ptY.Data(),HistName_ptY.Data(),200,-2.0,2.0,20,0.,5.0);
 
 
-  hist_SE_pt_y_PhiMeson[0] = new TH2D("hist_SE_pt_y_PhiMeson_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",500,-1.5,1.5,500,0.0,3.5);
+  hist_SE_pt_y_PhiMeson[0] = new TH2D("hist_SE_pt_y_PhiMeson_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",200,-2.0,2.0,20,0.,5.0);
   hist_SE_pt_y_Phi_tight_SigBkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_SigBkg_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",40,-2.,2.,35,0.0,3.5);
   hist_SE_pt_y_Phi_tight_Bkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_Bkg_0","p_{T} [GeV/c] vs. y of #phi^{Bkg}, 0-60% ",40,-2.,2.,35,0.0,3.5);
   hist_SE_pt_y_Phi_tight_Sig[0] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[0]->Clone("hist_SE_pt_y_Phi_tight_Sig_0");
   int centBES[4] = {0,10,40,80};
   for(int cent = 1; cent<4;cent++){
-    hist_SE_pt_y_PhiMeson[cent] = new TH2D(Form("hist_SE_pt_y_PhiMeson_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),500,-1.5,1.5,500,0.0,3.5);
+    hist_SE_pt_y_PhiMeson[cent] = new TH2D(Form("hist_SE_pt_y_PhiMeson_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),200,-2.0,2.0,20,0.,5.0);
     hist_SE_pt_y_Phi_tight_SigBkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_SigBkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Bkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_Bkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi^{Bkg}, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
@@ -225,10 +225,6 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h_nhitratio=new TH1F("h_nhitratio","",1000,-0.5,1.5);
   h_dca = new TH1F("h_dca","",1000,0.,5.);
   h_phi = new TH1F("h_phi","",1000,-6.28,6.28);
-
-  h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 90000, 22031041, 22121041,"");
-  h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 90000, 22031041, 22121041,"");
-
   //========================= Kaon PID ==========================================
   h_runidvstofmult = new TProfile("runidvstofmult", "", 90000, 22031041, 22121041,"");
   h_runidvsrefmult = new TProfile("runidvsrefmult", "", 90000, 22031041, 22121041,"");
@@ -237,8 +233,8 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hist_y_kaonPlus = new TH1D("hist_y_kaonPlus","y",500,-1.5,1.5);
   hist_phi_kaonPlus = new TH1D("hist_phi_kaonPlus","#phi [Radian]",1000,-1.5*TMath::Pi(),2.5*TMath::Pi());
   hist_rap_eta_kaonPlus = new TH2D("hist_rap_eta_kaonPlus","kaonPlus y versus #eta",500,-1.5,1.5,500,-1.5,1.5);
-  hist_pt_y_kaonPlus = new TH2D("hist_pt_y_kaonPlus","p_{T} [GeV/c] vs. y",500,-1.5,1.5,500,0.0,3.5);
-  hist_pt_eta_kaonPlus = new TH2D("hist_pt_eta_kaonPlus","p_{T} [GeV/c] vs. #eta",500,-1.5,1.5,500,0.0,3.5);
+  hist_pt_y_kaonPlus = new TH2D("hist_pt_y_kaonPlus","p_{T} [GeV/c] vs. y",200,-2.0,2.0,20,0.,5.0);
+  hist_pt_eta_kaonPlus = new TH2D("hist_pt_eta_kaonPlus","p_{T} [GeV/c] vs. #eta",200,-2.0,2.0,20,0.,5.0);
   hist_dEdx_kaonPlus = new TH2D("hist_dEdx_kaonPlus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
   hist_beta_kaonPlus = new TH2D("hist_beta_kaonPlus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
   hist_mass_kaonPlus = new TH2D("hist_mass_kaonPlus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
@@ -247,8 +243,8 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hist_y_kaonMinus = new TH1D("hist_y_kaonMinus","y",500,-1.5,1.5);
   hist_phi_kaonMinus = new TH1D("hist_phi_kaonMinus","#phi [Radian]",1000,-1.5*TMath::Pi(),2.5*TMath::Pi());
   hist_rap_eta_kaonMinus = new TH2D("hist_rap_eta_kaonMinus","kaonMinus y versus #eta",500,-1.5,1.5,500,-1.5,1.5);
-  hist_pt_y_kaonMinus = new TH2D("hist_pt_y_kaonMinus","p_{T} [GeV/c] vs. y",500,-1.5,1.5,500,0.0,3.5);
-  hist_pt_eta_kaonMinus = new TH2D("hist_pt_eta_kaonMinus","p_{T} [GeV/c] vs. #eta",500,-1.5,1.5,500,0.0,3.5);
+  hist_pt_y_kaonMinus = new TH2D("hist_pt_y_kaonMinus","p_{T} [GeV/c] vs. y",200,-2.0,2.0,20,0.,5.0);
+  hist_pt_eta_kaonMinus = new TH2D("hist_pt_eta_kaonMinus","p_{T} [GeV/c] vs. #eta",200,-2.0,2.0,20,0.,5.0);
   hist_dEdx_kaonMinus = new TH2D("hist_dEdx_kaonMinus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
   hist_beta_kaonMinus = new TH2D("hist_beta_kaonMinus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
   hist_mass_kaonMinus = new TH2D("hist_mass_kaonMinus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
@@ -768,9 +764,6 @@ short PicoAnalyzer::Make(int iEvent){
     ltrackA.SetXYZM(p_vecA.X(),p_vecA.Y(),p_vecA.Z(),_massKaon);
     double d_chargeA  = picoTrackA->charge();
     h2px  -> Fill(picoTrackA->pMom().X(),p_vecA.X());
-    cout << "pMOM X = " << picoTrackA->pMom().X() <<", " <<"p_vecA X = " << p_vecA.X() << endl;
-    cout << "pMOM Y = " << picoTrackA->pMom().Y() <<", " <<"p_vecA Y = " << p_vecA.Y() << endl;
-    cout << "pMOM Z = " << picoTrackA->pMom().Z() <<", " <<"p_vecA Z = " << p_vecA.Z() << endl;
     h2py  -> Fill(picoTrackA->pMom().Y(),p_vecA.Y());
     h2pz  -> Fill(picoTrackA->pMom().Z(),p_vecA.Z());
     Double_t d_ptA = ltrackA.Perp(), d_pzA = ltrackA.Pz(), d_momA = ltrackA.P();

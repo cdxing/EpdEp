@@ -158,12 +158,16 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
   h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",600,-3.,3.,600,-3.,3.);
   hist_dip_angle = new TH1D("hist_dip_angle","hist_dip_angle",1000,-1,1.0);
-  hist_SE_mass_Phi  = new TH1D("hist_SE_mass_Phi","Same event invariant mass",200,0.9,1.1);
-  hist_rotation_mass_Phi  = new TH1D("hist_rotation_mass_Phi","K+K- rotated invariant mass",200,0.9,1.1);
+  hist_SE_mass_Phi  = new TH1D("hist_SE_mass_Phi","Same event invariant mass",200,0.98,1.08);
+  hist_rotation_mass_Phi  = new TH1D("hist_rotation_mass_Phi","K+K- rotated invariant mass",200,0.98,1.08);
   hist_SE_PhiMeson_pT  = new TH1D("hist_SE_PhiMeson_pT","pT distribution of #phi",200,0.0,10);
   hist_SE_PhiMeson_mT  = new TH1D("hist_SE_PhiMeson_mT","mT distribution of #phi",200,0.0,10);
   hist_SE_PhiMeson_rap  = new TH1D("hist_SE_PhiMeson_rap","y distribution of #phi",200,-10.,10);
   hist_SE_PhiMeson_eta  = new TH1D("hist_SE_PhiMeson_eta","eta distribution of #phi",200,-10.,10);
+  TString HistName_ptEta = "pT_eta", HistName_ptY = "pT_y";
+  h2_pT_eta = new TH2F(HistName_ptEta.Data(),HistName_ptEta.Data(),200,-2.0,2.0,20,0.,5.0);
+  h2_pT_y = new TH2F(HistName_ptY.Data(),HistName_ptY.Data(),200,-2.0,2.0,20,0.,5.0);
+
 
   hist_SE_pt_y_PhiMeson[0] = new TH2D("hist_SE_pt_y_PhiMeson_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",500,-1.5,1.5,500,0.0,3.5);
   hist_SE_pt_y_Phi_tight_SigBkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_SigBkg_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",35,-3.0,0.5,35,0.0,3.5);
@@ -823,6 +827,8 @@ short PicoAnalyzer::Make(int iEvent){
       hist_SE_mass_Phi    ->Fill(InvMassAB);
       hist_rotation_mass_Phi    ->Fill(InvMassAB_rot);
       hist_SE_PhiMeson_pT ->Fill(pt);
+      h2_pT_eta->Fill(eta,pt);
+      h2_pT_y->Fill(rap,pt);
       hist_SE_PhiMeson_mT ->Fill(d_mT_phi);
       hist_SE_PhiMeson_rap ->Fill(rap);
       hist_SE_PhiMeson_eta ->Fill(eta);

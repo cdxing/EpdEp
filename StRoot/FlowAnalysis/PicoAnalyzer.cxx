@@ -759,8 +759,9 @@ short PicoAnalyzer::Make(int iEvent){
     if(!picoTrackA) continue;
     // K+ Variables
     StPicoPhysicalHelix   trackhelixA = picoTrackA->helix(mField);
-    TVector3 p_vecA = trackhelixA.cat(trackhelixA.pathLength(vertexPos));  // primary momentum
-    p_vecA *= (double)picoTrackA->pMom().Mag();  // primary momentum
+    TVector3 p_vecA = picoTrackA->pMom();  // primary momentum
+    // TVector3 p_vecA = trackhelixA.cat(trackhelixA.pathLength(vertexPos));  // primary momentum
+    // p_vecA *= (double)picoTrackA->pMom().Mag();  // primary momentum
     ltrackA.SetXYZM(p_vecA.X(),p_vecA.Y(),p_vecA.Z(),_massKaon);
     double d_chargeA  = picoTrackA->charge();
     h2px  -> Fill(picoTrackA->pMom().X(),p_vecA.X());

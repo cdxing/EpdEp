@@ -154,9 +154,9 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 
 
 //---------------- Make histograms for phi meson analysis --------------
-  h2px = new TH2D("h2px","pMomX vs. P_vecX",400,-0.5,3.5,400,-0.5,3.5);
-  h2py = new TH2D("h2py","pMomY vs. P_vecY",400,-0.5,3.5,400,-0.5,3.5);
-  h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",400,-0.5,3.5,400,-0.5,3.5);
+  h2px = new TH2D("h2px","pMomX vs. P_vecX",600,-3.,3.,600,-3.,3.);
+  h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
+  h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",600,-3.,3.,600,-3.,3.);
   hist_dip_angle = new TH1D("hist_dip_angle","hist_dip_angle",1000,-1,1.0);
   hist_SE_mass_Phi  = new TH1D("hist_SE_mass_Phi","Same event invariant mass",200,0.9,1.1);
   hist_rotation_mass_Phi  = new TH1D("hist_rotation_mass_Phi","K+K- rotated invariant mass",200,0.9,1.1);

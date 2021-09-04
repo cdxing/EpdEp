@@ -157,6 +157,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h2px = new TH2D("h2px","pMomX vs. P_vecX",400,-0.5,3.5,400,-0.5,3.5);
   h2py = new TH2D("h2py","pMomY vs. P_vecY",400,-0.5,3.5,400,-0.5,3.5);
   h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",400,-0.5,3.5,400,-0.5,3.5);
+  hist_dip_angle = new TH1D("hist_dip_angle","hist_dip_angle",1000,-1,1.0);
   hist_SE_mass_Phi  = new TH1D("hist_SE_mass_Phi","Same event invariant mass",200,0.9,1.1);
   hist_rotation_mass_Phi  = new TH1D("hist_rotation_mass_Phi","K+K- rotated invariant mass",200,0.9,1.1);
   hist_SE_PhiMeson_pT  = new TH1D("hist_SE_PhiMeson_pT","pT distribution of #phi",200,0.0,10);
@@ -395,10 +396,10 @@ short PicoAnalyzer::Make(int iEvent){
   //  TVector3 vertexPos(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
   TVector3 vertexPos = mPicoEvent->primaryVertex();
   int mRunId = mPicoEvent->runId();
-  int RUNYear = 2018;
-  float RUNEnergy = 27.;
-  int RunDay = floor( (mRunId - (RUNYear-2000)*pow(10,6))/pow(10,3) );
-  int DayBinId = RunDay-89;
+  // int RUNYear = 2018;
+  // float RUNEnergy = 27.;
+  // int RunDay = floor( (mRunId - (RUNYear-2000)*pow(10,6))/pow(10,3) );
+  // int DayBinId = RunDay-89;
 
   double pi = TMath::Pi();
 
@@ -486,7 +487,7 @@ short PicoAnalyzer::Make(int iEvent){
   //PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),3,0.5,3.5);//x is three types of Psi_TPC
   PCosPhi = new TH1D(Form("PCosPhi"),Form("PCosPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
-
+  const Float_t   mField = mPicoEvent->bField(); // Magnetic field
   std::vector<StPicoTrack *> v_KaonPlus_tracks;
   std::vector<StPicoTrack *> v_KaonMinus_tracks;
   //------------Begin loop over TPC tracks--------------------------
@@ -560,7 +561,7 @@ short PicoAnalyzer::Make(int iEvent){
     /* above from Shaowei lan */
     int Tch=track->charge();
     double rig=Tch*pMom.Mag();
-    double dEdx=track->dEdx();
+    // double dEdx=track->dEdx();
 
     // Kaons PID: require both TPC and TOF
     TLorentzVector ltrackk;
@@ -759,17 +760,15 @@ short PicoAnalyzer::Make(int iEvent){
     p_vecA *= (double)picoTrackA->pMom().Mag();  // primary momentum
     ltrackA.SetXYZM(p_vecA.X(),p_vecA.Y(),p_vecA.Z(),_massKaon);
     double d_chargeA  = picoTrackA->charge();
-    double d_pxA      = picoTrackA->pMom().x();
-    double d_pyA      = picoTrackA->pMom().y();
-    double d_pzA      = picoTrackA->pMom().z();
-    h2px  -> Fill(d_pxA,p_vecA.X());
-    h2py  -> Fill(d_pyA,p_vecA.Y());
-    h2pz  -> Fill(d_pzA,p_vecA.Z());
+    h2px  -> Fill(picoTrackA->pMom().X(),p_vecA.X());
+    h2py  -> Fill(picoTrackA->pMom().Y(),p_vecA.Y());
+    h2pz  -> Fill(picoTrackA->pMom().Z(),p_vecA.Z());
     Double_t d_ptA = ltrackA.Perp(), d_pzA = ltrackA.Pz(), d_momA = ltrackA.P();
     StPicoBTofPidTraits *traitA = NULL;
     double d_tofBeta0    = -999.;
     double d_inv_tofBeta0    = -999.;
-    if(picoTrackA->isTofTrack()) traitA = dst->btofPidTraits( picoTrackA->bTofPidTraitsIndex() );
+    StPicoBTofPidTraits *tofPid = (StPicoBTofPidTraits*)((*mTraits)[tofIndex]);
+    if(picoTrackA->isTofTrack()) traitA = (StPicoBTofPidTraits*)((*mTraits)[picoTrackA->bTofPidTraitsIndex()]);
     if(traitA)        d_tofBeta0 = traitA->btofBeta();
     double d_M0   = _massKaon;
     double d_E0   = sqrt((d_pxA*d_pxA+d_pyA*d_pyA+d_pzA*d_pzA)+_massKaon*_massKaon);
@@ -793,7 +792,7 @@ short PicoAnalyzer::Make(int iEvent){
       StPicoBTofPidTraits *traitB = NULL;
       double d_tofBeta1    = -999.;
       double d_inv_tofBeta1    = -999.;
-      if(picoTrackB->isTofTrack()) traitB = dst->btofPidTraits( picoTrackB->bTofPidTraitsIndex() );
+      if(picoTrackB->isTofTrack()) traitB = (StPicoBTofPidTraits*)((*mTraits)[picoTrackB->bTofPidTraitsIndex()]);
       if(traitB)        d_tofBeta1 = traitB->btofBeta();
       double d_M1   = _massKaon;
       double d_E1   = sqrt((d_px1*d_px1+d_py1*d_py1+d_pzB*d_pzB)+_massKaon*_massKaon);
@@ -828,7 +827,7 @@ short PicoAnalyzer::Make(int iEvent){
       hist_SE_PhiMeson_mT ->Fill(d_mT_phi);
       hist_SE_PhiMeson_rap ->Fill(rap);
       hist_SE_PhiMeson_eta ->Fill(eta);
-      if(centrality >= 7 && centrality <= 8){ // 0-10%
+      if(CentId >= 7 && CentId <= 8){ // 0-10%
         hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
         hist_SE_pt_y_PhiMeson[1] ->Fill(rap,pt);
         if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
@@ -840,7 +839,7 @@ short PicoAnalyzer::Make(int iEvent){
           hist_SE_pt_y_Phi_tight_Bkg[1] -> Fill(rap_rot,pt_rot);
         }
       }
-      if(centrality >= 4 && centrality <= 6){ // 10-40%
+      if(CentId >= 4 && CentId <= 6){ // 10-40%
         hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
         hist_SE_pt_y_PhiMeson[2] ->Fill(rap,pt);
         if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
@@ -852,7 +851,7 @@ short PicoAnalyzer::Make(int iEvent){
           hist_SE_pt_y_Phi_tight_Bkg[2] -> Fill(rap_rot,pt_rot);
         }
       }
-      if(centrality >= 0 && centrality <= 3){ // 40-80%
+      if(CentId >= 0 && CentId <= 3){ // 40-80%
         hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
         hist_SE_pt_y_PhiMeson[3] ->Fill(rap,pt);
         if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
@@ -872,7 +871,7 @@ short PicoAnalyzer::Make(int iEvent){
       TVector3 v3D_x_AB    = (v3D_x_daughterA+v3D_x_daughterB)*0.5;
       TVector3 v3D_xvec_decayl = v3D_x_AB - vertexPos;
       double d_AB_decay_length =  v3D_xvec_decayl.Mag();
-      hist_AB_decay_length->Fill(d_AB_decay_length);
+      // hist_AB_decay_length->Fill(d_AB_decay_length);
       // if(d_AB_decay_length > d_cut_AB_decay_length_PHI) continue; //decay length cut
       Double_t dip_angle_cutLevel = 0.04;
 
@@ -892,7 +891,7 @@ short PicoAnalyzer::Make(int iEvent){
       if(EpAngle[0][2]!=-999.0){// Using EPD-full
         for(int km=0;km<1;km++){ // km - flow order
           d_flow_PHI_raw[km]        = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]));
-          d_flow_PHI_resolution[km] = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]))/(d_resolution[km][centrality-1]); // km {0,1}, centrality [1,9]
+          // d_flow_PHI_resolution[km] = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]))/(d_resolution[km][CentId-1]); // km {0,1}, centrality [1,9]
         }
       }
 

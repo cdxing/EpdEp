@@ -246,6 +246,7 @@ TH2D *hist_mass_kaonMinus;
   TH2D *h2py;
   TH2D *h2pz;
 
+  TH1D * hist_dip_angle;
   TH1D * hist_SE_mass_Phi;
   TH1D * hist_rotation_mass_Phi;
   TH1D *hist_SE_PhiMeson_pT;

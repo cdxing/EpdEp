@@ -241,6 +241,23 @@ TH2D *hist_mass_kaonMinus;
   TFile* mEPDPhiWeightFile;
   //TFile* mRecenQFile;
 
+  // Phi meson analysis plots
+  TH2D *h2px;
+  TH2D *h2py;
+  TH2D *h2pz;
+
+  TH1D * hist_SE_mass_Phi;
+  TH1D * hist_rotation_mass_Phi;
+  TH1D *hist_SE_PhiMeson_pT;
+  TH1D *hist_SE_PhiMeson_mT;
+  TH1D *hist_SE_PhiMeson_rap;
+  TH1D *hist_SE_PhiMeson_eta;
+
+  TH2D *hist_SE_pt_y_PhiMeson[4];
+  TH2D *hist_SE_pt_y_Phi_tight_SigBkg[4];
+  TH2D *hist_SE_pt_y_Phi_tight_Bkg[4];
+  TH2D *hist_SE_pt_y_Phi_tight_Sig[4];
+
   static const int mEPTPCMaxTerm = 6;
   ClassDef(PicoAnalyzer, 1)                     //  Macro for CINT compatability
 

@@ -152,6 +152,31 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 //--------------Prepare the constant for weighting the TPC tracks------------
   mNumberOfTrackTypes =mNpTbin*mNVzbin*mNEtabin*2;
 
+
+//---------------- Make histograms for phi meson analysis --------------
+  h2px = new TH2D("h2px","pMomX vs. P_vecX",400,-0.5,3.5,400,-0.5,3.5);
+  h2py = new TH2D("h2py","pMomY vs. P_vecY",400,-0.5,3.5,400,-0.5,3.5);
+  h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",400,-0.5,3.5,400,-0.5,3.5);
+  hist_SE_mass_Phi  = new TH1D("hist_SE_mass_Phi","Same event invariant mass",200,0.9,1.1);
+  hist_rotation_mass_Phi  = new TH1D("hist_rotation_mass_Phi","K+K- rotated invariant mass",200,0.9,1.1);
+  hist_SE_PhiMeson_pT  = new TH1D("hist_SE_PhiMeson_pT","pT distribution of #phi",200,0.0,10);
+  hist_SE_PhiMeson_mT  = new TH1D("hist_SE_PhiMeson_mT","mT distribution of #phi",200,0.0,10);
+  hist_SE_PhiMeson_rap  = new TH1D("hist_SE_PhiMeson_rap","y distribution of #phi",200,-10.,10);
+  hist_SE_PhiMeson_eta  = new TH1D("hist_SE_PhiMeson_eta","eta distribution of #phi",200,-10.,10);
+
+  hist_SE_pt_y_PhiMeson[0] = new TH2D("hist_SE_pt_y_PhiMeson_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",500,-1.5,1.5,500,0.0,3.5);
+  hist_SE_pt_y_Phi_tight_SigBkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_SigBkg_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",35,-3.0,0.5,35,0.0,3.5);
+  hist_SE_pt_y_Phi_tight_Bkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_Bkg_0","p_{T} [GeV/c] vs. y of #phi^{Bkg}, 0-60% ",35,-3.0,0.5,35,0.0,3.5);
+  hist_SE_pt_y_Phi_tight_Sig[0] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[0]->Clone("hist_SE_pt_y_Phi_tight_Sig_0");
+  int centBES[4] = {0,10,40,80};
+  for(int cent = 1; cent<4;cent++){
+    hist_SE_pt_y_PhiMeson[cent] = new TH2D(Form("hist_SE_pt_y_PhiMeson_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),500,-1.5,1.5,500,0.0,3.5);
+    hist_SE_pt_y_Phi_tight_SigBkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_SigBkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),35,-3.0,0.5,35,0.0,3.5);
+    hist_SE_pt_y_Phi_tight_Bkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_Bkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi^{Bkg}, %d-%d%%",centBES[cent-1],centBES[cent]),35,-3.0,0.5,35,0.0,3.5);
+    hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
+  }
+
+
 //----------------Make histograms for QA ----------------------------------
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
   hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
@@ -448,7 +473,6 @@ short PicoAnalyzer::Make(int iEvent){
 
 
   mHisto2D[0]->Fill((double)EpAngle[0][1],(double)EpAngle[0][0]);//East vs. West
-
   //-----------Check the flattening of Psi_EPDFull----------
   for(int iorder=0;iorder<_PsiOrderMax;iorder++){
     mEPDFullPsiWeighted[CentId][iorder]->Fill(result.FullPhiWeightedPsi(iorder+1));
@@ -463,7 +487,6 @@ short PicoAnalyzer::Make(int iEvent){
   PCosPhi = new TH1D(Form("PCosPhi"),Form("PCosPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
 
-  float mField = mPicoEvent->bField();
   std::vector<StPicoTrack *> v_KaonPlus_tracks;
   std::vector<StPicoTrack *> v_KaonMinus_tracks;
   //------------Begin loop over TPC tracks--------------------------
@@ -604,7 +627,7 @@ short PicoAnalyzer::Make(int iEvent){
     }
 
   }
-//-------------End loop over TPC tracks-----------------------
+//-------------End loop over TPC tracks and get kaon track vectors-----------------------
 
 //-------------Now let's play with the EP---------------------
   //double TPCPsi1[3]={0.0};// Three types of Psi_TPC: 0_Full, 1_pos, 2_neg
@@ -678,7 +701,7 @@ short PicoAnalyzer::Make(int iEvent){
     }
 
     //if (nMip<mEPDthresh) continue;
-    double TileWeight = (nMip<3.0)?nMip:3.0;//Note: here a different nMIPMax from the EpFinder was used
+    double TileWeight = (nMip<4.0)?nMip:4.0;//Note: here a different nMIPMax from the EpFinder was used
     TVector3 StraightLine = mEpdGeom->RandomPointOnTile(tileId) - vertexPos;
     double Hphi = StraightLine.Phi();
     double Heta = StraightLine.Eta();
@@ -721,12 +744,166 @@ short PicoAnalyzer::Make(int iEvent){
     //if(EW==0) RingId=-1.0*(double)ring;
     //else RingId=(double)ring;
     //mTwoD[CentId]->Fill(nMip,RingId);
+
   }
   //-----------------End looping over EPD hits------------------------
 
+  // ------------------ Phi meson flow analysis ----------------------
+  TLorentzVector ltrackA, ltrackB;
+  for(unsigned int i = 0; i < v_KaonPlus_tracks.size(); i++){
+    StPicoTrack * picoTrackA = v_KaonPlus_tracks.at(i); // i-th K+ track
+    if(!picoTrackA) continue;
+    // K+ Variables
+    StPicoPhysicalHelix   trackhelixA = picoTrackA->helix(mField);
+    TVector3 p_vecA = trackhelixA.cat(trackhelixA.pathLength(vertexPos));  // primary momentum
+    p_vecA *= (double)picoTrackA->pMom().Mag();  // primary momentum
+    ltrackA.SetXYZM(p_vecA.X(),p_vecA.Y(),p_vecA.Z(),_massKaon);
+    double d_chargeA  = picoTrackA->charge();
+    double d_pxA      = picoTrackA->pMom().x();
+    double d_pyA      = picoTrackA->pMom().y();
+    double d_pzA      = picoTrackA->pMom().z();
+    h2px  -> Fill(d_pxA,p_vecA.X());
+    h2py  -> Fill(d_pyA,p_vecA.Y());
+    h2pz  -> Fill(d_pzA,p_vecA.Z());
+    Double_t d_ptA = ltrackA.Perp(), d_pzA = ltrackA.Pz(), d_momA = ltrackA.P();
+    StPicoBTofPidTraits *traitA = NULL;
+    double d_tofBeta0    = -999.;
+    double d_inv_tofBeta0    = -999.;
+    if(picoTrackA->isTofTrack()) traitA = dst->btofPidTraits( picoTrackA->bTofPidTraitsIndex() );
+    if(traitA)        d_tofBeta0 = traitA->btofBeta();
+    double d_M0   = _massKaon;
+    double d_E0   = sqrt((d_pxA*d_pxA+d_pyA*d_pyA+d_pzA*d_pzA)+_massKaon*_massKaon);
+    double d_y0   = ((d_E0-d_pzA) != 0.0) ? 0.5*TMath::Log( (d_E0 + d_pzA) / (d_E0 - d_pzA) ) : -999.0;
+    double eta0   = ((d_momA - d_pzA) != 0.0) ? 0.5*TMath::Log( (d_momA + d_pzA) / (d_momA - d_pzA) ) : -999.0;
+    double d_mT0  = sqrt(d_ptA*d_ptA + d_M0*d_M0);
+    double d_pq0   = fabs(d_momA) * d_chargeA;
+    for(unsigned int j = 0; j < v_KaonMinus_tracks.size(); j++){
+      StPicoTrack * picoTrackB = v_KaonMinus_tracks.at(j); // j-th K- track
+      if(!picoTrackB) continue;
+      // K- Variables
+      double d_chargeB  = picoTrackB->charge();
+      if(d_chargeA == d_chargeB) continue; // same charge cut
+      TVector3 p_vecB = picoTrackB->pMom();  // primary momentum
+      ltrackB.SetXYZM(p_vecB.X(),p_vecB.Y(),p_vecB.Z(),_massKaon);
+      double d_px1      = picoTrackB->pMom().x();
+      double d_py1      = picoTrackB->pMom().y();
+      double d_pzB      = picoTrackB->pMom().z();
+      Double_t d_ptB = ltrackB.Perp(), d_pzB = ltrackB.Pz(), d_momB = ltrackB.P();
+
+      StPicoBTofPidTraits *traitB = NULL;
+      double d_tofBeta1    = -999.;
+      double d_inv_tofBeta1    = -999.;
+      if(picoTrackB->isTofTrack()) traitB = dst->btofPidTraits( picoTrackB->bTofPidTraitsIndex() );
+      if(traitB)        d_tofBeta1 = traitB->btofBeta();
+      double d_M1   = _massKaon;
+      double d_E1   = sqrt((d_px1*d_px1+d_py1*d_py1+d_pzB*d_pzB)+_massKaon*_massKaon);
+      double d_y1   = ((d_E1-d_pzB) != 0.0) ? 0.5*TMath::Log( (d_E1 + d_pzB) / (d_E1 - d_pzB) ) : -999.0;
+      double eta1   = ((d_momB - d_pzB) != 0.0) ? 0.5*TMath::Log( (d_momB + d_pzB) / (d_momB - d_pzB) ) : -999.0;
+      double d_mT1  = sqrt(d_ptB*d_ptB + d_M1*d_M1);
+      double d_pq1   = fabs(d_momA) * d_chargeA;
+      // phi Variables
+      TLorentzVector trackAB      = ltrackA+ltrackB;
+      Double_t InvMassAB          = trackAB.M();
+      Double_t d_dip_angle = TMath::ACos((d_ptA*d_ptB+d_pzA*d_pzB) / (d_momA*d_momB) );
+
+      Double_t pt = trackAB.Perp();
+      Double_t eta = trackAB.Eta();
+      Double_t rap = trackAB.Rapidity();
+      Double_t d_mT_phi = sqrt(pt*pt + TriFlow::mMassPhi*TriFlow::mMassPhi );
+
+      Double_t randomNumber = gRandom->Uniform(1);
+      // std::cout << "randomNumber " << randomNumber  << std::endl;
+      double d_randAngle = TMath::Pi()*randomNumber;
+      // std::cout << "randomAngle " << d_randAngle  << std::endl;
+      TLorentzVector ltrackB_rot = ltrackB;
+      ltrackB_rot.RotateZ(d_randAngle);
+      TLorentzVector trackAB_rot      = ltrackA+ltrackB_rot;
+      Double_t InvMassAB_rot          = trackAB_rot.M();
+      Double_t pt_rot = trackAB_rot.Perp();
+      Double_t rap_rot =  trackAB_rot.Rapidity(); // Rotation don't  influence y
+
+      hist_SE_mass_Phi    ->Fill(InvMassAB);
+      hist_rotation_mass_Phi    ->Fill(InvMassAB_rot);
+      hist_SE_PhiMeson_pT ->Fill(pt);
+      hist_SE_PhiMeson_mT ->Fill(d_mT_phi);
+      hist_SE_PhiMeson_rap ->Fill(rap);
+      hist_SE_PhiMeson_eta ->Fill(eta);
+      if(centrality >= 7 && centrality <= 8){ // 0-10%
+        hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
+        hist_SE_pt_y_PhiMeson[1] ->Fill(rap,pt);
+        if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_SigBkg[0] -> Fill(rap,pt);
+          hist_SE_pt_y_Phi_tight_SigBkg[1] -> Fill(rap,pt);
+        }
+        if(InvMassAB_rot >= 1.005 && InvMassAB_rot <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_Bkg[0] -> Fill(rap_rot,pt_rot);
+          hist_SE_pt_y_Phi_tight_Bkg[1] -> Fill(rap_rot,pt_rot);
+        }
+      }
+      if(centrality >= 4 && centrality <= 6){ // 10-40%
+        hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
+        hist_SE_pt_y_PhiMeson[2] ->Fill(rap,pt);
+        if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_SigBkg[0] -> Fill(rap,pt);
+          hist_SE_pt_y_Phi_tight_SigBkg[2] -> Fill(rap,pt);
+        }
+        if(InvMassAB_rot >= 1.005 && InvMassAB_rot <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_Bkg[0] -> Fill(rap_rot,pt_rot);
+          hist_SE_pt_y_Phi_tight_Bkg[2] -> Fill(rap_rot,pt_rot);
+        }
+      }
+      if(centrality >= 0 && centrality <= 3){ // 40-80%
+        hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
+        hist_SE_pt_y_PhiMeson[3] ->Fill(rap,pt);
+        if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_SigBkg[0] -> Fill(rap,pt);
+          hist_SE_pt_y_Phi_tight_SigBkg[3] -> Fill(rap,pt);
+        }
+        if(InvMassAB_rot >= 1.005 && InvMassAB_rot <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_Bkg[0] -> Fill(rap_rot,pt_rot);
+          hist_SE_pt_y_Phi_tight_Bkg[3] -> Fill(rap_rot,pt_rot);
+        }
+      }
+      // ---------------- phi-meson cuts: decay length, dip angle ------------
+      StPicoPhysicalHelix    trackhelixB = picoTrackB->helix(mField);
+      pair<double,double> pairLengths = trackhelixA.pathLengths(trackhelixB);
+      TVector3 v3D_x_daughterA = trackhelixA.at(pairLengths.first);
+      TVector3 v3D_x_daughterB = trackhelixB.at(pairLengths.second);
+      TVector3 v3D_x_AB    = (v3D_x_daughterA+v3D_x_daughterB)*0.5;
+      TVector3 v3D_xvec_decayl = v3D_x_AB - vertexPos;
+      double d_AB_decay_length =  v3D_xvec_decayl.Mag();
+      hist_AB_decay_length->Fill(d_AB_decay_length);
+      // if(d_AB_decay_length > d_cut_AB_decay_length_PHI) continue; //decay length cut
+      Double_t dip_angle_cutLevel = 0.04;
+
+      hist_dip_angle         ->Fill(d_dip_angle);
+      if(d_dip_angle <= dip_angle_cutLevel) continue; // dip-angle cut
+      // --------------------- phi-meson flows -------------------------------
+      TVector3 v3D_p_daughterA = trackhelixA.momentumAt(pairLengths.first, mField*kilogauss);
+      TVector3 v3D_p_daughterB = trackhelixB.momentumAt(pairLengths.second, mField*kilogauss);
+      TVector3 v3D_p_AB    = v3D_p_daughterA+v3D_p_daughterB;
+      double d_pmom = v3D_xvec_decayl.Dot(v3D_p_AB);
+      double d_dca_AB = sqrt(v3D_xvec_decayl.Mag2() - (d_pmom*d_pmom/v3D_p_AB.Mag2()) );
+      double d_phi_azimuth = v3D_p_AB.Phi();
+      if(d_phi_azimuth < 0.0            ) d_phi_azimuth += 2.0*TMath::Pi();
+      if(d_phi_azimuth > 2.0*TMath::Pi()) d_phi_azimuth -= 2.0*TMath::Pi();
+      double d_flow_PHI_raw[2] = {-999.0,-999.0}; // v1, v2 raw flow
+      double d_flow_PHI_resolution[2] = {-999.0,-999.0}; // v1, v2 flow corrected by resolution
+      if(EpAngle[0][2]!=-999.0){// Using EPD-full
+        for(int km=0;km<1;km++){ // km - flow order
+          d_flow_PHI_raw[km]        = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]));
+          d_flow_PHI_resolution[km] = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]))/(d_resolution[km][centrality-1]); // km {0,1}, centrality [1,9]
+        }
+      }
+
+    }
+  }
+
+
   delete PCosPhi;
   delete PSinPhi;
-
+  v_KaonPlus_tracks.clear();
+  v_KaonMinus_tracks.clear();
   return 0;
 }
 //=================================================
@@ -785,15 +962,15 @@ int Centrality(int gRefMult )
 {
     int centrality;
     int centFull[9]={4, 9,17,30,50,78, 116,170,205};
-    if      (gRefMult>=centFull[8]) centrality=8;
-    else if (gRefMult>=centFull[7]) centrality=7;
-    else if (gRefMult>=centFull[6]) centrality=6;
-    else if (gRefMult>=centFull[5]) centrality=5;
-    else if (gRefMult>=centFull[4]) centrality=4;
-    else if (gRefMult>=centFull[3]) centrality=3;
-    else if (gRefMult>=centFull[2]) centrality=2;
-    else if (gRefMult>=centFull[1]) centrality=1;
-    else if (gRefMult>=centFull[0]) centrality=0;
+    if      (gRefMult>=centFull[8]) centrality=8; // 0 - 5%
+    else if (gRefMult>=centFull[7]) centrality=7; // 5 - 10%
+    else if (gRefMult>=centFull[6]) centrality=6; // 10 - 20%
+    else if (gRefMult>=centFull[5]) centrality=5; // 20 - 30%
+    else if (gRefMult>=centFull[4]) centrality=4; // 30 - 40%
+    else if (gRefMult>=centFull[3]) centrality=3; // 40 - 50%
+    else if (gRefMult>=centFull[2]) centrality=2; // 50 - 60%
+    else if (gRefMult>=centFull[1]) centrality=1; // 60 - 70%
+    else if (gRefMult>=centFull[0]) centrality=0; // 70 - 80%
     else centrality = -1;
     //else centrality = 9;
     return centrality;

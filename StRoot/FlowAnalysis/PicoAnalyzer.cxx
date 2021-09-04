@@ -767,13 +767,12 @@ short PicoAnalyzer::Make(int iEvent){
     StPicoBTofPidTraits *traitA = NULL;
     double d_tofBeta0    = -999.;
     double d_inv_tofBeta0    = -999.;
-    StPicoBTofPidTraits *tofPid = (StPicoBTofPidTraits*)((*mTraits)[tofIndex]);
     if(picoTrackA->isTofTrack()) traitA = (StPicoBTofPidTraits*)((*mTraits)[picoTrackA->bTofPidTraitsIndex()]);
     if(traitA)        d_tofBeta0 = traitA->btofBeta();
     double d_M0   = _massKaon;
-    double d_E0   = sqrt((d_pxA*d_pxA+d_pyA*d_pyA+d_pzA*d_pzA)+_massKaon*_massKaon);
-    double d_y0   = ((d_E0-d_pzA) != 0.0) ? 0.5*TMath::Log( (d_E0 + d_pzA) / (d_E0 - d_pzA) ) : -999.0;
-    double eta0   = ((d_momA - d_pzA) != 0.0) ? 0.5*TMath::Log( (d_momA + d_pzA) / (d_momA - d_pzA) ) : -999.0;
+    // double d_E0   = sqrt((d_pxA*d_pxA+d_pyA*d_pyA+d_pzA*d_pzA)+_massKaon*_massKaon);
+    // double d_y0   = ((d_E0-d_pzA) != 0.0) ? 0.5*TMath::Log( (d_E0 + d_pzA) / (d_E0 - d_pzA) ) : -999.0;
+    // double eta0   = ((d_momA - d_pzA) != 0.0) ? 0.5*TMath::Log( (d_momA + d_pzA) / (d_momA - d_pzA) ) : -999.0;
     double d_mT0  = sqrt(d_ptA*d_ptA + d_M0*d_M0);
     double d_pq0   = fabs(d_momA) * d_chargeA;
     for(unsigned int j = 0; j < v_KaonMinus_tracks.size(); j++){
@@ -784,9 +783,6 @@ short PicoAnalyzer::Make(int iEvent){
       if(d_chargeA == d_chargeB) continue; // same charge cut
       TVector3 p_vecB = picoTrackB->pMom();  // primary momentum
       ltrackB.SetXYZM(p_vecB.X(),p_vecB.Y(),p_vecB.Z(),_massKaon);
-      double d_px1      = picoTrackB->pMom().x();
-      double d_py1      = picoTrackB->pMom().y();
-      double d_pzB      = picoTrackB->pMom().z();
       Double_t d_ptB = ltrackB.Perp(), d_pzB = ltrackB.Pz(), d_momB = ltrackB.P();
 
       StPicoBTofPidTraits *traitB = NULL;
@@ -795,9 +791,9 @@ short PicoAnalyzer::Make(int iEvent){
       if(picoTrackB->isTofTrack()) traitB = (StPicoBTofPidTraits*)((*mTraits)[picoTrackB->bTofPidTraitsIndex()]);
       if(traitB)        d_tofBeta1 = traitB->btofBeta();
       double d_M1   = _massKaon;
-      double d_E1   = sqrt((d_px1*d_px1+d_py1*d_py1+d_pzB*d_pzB)+_massKaon*_massKaon);
-      double d_y1   = ((d_E1-d_pzB) != 0.0) ? 0.5*TMath::Log( (d_E1 + d_pzB) / (d_E1 - d_pzB) ) : -999.0;
-      double eta1   = ((d_momB - d_pzB) != 0.0) ? 0.5*TMath::Log( (d_momB + d_pzB) / (d_momB - d_pzB) ) : -999.0;
+      // double d_E1   = sqrt((d_px1*d_px1+d_py1*d_py1+d_pzB*d_pzB)+_massKaon*_massKaon);
+      // double d_y1   = ((d_E1-d_pzB) != 0.0) ? 0.5*TMath::Log( (d_E1 + d_pzB) / (d_E1 - d_pzB) ) : -999.0;
+      // double eta1   = ((d_momB - d_pzB) != 0.0) ? 0.5*TMath::Log( (d_momB + d_pzB) / (d_momB - d_pzB) ) : -999.0;
       double d_mT1  = sqrt(d_ptB*d_ptB + d_M1*d_M1);
       double d_pq1   = fabs(d_momA) * d_chargeA;
       // phi Variables
@@ -808,7 +804,7 @@ short PicoAnalyzer::Make(int iEvent){
       Double_t pt = trackAB.Perp();
       Double_t eta = trackAB.Eta();
       Double_t rap = trackAB.Rapidity();
-      Double_t d_mT_phi = sqrt(pt*pt + TriFlow::mMassPhi*TriFlow::mMassPhi );
+      Double_t d_mT_phi = sqrt(pt*pt + _massPhi*_massPhi );
 
       Double_t randomNumber = gRandom->Uniform(1);
       // std::cout << "randomNumber " << randomNumber  << std::endl;

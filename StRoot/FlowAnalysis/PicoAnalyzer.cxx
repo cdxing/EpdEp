@@ -183,6 +183,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     hist_SE_pt_y_Phi_tight_Bkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_Bkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi^{Bkg}, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
   }
+  /*
   for(Int_t cent = 0; cent < TriFlow::Bin_Centrality_01; cent++)
   {
       for(Int_t rap_bin = 0; rap_bin < TriFlow::Bin_rap; rap_bin++)
@@ -206,7 +207,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
         mProfile_v2_reso_ptSetA_centSetA[rap_bin][cent]->GetYaxis()->SetTitle("<cos(2(#phi - #psi_{1}))>/R_{1}^{EPD}");
   }
   }
-
+  */
 //----------------Make histograms for QA ----------------------------------
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
   hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);

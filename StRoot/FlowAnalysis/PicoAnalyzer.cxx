@@ -183,7 +183,29 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     hist_SE_pt_y_Phi_tight_Bkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_Bkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi^{Bkg}, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
   }
-
+  for(Int_t cent = 0; cent < TriFlow::Bin_Centrality_01; cent++)
+  {
+      for(Int_t rap_bin = 0; rap_bin < TriFlow::Bin_rap; rap_bin++)
+      {
+        TString hist_name_SE = Form("InvMass_SE_ptbin%d_cent%s",rap_bin+1,TriFlow::Centrality_01[cent].Data());
+        mHist_SE_InvM_ptSetA_centSetA[rap_bin][cent] = new TH1F(hist_name_SE.Data() ,
+        hist_name_SE.Data() ,
+        200,0.98,1.08);
+        mHist_SE_InvM_ptSetA_centSetA[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        TString hist_name_rot = Form("InvMass_rot_ptbin%d_cent%s",rap_bin+1,TriFlow::Centrality_01[cent].Data());
+        mHist_rotation_InvM_ptSetA_centSetA[rap_bin][cent] = new TH1F(hist_name_rot.Data() ,
+        hist_name_rot.Data() ,
+        200,0.98,1.08);
+        mHist_rotation_InvM_ptSetA_centSetA[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        TString hist_name_profile = Form("flow_InvMass_ptbin%d_cent%s",rap_bin+1,TriFlow::Centrality_01[cent].Data());
+        mProfile_v2_reso_ptSetA_centSetA[rap_bin][cent] = new TProfile(hist_name_profile.Data(),
+        hist_name_profile.Data(),
+        100,0.98,1.08,
+        0,0,"");
+        mProfile_v2_reso_ptSetA_centSetA[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        mProfile_v2_reso_ptSetA_centSetA[rap_bin][cent]->GetYaxis()->SetTitle("<cos(2(#phi - #psi_{1}))>/R_{1}^{EPD}");
+  }
+  }
 
 //----------------Make histograms for QA ----------------------------------
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
@@ -824,7 +846,7 @@ short PicoAnalyzer::Make(int iEvent){
       h_Mass    ->Fill(InvMassAB);
       h_Mass_rot    ->Fill(InvMassAB_rot);
       h_Mass2    ->Fill(pt,InvMassAB);
-      h_Mass2_rot    ->Fill(pt,InvMassAB_rot);
+      h_Mass2_rot    ->Fill(pt_rot,InvMassAB_rot);
       hist_SE_PhiMeson_pT ->Fill(pt);
       h2_pT_eta->Fill(eta,pt);
       h2_pT_y->Fill(rap,pt);
@@ -893,11 +915,13 @@ short PicoAnalyzer::Make(int iEvent){
       double d_flow_PHI_raw[2] = {-999.0,-999.0}; // v1, v2 raw flow
       double d_flow_PHI_resolution[2] = {-999.0,-999.0}; // v1, v2 flow corrected by resolution
       if(EpAngle[0][2]!=-999.0){// Using EPD-full
-        for(int km=0;km<1;km++){ // km - flow order
+        for(int km=0;km<2;km++){ // km - flow order
           d_flow_PHI_raw[km]        = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]));
           // d_flow_PHI_resolution[km] = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]))/(d_resolution[km][CentId-1]); // km {0,1}, centrality [1,9]
         }
       }
+
+
     }
   }
 

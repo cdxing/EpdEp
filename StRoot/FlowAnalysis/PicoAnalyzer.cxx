@@ -157,7 +157,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h2px = new TH2D("h2px","pMomX vs. P_vecX",600,-3.,3.,600,-3.,3.);
   h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
   h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",600,-3.,3.,600,-3.,3.);
-  hist_dip_angle = new TH1D("hist_dip_angle","hist_dip_angle",1000,-1.,9.);
+  h_dip_angle = new TH1D("h_dip_angle","h_dip_angle",1000,-1.,9.);
   h_Mass  = new TH1D("h_Mass","Same event invariant mass",200,0.98,1.08);
   h_Mass_rot  = new TH1D("h_Mass_rot","K+K- rotated invariant mass",200,0.98,1.08);
   hist_SE_PhiMeson_pT  = new TH1D("hist_SE_PhiMeson_pT","pT distribution of #phi",200,0.0,10);
@@ -177,37 +177,37 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hist_SE_pt_y_Phi_tight_Bkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_Bkg_0","p_{T} [GeV/c] vs. y of #phi^{Bkg}, 0-60% ",40,-2.,2.,35,0.0,3.5);
   hist_SE_pt_y_Phi_tight_Sig[0] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[0]->Clone("hist_SE_pt_y_Phi_tight_Sig_0");
   int centBES[4] = {0,10,40,80};
-  for(int cent = 1; cent<4;cent++){
+  for(int cent = 1; cent<Bin_Centrality_01;cent++){
     hist_SE_pt_y_PhiMeson[cent] = new TH2D(Form("hist_SE_pt_y_PhiMeson_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),200,-2.0,2.0,20,0.,5.0);
     hist_SE_pt_y_Phi_tight_SigBkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_SigBkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Bkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_Bkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi^{Bkg}, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
   }
-  /*
-  for(Int_t cent = 0; cent < TriFlow::Bin_Centrality_01; cent++)
+
+  for(Int_t cent = 0; cent < Bin_Centrality_01; cent++)
   {
-      for(Int_t rap_bin = 0; rap_bin < TriFlow::Bin_rap; rap_bin++)
+      for(Int_t rap_bin = 0; rap_bin < Bin_rap; rap_bin++)
       {
-        TString hist_name_SE = Form("InvMass_SE_ptbin%d_cent%s",rap_bin+1,TriFlow::Centrality_01[cent].Data());
-        mHist_SE_InvM_ptSetA_centSetA[rap_bin][cent] = new TH1F(hist_name_SE.Data() ,
+        TString hist_name_SE = Form("InvMass_SE_ptbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        mHist_SE_InvM_rap_cent[rap_bin][cent] = new TH1F(hist_name_SE.Data() ,
         hist_name_SE.Data() ,
         200,0.98,1.08);
-        mHist_SE_InvM_ptSetA_centSetA[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
-        TString hist_name_rot = Form("InvMass_rot_ptbin%d_cent%s",rap_bin+1,TriFlow::Centrality_01[cent].Data());
-        mHist_rotation_InvM_ptSetA_centSetA[rap_bin][cent] = new TH1F(hist_name_rot.Data() ,
+        mHist_SE_InvM_rap_cent[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        TString hist_name_rot = Form("InvMass_rot_ptbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        mHist_rotation_InvM_rap_cent[rap_bin][cent] = new TH1F(hist_name_rot.Data() ,
         hist_name_rot.Data() ,
         200,0.98,1.08);
-        mHist_rotation_InvM_ptSetA_centSetA[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
-        TString hist_name_profile = Form("flow_InvMass_ptbin%d_cent%s",rap_bin+1,TriFlow::Centrality_01[cent].Data());
-        mProfile_v2_reso_ptSetA_centSetA[rap_bin][cent] = new TProfile(hist_name_profile.Data(),
+        mHist_rotation_InvM_rap_cent[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        TString hist_name_profile = Form("flow_InvMass_ptbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        mProfile_flow_reso_rap_cent[rap_bin][cent] = new TProfile(hist_name_profile.Data(),
         hist_name_profile.Data(),
         100,0.98,1.08,
         0,0,"");
-        mProfile_v2_reso_ptSetA_centSetA[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
-        mProfile_v2_reso_ptSetA_centSetA[rap_bin][cent]->GetYaxis()->SetTitle("<cos(2(#phi - #psi_{1}))>/R_{1}^{EPD}");
+        mProfile_flow_reso_rap_cent[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        mProfile_flow_reso_rap_cent[rap_bin][cent]->GetYaxis()->SetTitle("<cos(1(#phi - #psi_{1}))>/R_{1}^{EPD}");
+      }
   }
-  }
-  */
+
 //----------------Make histograms for QA ----------------------------------
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
   hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
@@ -902,7 +902,7 @@ short PicoAnalyzer::Make(int iEvent){
       // if(d_AB_decay_length > d_cut_AB_decay_length_PHI) continue; //decay length cut
       Double_t dip_angle_cutLevel = 0.04;
 
-      hist_dip_angle         ->Fill(d_dip_angle);
+      h_dip_angle         ->Fill(d_dip_angle);
       if(d_dip_angle <= dip_angle_cutLevel) continue; // dip-angle cut
       // --------------------- phi-meson flows -------------------------------
       TVector3 v3D_p_daughterA = trackhelixA.momentumAt(pairLengths.first, mField*kilogauss);
@@ -919,9 +919,35 @@ short PicoAnalyzer::Make(int iEvent){
         for(int km=0;km<2;km++){ // km - flow order
           d_flow_PHI_raw[km]        = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]));
           // d_flow_PHI_resolution[km] = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]))/(d_resolution[km][CentId-1]); // km {0,1}, centrality [1,9]
+          d_flow_PHI_resolution[km] = d_flow_PHI_raw[km]; // km {0,1}, centrality [1,9]
         }
       }
+      for(Int_t cent = 0; cent < Bin_Centrality_01; cent++)
+      {
+          for(Int_t rap_bin = 0; rap_bin < Bin_pT; rap_bin++)
+          {
+            if(cent_low[cent]<= cent9 && cent9 <= cent_up[cent] &&
+               rap_low_phi[rap_bin] <= pt && pt < rap_up_phi[rap_bin])
+               {
+                 mHist_SE_InvM_rap_cent[rap_bin][cent]->Fill(InvMassAB);
+                 // std::cout << "invM = " << InvMassAB << std::endl;
+                 if(!(EpAngle == -999.0 || Res_EP == -999.0 || d_flow_PHI_resolution[0] == -999.0))
+                 {
+                   // if(rap_bin==0)std::cout << "EpAngle  = " << EpAngle << std::endl;
+                   // if(rap_bin==0)std::cout << "Res_EP  = " << Res_EP << std::endl;
+                   // if(rap_bin==0)std::cout << "ptbin1 d_flow_PHI_resolution[0] = " << d_flow_PHI_resolution[0] << std::endl;
+                   mProfile_flow_reso_rap_cent[rap_bin][cent]->Fill(InvMassAB,d_flow_PHI_resolution[0]);
+                 }
+               }
+            if(cent_low[cent]<= cent9 && cent9 <= cent_up[cent] &&
+               rap_low_phi[rap_bin] <= pt_rot && pt_rot <= rap_up_phi[rap_bin])
+               {
+                 // std::cout << "invM rot = " << InvMassAB_rot << std::endl;
+                 mHist_rotation_InvM_rap_cent[rap_bin][cent]->Fill(InvMassAB_rot);
+               }
 
+          }
+      }
 
     }
   }

@@ -266,14 +266,14 @@ TH2D *hist_mass_kaonMinus;
   TH2F *h2_pT_y;
 
 
-  TH2D *hist_SE_pt_y_PhiMeson[Bin_Centrality_01];
-  TH2D *hist_SE_pt_y_Phi_tight_SigBkg[Bin_Centrality_01];
-  TH2D *hist_SE_pt_y_Phi_tight_Bkg[Bin_Centrality_01];
-  TH2D *hist_SE_pt_y_Phi_tight_Sig[Bin_Centrality_01];
+  TH2D *hist_SE_pt_y_PhiMeson[4];
+  TH2D *hist_SE_pt_y_Phi_tight_SigBkg[4];
+  TH2D *hist_SE_pt_y_Phi_tight_Bkg[4];
+  TH2D *hist_SE_pt_y_Phi_tight_Sig[4];
 
-  TH1F *mHist_SE_InvM_rap_cent[Bin_Centrality_01][Bin_rap];
-  TH1F *mHist_rotation_InvM_rap_cent[Bin_Centrality_01][Bin_rap];
-  TH1F *mProfile_flow_reso_rap_cent[Bin_Centrality_01][Bin_rap];
+  TH1F *mHist_SE_InvM_rap_cent[4][8];
+  TH1F *mHist_rotation_InvM_rap_cent[4][8];
+  TH1F *mProfile_flow_reso_rap_cent[4][8];
 
   static const int mEPTPCMaxTerm = 6;
   ClassDef(PicoAnalyzer, 1)                     //  Macro for CINT compatability

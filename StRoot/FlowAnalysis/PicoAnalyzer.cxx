@@ -791,17 +791,17 @@ short PicoAnalyzer::Make(int iEvent){
     h2py  -> Fill(picoTrackA->pMom().Y(),p_vecA.Y());
     h2pz  -> Fill(picoTrackA->pMom().Z(),p_vecA.Z());
     Double_t d_ptA = ltrackA.Perp(), d_pzA = ltrackA.Pz(), d_momA = ltrackA.P();
-    StPicoBTofPidTraits *traitA = NULL;
+    // StPicoBTofPidTraits *traitA = NULL;
     double d_tofBeta0    = -999.;
-    double d_inv_tofBeta0    = -999.;
-    if(picoTrackA->isTofTrack()) traitA = (StPicoBTofPidTraits*)((*mTraits)[picoTrackA->bTofPidTraitsIndex()]);
-    if(traitA)        d_tofBeta0 = traitA->btofBeta();
+    // double d_inv_tofBeta0    = -999.;
+    // if(picoTrackA->isTofTrack()) traitA = (StPicoBTofPidTraits*)((*mTraits)[picoTrackA->bTofPidTraitsIndex()]);
+    // if(traitA)        d_tofBeta0 = traitA->btofBeta();
     double d_M0   = _massKaon;
     // double d_E0   = sqrt((d_pxA*d_pxA+d_pyA*d_pyA+d_pzA*d_pzA)+_massKaon*_massKaon);
     // double d_y0   = ((d_E0-d_pzA) != 0.0) ? 0.5*TMath::Log( (d_E0 + d_pzA) / (d_E0 - d_pzA) ) : -999.0;
     // double eta0   = ((d_momA - d_pzA) != 0.0) ? 0.5*TMath::Log( (d_momA + d_pzA) / (d_momA - d_pzA) ) : -999.0;
-    double d_mT0  = sqrt(d_ptA*d_ptA + d_M0*d_M0);
-    double d_pq0   = fabs(d_momA) * d_chargeA;
+    // double d_mT0  = sqrt(d_ptA*d_ptA + d_M0*d_M0);
+    // double d_pq0   = fabs(d_momA) * d_chargeA;
     for(unsigned int j = 0; j < v_KaonMinus_tracks.size(); j++){
       StPicoTrack * picoTrackB = v_KaonMinus_tracks.at(j); // j-th K- track
       if(!picoTrackB) continue;
@@ -812,17 +812,17 @@ short PicoAnalyzer::Make(int iEvent){
       ltrackB.SetXYZM(p_vecB.X(),p_vecB.Y(),p_vecB.Z(),_massKaon);
       Double_t d_ptB = ltrackB.Perp(), d_pzB = ltrackB.Pz(), d_momB = ltrackB.P();
 
-      StPicoBTofPidTraits *traitB = NULL;
-      double d_tofBeta1    = -999.;
-      double d_inv_tofBeta1    = -999.;
-      if(picoTrackB->isTofTrack()) traitB = (StPicoBTofPidTraits*)((*mTraits)[picoTrackB->bTofPidTraitsIndex()]);
-      if(traitB)        d_tofBeta1 = traitB->btofBeta();
+      // StPicoBTofPidTraits *traitB = NULL;
+      // double d_tofBeta1    = -999.;
+      // double d_inv_tofBeta1    = -999.;
+      // if(picoTrackB->isTofTrack()) traitB = (StPicoBTofPidTraits*)((*mTraits)[picoTrackB->bTofPidTraitsIndex()]);
+      // if(traitB)        d_tofBeta1 = traitB->btofBeta();
       double d_M1   = _massKaon;
       // double d_E1   = sqrt((d_px1*d_px1+d_py1*d_py1+d_pzB*d_pzB)+_massKaon*_massKaon);
       // double d_y1   = ((d_E1-d_pzB) != 0.0) ? 0.5*TMath::Log( (d_E1 + d_pzB) / (d_E1 - d_pzB) ) : -999.0;
       // double eta1   = ((d_momB - d_pzB) != 0.0) ? 0.5*TMath::Log( (d_momB + d_pzB) / (d_momB - d_pzB) ) : -999.0;
-      double d_mT1  = sqrt(d_ptB*d_ptB + d_M1*d_M1);
-      double d_pq1   = fabs(d_momA) * d_chargeA;
+      // double d_mT1  = sqrt(d_ptB*d_ptB + d_M1*d_M1);
+      // double d_pq1   = fabs(d_momA) * d_chargeA;
       // phi Variables
       TLorentzVector trackAB      = ltrackA+ltrackB;
       Double_t InvMassAB          = trackAB.M();
@@ -897,7 +897,7 @@ short PicoAnalyzer::Make(int iEvent){
       TVector3 v3D_x_daughterB = trackhelixB.at(pairLengths.second);
       TVector3 v3D_x_AB    = (v3D_x_daughterA+v3D_x_daughterB)*0.5;
       TVector3 v3D_xvec_decayl = v3D_x_AB - vertexPos;
-      double d_AB_decay_length =  v3D_xvec_decayl.Mag();
+      // double d_AB_decay_length =  v3D_xvec_decayl.Mag();
       // hist_AB_decay_length->Fill(d_AB_decay_length);
       // if(d_AB_decay_length > d_cut_AB_decay_length_PHI) continue; //decay length cut
       Double_t dip_angle_cutLevel = 0.04;
@@ -909,7 +909,7 @@ short PicoAnalyzer::Make(int iEvent){
       TVector3 v3D_p_daughterB = trackhelixB.momentumAt(pairLengths.second, mField*kilogauss);
       TVector3 v3D_p_AB    = v3D_p_daughterA+v3D_p_daughterB;
       double d_pmom = v3D_xvec_decayl.Dot(v3D_p_AB);
-      double d_dca_AB = sqrt(v3D_xvec_decayl.Mag2() - (d_pmom*d_pmom/v3D_p_AB.Mag2()) );
+      // double d_dca_AB = sqrt(v3D_xvec_decayl.Mag2() - (d_pmom*d_pmom/v3D_p_AB.Mag2()) );
       double d_phi_azimuth = v3D_p_AB.Phi();
       if(d_phi_azimuth < 0.0            ) d_phi_azimuth += 2.0*TMath::Pi();
       if(d_phi_azimuth > 2.0*TMath::Pi()) d_phi_azimuth -= 2.0*TMath::Pi();

@@ -98,6 +98,7 @@ class PicoAnalyzer : public TObject {
   Int_t cent_up[4]  = {8,8,6,3}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
   Float_t pt_low_phi[3] = {-1.0,-0.6,-0.3,-0.1,0  ,0.1,0.3,0.6};
   Float_t rap_up_phi[3]  = {-0.6,-0.3,-0.1, 0  ,0.1,0.3,0.6,1.0};
+  TString Centrality_01[4] = {"0080","0010","1040","4080"};
   /*
   //  static const int mNumberOfEpdSubEvents = 6;
   //  double mEpdEtaBbounds[mNumberOfEpdSubEvents+1] = {2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};
@@ -252,7 +253,7 @@ TH2D *hist_mass_kaonMinus;
   TH2D *h2py;
   TH2D *h2pz;
 
-  TH1D * hist_dip_angle;
+  TH1D * h_dip_angle;
   TH1D * h_Mass;
   TH1D * h_Mass_rot;
   TH1D *hist_SE_PhiMeson_pT;
@@ -265,10 +266,14 @@ TH2D *hist_mass_kaonMinus;
   TH2F *h2_pT_y;
 
 
-  TH2D *hist_SE_pt_y_PhiMeson[4];
-  TH2D *hist_SE_pt_y_Phi_tight_SigBkg[4];
-  TH2D *hist_SE_pt_y_Phi_tight_Bkg[4];
-  TH2D *hist_SE_pt_y_Phi_tight_Sig[4];
+  TH2D *hist_SE_pt_y_PhiMeson[Bin_Centrality_01];
+  TH2D *hist_SE_pt_y_Phi_tight_SigBkg[Bin_Centrality_01];
+  TH2D *hist_SE_pt_y_Phi_tight_Bkg[Bin_Centrality_01];
+  TH2D *hist_SE_pt_y_Phi_tight_Sig[Bin_Centrality_01];
+
+  TH1F *mHist_SE_InvM_rap_cent[Bin_Centrality_01][Bin_rap];
+  TH1F *mHist_rotation_InvM_rap_cent[Bin_Centrality_01][Bin_rap];
+  TH1F *mProfile_flow_reso_rap_cent[Bin_Centrality_01][Bin_rap];
 
   static const int mEPTPCMaxTerm = 6;
   ClassDef(PicoAnalyzer, 1)                     //  Macro for CINT compatability

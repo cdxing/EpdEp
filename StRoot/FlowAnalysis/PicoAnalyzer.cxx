@@ -924,10 +924,10 @@ short PicoAnalyzer::Make(int iEvent){
       }
       for(Int_t cent = 0; cent < Bin_Centrality_01; cent++)
       {
-          for(Int_t rap_bin = 0; rap_bin < Bin_pT; rap_bin++)
+          for(Int_t rap_bin = 0; rap_bin < Bin_rap; rap_bin++)
           {
-            if(cent_low[cent]<= cent9 && cent9 <= cent_up[cent] &&
-               rap_low_phi[rap_bin] <= pt && pt < rap_up_phi[rap_bin])
+            if(cent_low[cent]<= CentId && CentId <= cent_up[cent] &&
+               rap_low_phi[rap_bin] <= rap && rap < rap_up_phi[rap_bin])
                {
                  mHist_SE_InvM_rap_cent[rap_bin][cent]->Fill(InvMassAB);
                  // std::cout << "invM = " << InvMassAB << std::endl;
@@ -939,8 +939,8 @@ short PicoAnalyzer::Make(int iEvent){
                    mProfile_flow_reso_rap_cent[rap_bin][cent]->Fill(InvMassAB,d_flow_PHI_resolution[0]);
                  }
                }
-            if(cent_low[cent]<= cent9 && cent9 <= cent_up[cent] &&
-               rap_low_phi[rap_bin] <= pt_rot && pt_rot <= rap_up_phi[rap_bin])
+            if(cent_low[cent]<= CentId && CentId <= cent_up[cent] &&
+               rap_low_phi[rap_bin] <= rap_rot && rap_rot <= rap_up_phi[rap_bin])
                {
                  // std::cout << "invM rot = " << InvMassAB_rot << std::endl;
                  mHist_rotation_InvM_rap_cent[rap_bin][cent]->Fill(InvMassAB_rot);

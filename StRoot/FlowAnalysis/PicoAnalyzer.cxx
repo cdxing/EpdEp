@@ -184,7 +184,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     hist_SE_pt_y_Phi_tight_Bkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_Bkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi^{Bkg}, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
   }
-
+/*
   for(Int_t cent = 0; cent < 4; cent++)
   {
       for(Int_t rap_bin = 0; rap_bin < 8; rap_bin++)
@@ -208,7 +208,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
         mProfile_flow_reso_rap_cent[rap_bin][cent]->GetYaxis()->SetTitle("<cos(1(#phi - #psi_{1}))>/R_{1}^{EPD}");
       }
   }
-
+*/
 //----------------Make histograms for QA ----------------------------------
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
   hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
@@ -923,6 +923,7 @@ short PicoAnalyzer::Make(int iEvent){
           d_flow_PHI_resolution[km] = d_flow_PHI_raw[km]; // km {0,1}, centrality [1,9]
         }
       }
+      /*
       for(Int_t cent = 0; cent < 4; cent++)
       {
           for(Int_t rap_bin = 0; rap_bin < 8; rap_bin++)
@@ -932,7 +933,7 @@ short PicoAnalyzer::Make(int iEvent){
                {
                  mHist_SE_InvM_rap_cent[rap_bin][cent]->Fill(InvMassAB);
                  // std::cout << "invM = " << InvMassAB << std::endl;
-                 if(!(EpAngle[0][2] == -999.0 /*|| Res_EP == -999.0 */|| d_flow_PHI_resolution[0] == -999.0))
+                 if(!(EpAngle[0][2] == -999.0 || d_flow_PHI_resolution[0] == -999.0))
                  {
                    // if(rap_bin==0)std::cout << "EpAngle  = " << EpAngle << std::endl;
                    // if(rap_bin==0)std::cout << "Res_EP  = " << Res_EP << std::endl;
@@ -949,7 +950,7 @@ short PicoAnalyzer::Make(int iEvent){
 
           }
       }
-
+      */
     }
   }
 

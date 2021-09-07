@@ -52,8 +52,9 @@ ClassImp(PicoAnalyzer)                     //  Macro for CINT compatability
 int Centrality(int gRefMult );
 
 //=================================================
-PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMink(0.2),mpTMaxk(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNPhibin(100),mNpTbin(20),mNVzbin(4),mNEtabin(60),
-mVzMin(-70.0),mVzMax(70.0),mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
+PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMink(0.2),mpTMaxk(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNPhibin(100),mNpTbin(20),mVzMin(-70.0),mVzMax(70.0),
+mNVzbin(4),mNEtabin(60),
+mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
 mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(2.0),
 mProtonSigma(0.012),mEtaMaxv1(2.0),d_KaonM2low(0.16),d_KaonM2high(0.36),mEtaMinv1(-2.0){
   mFileNameBase = FileNameBase;

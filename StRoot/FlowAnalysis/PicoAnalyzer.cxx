@@ -930,7 +930,7 @@ short PicoAnalyzer::Make(int iEvent){
       double rap_up_phi[8]  = {-0.6, -0.3, -0.1, 0.,  0.1, 0.3, 0.6, 1.0};
 
 
-      for(Int_t cent = 0; cent < Bin_Centrality; cent++)
+      for(Int_t cent = 0; cent < Bin_Centrality_01; cent++)
       {
           for(Int_t rap_bin = 0; rap_bin < Bin_rap; rap_bin++)
           {

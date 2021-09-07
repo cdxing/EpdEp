@@ -190,17 +190,17 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   {
       for(Int_t rap_bin = 0; rap_bin < Bin_rap; rap_bin++)
       {
-        TString hist_name_SE = Form("InvMass_SE_ptbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        TString hist_name_SE = Form("InvMass_SE_rapbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
         mHist_SE_InvM_rap_cent[rap_bin][cent] = new TH1F(hist_name_SE.Data() ,
         hist_name_SE.Data() ,
         200,0.98,1.08);
         mHist_SE_InvM_rap_cent[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
-        TString hist_name_rot = Form("InvMass_rot_ptbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        TString hist_name_rot = Form("InvMass_rot_rapbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
         mHist_rotation_InvM_rap_cent[rap_bin][cent] = new TH1F(hist_name_rot.Data() ,
         hist_name_rot.Data() ,
         200,0.98,1.08);
         mHist_rotation_InvM_rap_cent[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
-        TString hist_name_profile = Form("flow_InvMass_ptbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        TString hist_name_profile = Form("flow_InvMass_rapbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
         mProfile_flow_reso_rap_cent[rap_bin][cent] = new TProfile(hist_name_profile.Data(),
         hist_name_profile.Data(),
         100,0.98,1.08,

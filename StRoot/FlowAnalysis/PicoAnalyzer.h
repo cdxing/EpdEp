@@ -91,14 +91,17 @@ class PicoAnalyzer : public TObject {
 
   static const int mTPCphibin = 80;
   double mTPCphibinwidth = TMath::Pi()/40;
+  /*
   Int_t Bin_Centrality_01 = 4;
   Int_t Bin_rap = 8;
   // Centrality bin
+
   Int_t cent_low[4] = {0,7,4,0}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
   Int_t cent_up[4]  = {8,8,6,3}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
   Float_t rap_low_phi[8] = {-1.0,-0.6,-0.3,-0.1,0  ,0.1,0.3,0.6};
   Float_t rap_up_phi[8]  = {-0.6,-0.3,-0.1, 0  ,0.1,0.3,0.6,1.0};
   TString Centrality_01[4] = {"0080","0010","1040","4080"};
+  */
   /*
   //  static const int mNumberOfEpdSubEvents = 6;
   //  double mEpdEtaBbounds[mNumberOfEpdSubEvents+1] = {2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};

@@ -923,6 +923,8 @@ short PicoAnalyzer::Make(int iEvent){
           d_flow_PHI_resolution[km] = d_flow_PHI_raw[km]; // km {0,1}, centrality [1,9]
         }
       }
+      int cent_low[4] = {0,7,4,0}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
+      int cent_up[4]  = {8,8,6,3}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
       /*
       for(Int_t cent = 0; cent < 4; cent++)
       {

@@ -177,16 +177,16 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hist_SE_pt_y_Phi_tight_Bkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_Bkg_0","p_{T} [GeV/c] vs. y of #phi^{Bkg}, 0-60% ",40,-2.,2.,35,0.0,3.5);
   hist_SE_pt_y_Phi_tight_Sig[0] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[0]->Clone("hist_SE_pt_y_Phi_tight_Sig_0");
   int centBES[4] = {0,10,40,80};
-  for(int cent = 1; cent<Bin_Centrality_01;cent++){
+  for(int cent = 1; cent<4;cent++){
     hist_SE_pt_y_PhiMeson[cent] = new TH2D(Form("hist_SE_pt_y_PhiMeson_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),200,-2.0,2.0,20,0.,5.0);
     hist_SE_pt_y_Phi_tight_SigBkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_SigBkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Bkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_Bkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi^{Bkg}, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
   }
 
-  for(Int_t cent = 0; cent < Bin_Centrality_01; cent++)
+  for(Int_t cent = 0; cent < 4; cent++)
   {
-      for(Int_t rap_bin = 0; rap_bin < Bin_rap; rap_bin++)
+      for(Int_t rap_bin = 0; rap_bin < 8; rap_bin++)
       {
         TString hist_name_SE = Form("InvMass_SE_ptbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
         mHist_SE_InvM_rap_cent[rap_bin][cent] = new TH1F(hist_name_SE.Data() ,
@@ -922,9 +922,9 @@ short PicoAnalyzer::Make(int iEvent){
           d_flow_PHI_resolution[km] = d_flow_PHI_raw[km]; // km {0,1}, centrality [1,9]
         }
       }
-      for(Int_t cent = 0; cent < Bin_Centrality_01; cent++)
+      for(Int_t cent = 0; cent < 4; cent++)
       {
-          for(Int_t rap_bin = 0; rap_bin < Bin_rap; rap_bin++)
+          for(Int_t rap_bin = 0; rap_bin < 8; rap_bin++)
           {
             if(cent_low[cent]<= CentId && CentId <= cent_up[cent] &&
                rap_low_phi[rap_bin] <= rap && rap < rap_up_phi[rap_bin])

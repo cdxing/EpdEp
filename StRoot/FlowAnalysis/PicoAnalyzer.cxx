@@ -52,8 +52,8 @@ ClassImp(PicoAnalyzer)                     //  Macro for CINT compatability
 int Centrality(int gRefMult );
 
 //=================================================
-PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMink(0.2),mpTMaxk(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNpTbin(20),mNVzbin(4),mNEtabin(60),
-mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
+PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMink(0.2),mpTMaxk(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNPhibin(100),mNpTbin(20),mNVzbin(4),mNEtabin(60),
+mVzMin(-70.0),mVzMax(70.0),mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
 mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(2.0),
 mProtonSigma(0.012),mEtaMaxv1(2.0),d_KaonM2low(0.16),d_KaonM2high(0.36),mEtaMinv1(-2.0){
   mFileNameBase = FileNameBase;
@@ -792,11 +792,11 @@ short PicoAnalyzer::Make(int iEvent){
     h2pz  -> Fill(picoTrackA->pMom().Z(),p_vecA.Z());
     Double_t d_ptA = ltrackA.Perp(), d_pzA = ltrackA.Pz(), d_momA = ltrackA.P();
     // StPicoBTofPidTraits *traitA = NULL;
-    double d_tofBeta0    = -999.;
+    // double d_tofBeta0    = -999.;
     // double d_inv_tofBeta0    = -999.;
     // if(picoTrackA->isTofTrack()) traitA = (StPicoBTofPidTraits*)((*mTraits)[picoTrackA->bTofPidTraitsIndex()]);
     // if(traitA)        d_tofBeta0 = traitA->btofBeta();
-    double d_M0   = _massKaon;
+    // double d_M0   = _massKaon;
     // double d_E0   = sqrt((d_pxA*d_pxA+d_pyA*d_pyA+d_pzA*d_pzA)+_massKaon*_massKaon);
     // double d_y0   = ((d_E0-d_pzA) != 0.0) ? 0.5*TMath::Log( (d_E0 + d_pzA) / (d_E0 - d_pzA) ) : -999.0;
     // double eta0   = ((d_momA - d_pzA) != 0.0) ? 0.5*TMath::Log( (d_momA + d_pzA) / (d_momA - d_pzA) ) : -999.0;
@@ -817,7 +817,7 @@ short PicoAnalyzer::Make(int iEvent){
       // double d_inv_tofBeta1    = -999.;
       // if(picoTrackB->isTofTrack()) traitB = (StPicoBTofPidTraits*)((*mTraits)[picoTrackB->bTofPidTraitsIndex()]);
       // if(traitB)        d_tofBeta1 = traitB->btofBeta();
-      double d_M1   = _massKaon;
+      // double d_M1   = _massKaon;
       // double d_E1   = sqrt((d_px1*d_px1+d_py1*d_py1+d_pzB*d_pzB)+_massKaon*_massKaon);
       // double d_y1   = ((d_E1-d_pzB) != 0.0) ? 0.5*TMath::Log( (d_E1 + d_pzB) / (d_E1 - d_pzB) ) : -999.0;
       // double eta1   = ((d_momB - d_pzB) != 0.0) ? 0.5*TMath::Log( (d_momB + d_pzB) / (d_momB - d_pzB) ) : -999.0;
@@ -908,7 +908,7 @@ short PicoAnalyzer::Make(int iEvent){
       TVector3 v3D_p_daughterA = trackhelixA.momentumAt(pairLengths.first, mField*kilogauss);
       TVector3 v3D_p_daughterB = trackhelixB.momentumAt(pairLengths.second, mField*kilogauss);
       TVector3 v3D_p_AB    = v3D_p_daughterA+v3D_p_daughterB;
-      double d_pmom = v3D_xvec_decayl.Dot(v3D_p_AB);
+      // double d_pmom = v3D_xvec_decayl.Dot(v3D_p_AB);
       // double d_dca_AB = sqrt(v3D_xvec_decayl.Mag2() - (d_pmom*d_pmom/v3D_p_AB.Mag2()) );
       double d_phi_azimuth = v3D_p_AB.Phi();
       if(d_phi_azimuth < 0.0            ) d_phi_azimuth += 2.0*TMath::Pi();

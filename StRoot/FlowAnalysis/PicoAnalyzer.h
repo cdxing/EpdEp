@@ -96,8 +96,8 @@ class PicoAnalyzer : public TObject {
   // Centrality bin
   Int_t cent_low[4] = {0,7,4,0}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
   Int_t cent_up[4]  = {8,8,6,3}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
-  Float_t pt_low_phi[3] = {-1.0,-0.6,-0.3,-0.1,0  ,0.1,0.3,0.6};
-  Float_t rap_up_phi[3]  = {-0.6,-0.3,-0.1, 0  ,0.1,0.3,0.6,1.0};
+  Float_t rap_low_phi[8] = {-1.0,-0.6,-0.3,-0.1,0  ,0.1,0.3,0.6};
+  Float_t rap_up_phi[8]  = {-0.6,-0.3,-0.1, 0  ,0.1,0.3,0.6,1.0};
   TString Centrality_01[4] = {"0080","0010","1040","4080"};
   /*
   //  static const int mNumberOfEpdSubEvents = 6;
@@ -273,7 +273,7 @@ TH2D *hist_mass_kaonMinus;
 
   TH1F *mHist_SE_InvM_rap_cent[4][8];
   TH1F *mHist_rotation_InvM_rap_cent[4][8];
-  TH1F *mProfile_flow_reso_rap_cent[4][8];
+  TProfile *mProfile_flow_reso_rap_cent[4][8];
 
   static const int mEPTPCMaxTerm = 6;
   ClassDef(PicoAnalyzer, 1)                     //  Macro for CINT compatability

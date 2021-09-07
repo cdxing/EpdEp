@@ -931,7 +931,7 @@ short PicoAnalyzer::Make(int iEvent){
                {
                  mHist_SE_InvM_rap_cent[rap_bin][cent]->Fill(InvMassAB);
                  // std::cout << "invM = " << InvMassAB << std::endl;
-                 if(!(EpAngle == -999.0 || Res_EP == -999.0 || d_flow_PHI_resolution[0] == -999.0))
+                 if(!(EpAngle[0][2] == -999.0 /*|| Res_EP == -999.0 */|| d_flow_PHI_resolution[0] == -999.0))
                  {
                    // if(rap_bin==0)std::cout << "EpAngle  = " << EpAngle << std::endl;
                    // if(rap_bin==0)std::cout << "Res_EP  = " << Res_EP << std::endl;

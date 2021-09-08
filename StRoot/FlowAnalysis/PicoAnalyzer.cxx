@@ -125,8 +125,6 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 
   double lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
   double cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
-  double d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
-       0.67352165, 0.59120378, 0.44391744, 0.27105964};
   TH2D wt("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
   for (int ix=1; ix<101; ix++){
     for (int iy=1; iy<10; iy++){
@@ -481,6 +479,9 @@ short PicoAnalyzer::Make(int iEvent){
   if (CentId<0) return 0;            // 80-100% - very peripheral
 
   mVz[CentId]->Fill(vertexPos.Z());
+
+  double d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
+       0.67352165, 0.59120378, 0.44391744, 0.27105964};
 
   int VzBin;
   double VzArr[17]={-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40};

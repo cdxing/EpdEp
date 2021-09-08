@@ -125,7 +125,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 
   double lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
   double cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
-  d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
+  double d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
        0.67352165, 0.59120378, 0.44391744, 0.27105964};
   TH2D wt("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
   for (int ix=1; ix<101; ix++){
@@ -923,7 +923,7 @@ short PicoAnalyzer::Make(int iEvent){
         for(int km=0;km<2;km++){ // km - flow order
           d_flow_PHI_raw[km]        = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]));
           d_flow_PHI_resolution[km] = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]))/(d_resolution_EPD[CentId]); // km {0,1}, centrality [1,9]
-          // d_flow_PHI_resolution[km] = d_flow_PHI_raw[km]; 
+          // d_flow_PHI_resolution[km] = d_flow_PHI_raw[km];
         }
       }
       int cent_low[4] = {0,7,4,0}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%

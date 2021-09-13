@@ -52,11 +52,12 @@ ClassImp(PicoAnalyzer)                     //  Macro for CINT compatability
 int Centrality(int gRefMult );
 
 //=================================================
-PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMink(0.2),mpTMaxk(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),
+PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMink(0.2),mpTMaxk(2.0),mEtaMin(-1.2),mEtaMax(1.2),
+mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),
 mNpTbin(20),mNVzbin(4),mNEtabin(60),
 mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
 mNTPCSubEvents(2),mEPDMax(2.0),mNEPDSubEvents(10),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(2.0),
-mProtonSigma(0.012),d_KaonM2low(0.16),d_KaonM2high(0.36),mEtaMaxv1(2.0),mEtaMinv1(-2.0){
+mProtonSigma(0.012),d_KaonM2low(0.16),d_KaonM2high(0.36),mEtaMaxv1(2.0),mEtaMinv1(-2.0),dip_angle_cutLevel(0.04){
   mFileNameBase = FileNameBase;
 
   mPicoDst=0;
@@ -214,6 +215,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
   hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
   hvzvpdvz_b =new TH2F("h_vz_vpd_b","vz_vs_vpd_b",1000,-150,150,1000,-150,150);
+  hvzvpdvzdiff_b =new TH1F("hvzvpdvzdiff_b","hvzvpdvzdiff_b",1000,-150,150);
   hvr_b = new TH2F("h_vr_b","vy_vs_vx_b",1000,-10,10,1000,-10,10);
   htofvsref_b = new TH2F("htofvsref_b","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
   htofmatchvsref_b=new TH2F("htofmatchvsref_b","",1500,0.0,1500.0,1500,0.0,1500.0);
@@ -221,6 +223,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   href = new TH1F("h_ref","refmult_dis",1000,0.,1000.);
   hvz = new TH1F("h_vz","vz_dis",1000,-100,100);
   hvzvpdvz =new TH2F("h_vz_vpd","vz_vs_vpd",1000,-150,150,1000,-150,150);
+  hvzvpdvzdiff =new TH1F("hvzvpdvzdiff","hvzvpdvzdiff",1000,-150,150);
   htofvsref = new TH2F("htofvsref","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
   htofmatchvsref=new TH2F("htofmatchvsref","",1500,0.0,1500.0,1500,0.0,1500.0);
   hvr = new TH2F("h_vr","vy_vs_vx",1000,-10,10,1000,-10,10);
@@ -419,6 +422,8 @@ short PicoAnalyzer::Make(int iEvent){
 
   //----- done getting data; have fun! ------
   // if(!(mPicoEvent->isTrigger(610001)||mPicoEvent->isTrigger(610011)||mPicoEvent->isTrigger(610021)||mPicoEvent->isTrigger(610031)||mPicoEvent->isTrigger(610041)||mPicoEvent->isTrigger(610051))) return 0;
+  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||
+mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031))) return 0;
 
   //  StThreeVectorF primaryVertex = mPicoEvent->primaryVertex();
   //  TVector3 vertexPos(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
@@ -457,6 +462,7 @@ short PicoAnalyzer::Make(int iEvent){
   hvz_b->Fill(vertexPos.Z());
   hvr_b->Fill(vertexPos.X(),vertexPos.Y());
   hvzvpdvz_b->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
+  hvzvpdvzdiff_b->Fill(vertexPos.Z()-mPicoEvent->vzVpd());
   htofvsref_b->Fill(refMult,tofMult);
   htofmatchvsref_b->Fill(refMult,tofmatch);
   h_runidvstofmult_b->Fill(mRunId,tofMult);
@@ -471,6 +477,7 @@ short PicoAnalyzer::Make(int iEvent){
   hvz->Fill(vertexPos.Z());
   hvr->Fill(vertexPos.X(),vertexPos.Y());
   hvzvpdvz->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
+  hvzvpdvzdiff->Fill(vertexPos.Z()-mPicoEvent->vzVpd());
   htofvsref->Fill(refMult,tofMult);
   htofmatchvsref->Fill(refMult,tofmatch);
 
@@ -905,7 +912,6 @@ short PicoAnalyzer::Make(int iEvent){
       // double d_AB_decay_length =  v3D_xvec_decayl.Mag();
       // hist_AB_decay_length->Fill(d_AB_decay_length);
       // if(d_AB_decay_length > d_cut_AB_decay_length_PHI) continue; //decay length cut
-      Double_t dip_angle_cutLevel = 0.04;
 
       h_dip_angle         ->Fill(d_dip_angle);
       if(d_dip_angle <= dip_angle_cutLevel) continue; // dip-angle cut

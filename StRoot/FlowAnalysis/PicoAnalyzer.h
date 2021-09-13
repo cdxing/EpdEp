@@ -155,9 +155,10 @@ double d_KaonM2low;//1/beta sigma
 double d_KaonM2high;//1/beta sigma
 double mEtaMaxv1;//for v1 analysis
 double mEtaMinv1;//for v1 analysis
+double dip_angle_cutLevel;//for v1 analysis
 
 //histos for QA
-TH1F *href_vz, *hvz_b;
+TH1F *href_vz, *hvz_b, *hvzvpdvzdiff, *hvzvpdvzdiff_b;
 TH1F *href, *hvz, *hbtofYLocal;
 TH2F *hvzvpdvz_b, *hvr_b, *hvzvpdvz, *hvr, *hmassvsp, *hdedxvsp, *htofvsref_b, *htofvsref, *hbtofYLocalvsMass2;
 TH2F *htofmatchvsref, *htofmatchvsref_b;

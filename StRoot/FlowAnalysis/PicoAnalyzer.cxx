@@ -254,8 +254,6 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h_dca = new TH1F("h_dca","",1000,0.,5.);
   h_phi = new TH1F("h_phi","",1000,-6.28,6.28);
   //========================= Kaon PID ==========================================
-  h_runidvstofmult = new TProfile("runidvstofmult", "", 90000, 22031041, 22121041,"");
-  h_runidvsrefmult = new TProfile("runidvsrefmult", "", 90000, 22031041, 22121041,"");
   hist_pt_kaonPlus = new TH1D("hist_pt_kaonPlus","p_{T} [GeV/c]",1000,0.0,5.0);
   hist_eta_kaonPlus = new TH1D("hist_eta_kaonPlus","#eta",500,-1.5,1.5);
   hist_y_kaonPlus = new TH1D("hist_y_kaonPlus","y",500,-1.5,1.5);
@@ -422,8 +420,7 @@ short PicoAnalyzer::Make(int iEvent){
 
   //----- done getting data; have fun! ------
   // if(!(mPicoEvent->isTrigger(610001)||mPicoEvent->isTrigger(610011)||mPicoEvent->isTrigger(610021)||mPicoEvent->isTrigger(610031)||mPicoEvent->isTrigger(610041)||mPicoEvent->isTrigger(610051))) return 0;
-  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||
-mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031))) return 0;
+  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031))) return 0;
 
   //  StThreeVectorF primaryVertex = mPicoEvent->primaryVertex();
   //  TVector3 vertexPos(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
@@ -448,10 +445,10 @@ mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrig
   // if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
   // ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
   // if(ISRefMultCorrBadRun) return 0;
-  for(int ii=0;ii<44;ii++)
-  {
-    if(mRunId == badrun[ii]) return 0;
-  }
+  // for(int ii=0;ii<44;ii++)
+  // {
+  //   if(mRunId == badrun[ii]) return 0;
+  // }
   //mRefMultCorr->initEvent(refMult,vertexPos.Z(),mPicoEvent->ZDCx());
   //refMult = mRefMultCorr->getRefMultCorr();
   CentId = Centrality(mPicoEvent->refMult());//An integer between 0 (70-80%) and 8 (0-5%)

@@ -420,6 +420,10 @@ short PicoAnalyzer::Make(int iEvent){
 
   //----- done getting data; have fun! ------
   // if(!(mPicoEvent->isTrigger(610001)||mPicoEvent->isTrigger(610011)||mPicoEvent->isTrigger(610021)||mPicoEvent->isTrigger(610031)||mPicoEvent->isTrigger(610041)||mPicoEvent->isTrigger(610051))) return 0;
+  for(unsigned int i = 0 ; i< mPicoEvent->triggerIds().size();i++){
+    cout << "trigger id: "<< mPicoEvent->triggerIds().at(i)<< ", ";
+  }
+  cout <<endl;
   cout << !(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031))  << endl;
   if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031))) return 0;
   cout << "test 1 ! "  << endl;

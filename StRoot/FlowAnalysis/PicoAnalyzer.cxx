@@ -457,6 +457,7 @@ short PicoAnalyzer::Make(int iEvent){
   //if(mRefMultCorr->passnTofMatchRefmultCut(1.*mPicoEvent->refMult(), 1.*mPicoEvent->nBTOFMatch())!=1) return 0;
 
   hvz_b->Fill(vertexPos.Z());
+  cout << "vertex z = "<<vertexPos.Z()<<endl;
   hvr_b->Fill(vertexPos.X(),vertexPos.Y());
   hvzvpdvz_b->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
   hvzvpdvzdiff_b->Fill(vertexPos.Z()-mPicoEvent->vzVpd());

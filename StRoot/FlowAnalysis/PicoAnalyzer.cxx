@@ -424,8 +424,9 @@ short PicoAnalyzer::Make(int iEvent){
     cout << "trigger id: "<< mPicoEvent->triggerIds().at(i)<< ", ";
   }
   cout <<endl;
-  cout << !(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031))  << endl;
-  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031))) return 0;
+  cout << !(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))  << endl;
+  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||
+  mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))) return 0;
   cout << "test 1 ! "  << endl;
   //  StThreeVectorF primaryVertex = mPicoEvent->primaryVertex();
   //  TVector3 vertexPos(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());

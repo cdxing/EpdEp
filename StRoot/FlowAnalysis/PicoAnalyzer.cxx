@@ -124,8 +124,8 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   mEpFinder->SetMaxTileWeight(2.0);
   mEpFinder->SetEpdHitFormat(2);     // 2=pico
 
-  double lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
-  double cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
+  double lin[9] = {-0.00123078, -0.00214392, -0.00290788, -0.00347494, -0.0036696, -0.00350018, -0.00304427, -0.00248817, -0.00153515};
+  double cub[9] = {0.000156391, 0.000244697, 0.000330155, 0.000406341, 0.000448467, 0.000447128, 0.00040198, 0.000333107, 0.000190221};
   TH2D wt("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
   for (int ix=1; ix<101; ix++){
     for (int iy=1; iy<10; iy++){
@@ -133,8 +133,8 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
       wt.SetBinContent(ix,iy,lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
     }
   }
-  // mEpFinder->SetEtaWeights(1,wt);
-  // cout<<"etaweight set"<<endl;
+  mEpFinder->SetEtaWeights(1,wt);
+  cout<<"etaweight set"<<endl;
   cout<<"etaweight disabled"<<endl;
   // --------------------------------------------------------
 
@@ -239,11 +239,11 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 
   h_counter = new TH1F("h_counter","event_counter",58,-8,50.);
 
-  h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 90000, 22031041, 22121041,"");
-  h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 90000, 22031041, 22121041,"");
+  h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 40000, 20056031, 20096031,"");
+  h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 40000, 20056031, 20096031,"");
 
-  h_runidvstofmult = new TProfile("runidvstofmult", "", 90000, 22031041, 22121041,"");
-  h_runidvsrefmult = new TProfile("runidvsrefmult", "", 90000, 22031041, 22121041,"");
+  h_runidvstofmult = new TProfile("runidvstofmult", "", 40000, 20056031, 20096031,"");
+  h_runidvsrefmult = new TProfile("runidvsrefmult", "", 40000, 20056031, 20096031,"");
 
   h_pt = new TH1F("h_pt","",1000,0.,10.);
   h_eta_b= new TH1F("h_eta_b","",1000,-2.,2.);
@@ -451,10 +451,10 @@ short PicoAnalyzer::Make(int iEvent){
   // if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
   // ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
   // if(ISRefMultCorrBadRun) return 0;
-  // for(int ii=0;ii<44;ii++)
-  // {
-  //   if(mRunId == badrun[ii]) return 0;
-  // }
+  for(int ii=0;ii<83;ii++)
+  {
+    if(mRunId == badrun[ii]) return 0;
+  }
   //mRefMultCorr->initEvent(refMult,vertexPos.Z(),mPicoEvent->ZDCx());
   //refMult = mRefMultCorr->getRefMultCorr();
   CentId = Centrality(mPicoEvent->refMult());//An integer between 0 (70-80%) and 8 (0-5%)
@@ -1040,7 +1040,8 @@ int PicoAnalyzer::FindTrackId(int Trkch,double TrkVz,double TrkEta,double TrkpT)
 int Centrality(int gRefMult )
 {
     int centrality;
-    int centFull[9]={4, 9,17,30,50,78, 116,170,205};
+    int centFull[9]={4,9,17,32,57,94,150,233,290};
+    // https://drupal.star.bnl.gov/STAR/system/files/19.6_GeV_bad_run_centrality.pdf
     if      (gRefMult>=centFull[8]) centrality=8; // 0 - 5%
     else if (gRefMult>=centFull[7]) centrality=7; // 5 - 10%
     else if (gRefMult>=centFull[6]) centrality=6; // 10 - 20%

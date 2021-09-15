@@ -135,7 +135,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   }
   mEpFinder->SetEtaWeights(1,wt);
   cout<<"etaweight set"<<endl;
-  cout<<"etaweight disabled"<<endl;
+  // cout<<"etaweight disabled"<<endl;
   // --------------------------------------------------------
 
   TString OutputRootFileName = mFileNameBase;
@@ -649,7 +649,8 @@ short PicoAnalyzer::Make(int iEvent){
     //----------Prepare Q to calculate the Psi_TPC-----------------
     int TtrId=FindTrackId(Tch,vertexPos.Z(),Teta,TPt);
     if(TtrId<=0||TtrId>mNumberOfTrackTypes){
-      cout<<"Ah-oh, invalid TrackId :("<<endl;
+      // cout<<"Ah-oh, invalid TrackId :("<<endl;
+      cout "track id: " << TtrId;
     }
     double TrackPhiWeight=1.0;
     if(mTPCPhiWeightInput!=0) TrackPhiWeight=1.0/mTPCPhiWeightInput->GetBinContent(mTPCPhiWeightInput->FindBin(Tphi,TtrId));

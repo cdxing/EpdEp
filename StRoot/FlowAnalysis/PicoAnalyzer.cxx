@@ -650,7 +650,7 @@ short PicoAnalyzer::Make(int iEvent){
     int TtrId=FindTrackId(Tch,vertexPos.Z(),Teta,TPt);
     if(TtrId<=0||TtrId>mNumberOfTrackTypes){
       // cout<<"Ah-oh, invalid TrackId :("<<endl;
-      cout <<"track id: " << TtrId << endl;
+      // cout <<"track id: " << TtrId << endl;
     }
     double TrackPhiWeight=1.0;
     if(mTPCPhiWeightInput!=0) TrackPhiWeight=1.0/mTPCPhiWeightInput->GetBinContent(mTPCPhiWeightInput->FindBin(Tphi,TtrId));

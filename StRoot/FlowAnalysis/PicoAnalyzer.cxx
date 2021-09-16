@@ -161,7 +161,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 //--------------Prepare the constant for weighting the TPC tracks------------
   mNumberOfTrackTypes =mNpTbin*mNVzbin*mNEtabin*2;
 
-
+/*
 //---------------- Make histograms for phi meson analysis --------------
   h2px = new TH2D("h2px","pMomX vs. P_vecX",600,-3.,3.,600,-3.,3.);
   h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
@@ -217,7 +217,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
         mProfile_flow_reso_rap_cent[rap_bin][cent]->GetYaxis()->SetTitle("<cos(1(#phi - #psi_{1}))>/R_{1}^{EPD}");
       }
   }
-
+*/
 //----------------Make histograms for QA ----------------------------------
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
   hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
@@ -260,6 +260,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h_nhitratio=new TH1F("h_nhitratio","",1000,-0.5,1.5);
   h_dca = new TH1F("h_dca","",1000,0.,5.);
   h_phi = new TH1F("h_phi","",1000,-6.28,6.28);
+  /*
   //========================= Kaon PID ==========================================
   hist_pt_kaonPlus = new TH1D("hist_pt_kaonPlus","p_{T} [GeV/c]",1000,0.0,5.0);
   hist_eta_kaonPlus = new TH1D("hist_eta_kaonPlus","#eta",500,-1.5,1.5);
@@ -281,6 +282,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hist_dEdx_kaonMinus = new TH2D("hist_dEdx_kaonMinus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
   hist_beta_kaonMinus = new TH2D("hist_beta_kaonMinus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
   hist_mass_kaonMinus = new TH2D("hist_mass_kaonMinus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
+  */
 //----------------Make histograms for shifting Psi_TPC--------------------
   mTPCCosShift = new TProfile3D("TPCCosShift","TPCCosShift",9,-0.5,8.5,mFourierOrder,0.5,0.5+mFourierOrder,_PsiOrderMax,0.5,(double)_PsiOrderMax+0.5);
   mTPCCosShift->Sumw2();
@@ -611,7 +613,7 @@ short PicoAnalyzer::Make(int iEvent){
     int Tch=track->charge();
     double rig=Tch*pMom.Mag();
     // double dEdx=track->dEdx();
-
+/*
     // Kaons PID: require both TPC and TOF
     TLorentzVector ltrackk;
     if(
@@ -649,6 +651,7 @@ short PicoAnalyzer::Make(int iEvent){
         hist_mass_kaonMinus->Fill(rig,mass2);
       }
     }
+*/
     if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
     //mHisto1D[3]->Fill(TPt);
 
@@ -800,6 +803,7 @@ short PicoAnalyzer::Make(int iEvent){
   //-----------------End looping over EPD hits------------------------
 
   // ------------------ Phi meson flow analysis ----------------------
+  /*
   TLorentzVector ltrackA, ltrackB;
   for(unsigned int i = 0; i < v_KaonPlus_tracks.size(); i++){
     StPicoTrack * picoTrackA = v_KaonPlus_tracks.at(i); // i-th K+ track
@@ -980,12 +984,14 @@ short PicoAnalyzer::Make(int iEvent){
 
     }
   }
-
+  */
 
   delete PCosPhi;
   delete PSinPhi;
+  /*
   v_KaonPlus_tracks.clear();
   v_KaonMinus_tracks.clear();
+  */
   return 0;
 }
 //=================================================

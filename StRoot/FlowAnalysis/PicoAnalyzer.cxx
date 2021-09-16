@@ -998,12 +998,13 @@ short PicoAnalyzer::Make(int iEvent){
 }
 //=================================================
 short PicoAnalyzer::Finish(){
-
+  /*
   // subtraction
   for(int cent=0;cent<4;cent++){
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
     hist_SE_pt_y_Phi_tight_Sig[cent]->Add(hist_SE_pt_y_Phi_tight_Bkg[cent],-1.);
   }
+  */
   cout << "In PicoAnalyzer::Finish - calling StEpdEpFinder::Finish()\n";
   mEpFinder->Finish();
 

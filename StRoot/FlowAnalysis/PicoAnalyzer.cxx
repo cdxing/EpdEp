@@ -131,6 +131,13 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     for (int iy=1; iy<10; iy++){
       double eta = wt.GetXaxis()->GetBinCenter(ix);
       wt.SetBinContent(ix,iy,lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
+      cout<< "(ix, iy): ("<< ix << ", "<<iy << "): " << "etaweight = " << lin[iy-1]*eta+cub[iy-1]*pow(eta,3) << endl;
+    }
+  }
+  for (int ix=1; ix<101; ix++){
+    for (int iy=1; iy<10; iy++){
+      double eta = wt.GetXaxis()->GetBinCenter(ix);
+      cout<< "(ix, iy): ("<< ix << ", "<<iy << "): " << "wt BinContent = " << wt.GetBinContent(ix,iy)  << endl;
     }
   }
   mEpFinder->SetEtaWeights(1,wt);

@@ -131,13 +131,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     for (int iy=1; iy<10; iy++){
       double eta = wt.GetXaxis()->GetBinCenter(ix);
       wt.SetBinContent(ix,iy,lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
-      cout<< "eta = "<< eta << " (ix, iy): ("<< ix << ", "<<iy << "): " << "etaweight = " << lin[iy-1]*eta+cub[iy-1]*pow(eta,3) << endl;
-    }
-  }
-  for (int ix=1; ix<101; ix++){
-    for (int iy=1; iy<10; iy++){
-      double eta = wt.GetXaxis()->GetBinCenter(ix);
-      cout<< "eta = "<< eta << " (ix, iy): ("<< ix << ", "<<iy << "): " << "wt BinContent = " << wt.GetBinContent(ix,iy)  << endl;
+      // cout<< "eta = "<< eta << " (ix, iy): ("<< ix << ", "<<iy << "): " << "etaweight = " << lin[iy-1]*eta+cub[iy-1]*pow(eta,3) << endl;
     }
   }
   mEpFinder->SetEtaWeights(1,wt);
@@ -476,6 +470,7 @@ short PicoAnalyzer::Make(int iEvent){
   hvr_b->Fill(vertexPos.X(),vertexPos.Y());
   hvzvpdvz_b->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
   hvzvpdvzdiff_b->Fill(vertexPos.Z()-mPicoEvent->vzVpd());
+  mHisto1D[1]->Fill(refMult);
   htofvsref_b->Fill(refMult,tofMult);
   htofmatchvsref_b->Fill(refMult,tofmatch);
   h_runidvstofmult_b->Fill(mRunId,tofMult);

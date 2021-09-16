@@ -539,8 +539,10 @@ short PicoAnalyzer::Make(int iEvent){
   PCosPhi = new TH1D(Form("PCosPhi"),Form("PCosPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   const Float_t   mField = mPicoEvent->bField(); // Magnetic field
+  /*
   std::vector<StPicoTrack *> v_KaonPlus_tracks;
   std::vector<StPicoTrack *> v_KaonMinus_tracks;
+  */
   //------------Begin loop over TPC tracks--------------------------
   for(int itrk=0; itrk<mTracks->GetEntries(); itrk++){
     StPicoTrack* track = (StPicoTrack*)((*mTracks)[itrk]);

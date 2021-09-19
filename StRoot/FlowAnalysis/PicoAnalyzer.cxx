@@ -288,12 +288,13 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
-      mEPDFullPsiWeighted[cent][iorder] = new TH1D(Form("EPDFullPsi%dWeightedCent%d",iorder,cent),Form("EPDFullPsi%dWeightedCent%d",iorder,cent),100,0.0,2.0*TMath::Pi()/(iorder+1.0));
-      mEPDFullPsiShifted[cent][iorder] = new TH1D(Form("EPDFullPsi%dShiftedCent%d",iorder,cent),Form("EPDFullPsi%dShiftedCent%d",iorder,cent),100,0.0,2.0*TMath::Pi()/(iorder+1.0));
+      mEPDFullPsiRaw[cent][iorder] = new TH1D(Form("EPDFullPsi%dRawCent%d",iorder,cent),Form("EPDFullPsi%dRawCent%d",iorder,cent),100,-0.1*TMath::Pi()/(iorder+1.0),2.1*TMath::Pi()/(iorder+1.0));
+      mEPDFullPsiWeighted[cent][iorder] = new TH1D(Form("EPDFullPsi%dWeightedCent%d",iorder,cent),Form("EPDFullPsi%dWeightedCent%d",iorder,cent),100,-0.1*TMath::Pi()/(iorder+1.0),2.1*TMath::Pi()/(iorder+1.0));
+      mEPDFullPsiShifted[cent][iorder] = new TH1D(Form("EPDFullPsi%dShiftedCent%d",iorder,cent),Form("EPDFullPsi%dShiftedCent%d",iorder,cent),100,-0.1*TMath::Pi()/(iorder+1.0),2.1*TMath::Pi()/(iorder+1.0));
       mResolution[cent][iorder] = new TProfile(Form("ResolutionPsi%dCent%d",iorder,cent),Form("ResolutionPsi%dCent%d",iorder,cent),10,0.5,10.5);//x axis corresponds to the <cos()> of different combinations of EP
       mResolution[cent][iorder]->Sumw2();
-      mTPCPsiDisWeighted[cent][iorder] = new TH1D(Form("TPCPsi%dDisWeightedCent%d",iorder,cent),Form("TPCPsi%dDisWeightedCent%d",iorder,cent),100,-TMath::Pi()/(iorder+1.0),TMath::Pi()/(iorder+1.0));
-      mTPCPsiDisShifted[cent][iorder] = new TH1D(Form("TPCPsi%dDisShiftedCent%d",iorder,cent),Form("TPCPsi%dDisShifteddCent%d",iorder,cent),100,-TMath::Pi()/(iorder+1.0),TMath::Pi()/(iorder+1.0));
+      mTPCPsiDisWeighted[cent][iorder] = new TH1D(Form("TPCPsi%dDisWeightedCent%d",iorder,cent),Form("TPCPsi%dDisWeightedCent%d",iorder,cent),100,-1.1*TMath::Pi()/(iorder+1.0),1.1*TMath::Pi()/(iorder+1.0));
+      mTPCPsiDisShifted[cent][iorder] = new TH1D(Form("TPCPsi%dDisShiftedCent%d",iorder,cent),Form("TPCPsi%dDisShifteddCent%d",iorder,cent),100,-1.1*TMath::Pi()/(iorder+1.0),1.1*TMath::Pi()/(iorder+1.0));
     }
     /*
     for(int i=0;i<3;i++){
@@ -522,6 +523,7 @@ short PicoAnalyzer::Make(int iEvent){
   mHisto2D[0]->Fill((double)EpAngle[0][1],(double)EpAngle[0][0]);//East vs. West
   //-----------Check the flattening of Psi_EPDFull----------
   for(int iorder=0;iorder<_PsiOrderMax;iorder++){
+    mEPDFullPsiRaw[CentId][iorder]->Fill(result.FullRawPsi(iorder+1));
     mEPDFullPsiWeighted[CentId][iorder]->Fill(result.FullPhiWeightedPsi(iorder+1));
     mEPDFullPsiShifted[CentId][iorder]->Fill(result.FullPhiWeightedAndShiftedPsi(iorder+1));
   }

@@ -209,6 +209,7 @@ TH2D *hist_mass_kaonMinus;
   TH1D* mTPCPsiDisWeighted[9][3];//Entry is the centrality and "TrackType", e.g sometimes I want to look at low pT or high pT tracks.
   TH1D* mTPCPsiDisShifted[9][3];
 //histos for checking the flattening of the Psi_EODfull
+  TH1D* mEPDFullPsiRaw[9][_PsiOrderMax];
   TH1D* mEPDFullPsiWeighted[9][_PsiOrderMax];
   TH1D* mEPDFullPsiShifted[9][_PsiOrderMax];
 

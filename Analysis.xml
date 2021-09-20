@@ -12,25 +12,25 @@
  <SandBox installer="ZIP">
    <Package>
      <File>file:./Analysis.xml </File>
-     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/Analysis.C </File>
-     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/StRoot </File>
-     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/.sl73_gcc485 </File>
-     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/EPDcorrection.root </File>
-     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/TPCShiftFile.root </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/Analysis.C </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/StRoot </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/.sl73_gcc485 </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/EPDcorrection.root </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/TPCShiftFile.root </File>
    </Package>
   </SandBox>
 
   <input URL="catalog:star.bnl.gov?production=P21ic,filetype=daq_reco_picoDst,trgsetupname=production_19GeV_2019,tpx=1,filename~st_physics,sanity=1,storage!=HPSS" nFiles="all"/>
-  <stdout URL="file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/out/$JOBID.out"/>
-  <stderr URL="file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/err/$JOBID.err"/>
+  <stdout URL="file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/out/$JOBID.out"/>
+  <stderr URL="file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/err/$JOBID.err"/>
 
 
-  <output fromScratch="*.root" toURL="/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/production/" />
-  <output fromScratch="*.log" toURL="/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/log/" />
+  <output fromScratch="*.root" toURL="/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/production/" />
+  <output fromScratch="*.log" toURL="/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/log/" />
 
   <Generator>
-    <Location>/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/list/</Location>
-    <ReportLocation>/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_weighted/EpdEp/report/</ReportLocation>
+    <Location>/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/list/</Location>
+    <ReportLocation>/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/EpdEp/report/</ReportLocation>
   </Generator>
 
 </job>

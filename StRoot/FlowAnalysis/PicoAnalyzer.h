@@ -252,7 +252,7 @@ TH2D *hist_mass_kaonMinus;
   TFile* mTPCShiftFile;
   TFile* mEPDPhiWeightFile;
   //TFile* mRecenQFile;
-/*
+
   // Phi meson analysis plots
   TH2D *h2px;
   TH2D *h2py;
@@ -279,7 +279,7 @@ TH2D *hist_mass_kaonMinus;
   TH1F *mHist_SE_InvM_rap_cent[8][4];
   TH1F *mHist_rotation_InvM_rap_cent[8][4];
   TProfile *mProfile_flow_reso_rap_cent[8][4];
-*/
+
   static const int mEPTPCMaxTerm = 6;
   ClassDef(PicoAnalyzer, 1)                     //  Macro for CINT compatability
 

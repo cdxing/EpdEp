@@ -155,7 +155,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 //--------------Prepare the constant for weighting the TPC tracks------------
   mNumberOfTrackTypes =mNpTbin*mNVzbin*mNEtabin*2;
 
-/*
+
 //---------------- Make histograms for phi meson analysis --------------
   h2px = new TH2D("h2px","pMomX vs. P_vecX",600,-3.,3.,600,-3.,3.);
   h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
@@ -211,7 +211,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
         mProfile_flow_reso_rap_cent[rap_bin][cent]->GetYaxis()->SetTitle("<cos(1(#phi - #psi_{1}))>/R_{1}^{EPD}");
       }
   }
-*/
+
 //----------------Make histograms for QA ----------------------------------
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
   hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
@@ -496,8 +496,8 @@ short PicoAnalyzer::Make(int iEvent){
 
   mVz[CentId]->Fill(vertexPos.Z());
 
-  double d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
-       0.67352165, 0.59120378, 0.44391744, 0.27105964};
+  double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.52842022,
+       0.54077169, 0.48401103, 0.35439984, 0.18964124};
 
   int VzBin;
   double VzArr[17]={-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40};
@@ -802,7 +802,7 @@ short PicoAnalyzer::Make(int iEvent){
   //-----------------End looping over EPD hits------------------------
 
   // ------------------ Phi meson flow analysis ----------------------
-  /*
+
   TLorentzVector ltrackA, ltrackB;
   for(unsigned int i = 0; i < v_KaonPlus_tracks.size(); i++){
     StPicoTrack * picoTrackA = v_KaonPlus_tracks.at(i); // i-th K+ track
@@ -983,7 +983,7 @@ short PicoAnalyzer::Make(int iEvent){
 
     }
   }
-  */
+
 
   delete PCosPhi;
   delete PSinPhi;
@@ -995,13 +995,13 @@ short PicoAnalyzer::Make(int iEvent){
 }
 //=================================================
 short PicoAnalyzer::Finish(){
-  /*
+  
   // subtraction
   for(int cent=0;cent<4;cent++){
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
     hist_SE_pt_y_Phi_tight_Sig[cent]->Add(hist_SE_pt_y_Phi_tight_Bkg[cent],-1.);
   }
-  */
+
   cout << "In PicoAnalyzer::Finish - calling StEpdEpFinder::Finish()\n";
   mEpFinder->Finish();
 

@@ -536,10 +536,10 @@ short PicoAnalyzer::Make(int iEvent){
   PCosPhi = new TH1D(Form("PCosPhi"),Form("PCosPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   const Float_t   mField = mPicoEvent->bField(); // Magnetic field
-  /*
+
   std::vector<StPicoTrack *> v_KaonPlus_tracks;
   std::vector<StPicoTrack *> v_KaonMinus_tracks;
-  */
+
   //------------Begin loop over TPC tracks--------------------------
   for(int itrk=0; itrk<mTracks->GetEntries(); itrk++){
     StPicoTrack* track = (StPicoTrack*)((*mTracks)[itrk]);
@@ -612,7 +612,7 @@ short PicoAnalyzer::Make(int iEvent){
     int Tch=track->charge();
     double rig=Tch*pMom.Mag();
     // double dEdx=track->dEdx();
-/*
+
     // Kaons PID: require both TPC and TOF
     TLorentzVector ltrackk;
     if(
@@ -650,7 +650,7 @@ short PicoAnalyzer::Make(int iEvent){
         hist_mass_kaonMinus->Fill(rig,mass2);
       }
     }
-*/
+
     if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
     //mHisto1D[3]->Fill(TPt);
 
@@ -987,15 +987,15 @@ short PicoAnalyzer::Make(int iEvent){
 
   delete PCosPhi;
   delete PSinPhi;
-  /*
+  
   v_KaonPlus_tracks.clear();
   v_KaonMinus_tracks.clear();
-  */
+
   return 0;
 }
 //=================================================
 short PicoAnalyzer::Finish(){
-  
+
   // subtraction
   for(int cent=0;cent<4;cent++){
     hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));

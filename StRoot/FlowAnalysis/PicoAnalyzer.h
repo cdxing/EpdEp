@@ -171,7 +171,7 @@ TProfile *h_runidvstofmult_b, *h_runidvsrefmult_b;
 TProfile *h_runidvstofmult, *h_runidvsrefmult;
 
 TH1F *h_pt, *h_eta_b, *h_eta, *h_nhitfit, *h_nhitmax, *h_nhitratio, *h_dca, *h_phi;
-/*
+
 // Kaon PID
 TH1D *hist_pt_kaonPlus;
 TH1D *hist_eta_kaonPlus;
@@ -194,7 +194,7 @@ TH2D *hist_pt_eta_kaonMinus;
 TH2D *hist_dEdx_kaonMinus;
 TH2D *hist_beta_kaonMinus;
 TH2D *hist_mass_kaonMinus;
-*/
+
 //histos for checking the phi-weighted eta-phi distribution for the TPC tracks
   TH2D* mEtaPhiDisPhiWeighted[9];//phi-weighted eta phi distribution for 9 centralitites.
   TH2D* mEtaPhiDisRaw[9];

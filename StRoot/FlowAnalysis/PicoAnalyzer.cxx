@@ -254,7 +254,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h_nhitratio=new TH1F("h_nhitratio","",1000,-0.5,1.5);
   h_dca = new TH1F("h_dca","",1000,0.,5.);
   h_phi = new TH1F("h_phi","",1000,-6.28,6.28);
-  /*
+  
   //========================= Kaon PID ==========================================
   hist_pt_kaonPlus = new TH1D("hist_pt_kaonPlus","p_{T} [GeV/c]",1000,0.0,5.0);
   hist_eta_kaonPlus = new TH1D("hist_eta_kaonPlus","#eta",500,-1.5,1.5);
@@ -276,7 +276,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hist_dEdx_kaonMinus = new TH2D("hist_dEdx_kaonMinus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
   hist_beta_kaonMinus = new TH2D("hist_beta_kaonMinus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
   hist_mass_kaonMinus = new TH2D("hist_mass_kaonMinus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
-  */
+
 //----------------Make histograms for shifting Psi_TPC--------------------
   mTPCCosShift = new TProfile3D("TPCCosShift","TPCCosShift",9,-0.5,8.5,mFourierOrder,0.5,0.5+mFourierOrder,_PsiOrderMax,0.5,(double)_PsiOrderMax+0.5);
   mTPCCosShift->Sumw2();
@@ -987,7 +987,7 @@ short PicoAnalyzer::Make(int iEvent){
 
   delete PCosPhi;
   delete PSinPhi;
-  
+
   v_KaonPlus_tracks.clear();
   v_KaonMinus_tracks.clear();
 

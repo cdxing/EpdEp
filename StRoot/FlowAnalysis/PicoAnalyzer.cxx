@@ -56,7 +56,7 @@ PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMin
 mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),
 mNpTbin(20),mNVzbin(4),mNEtabin(60),
 mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
-mNTPCSubEvents(2),mEPDMax(2.0),mNEPDSubEvents(10),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(2.0),
+mNTPCSubEvents(2),mEPDMax(2.0),mNEPDSubEvents(10),mMinEPDhits(5),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(2.0),
 mProtonSigma(0.012),d_KaonM2low(0.16),d_KaonM2high(0.36),mEtaMaxv1(2.0),mEtaMinv1(-2.0),dip_angle_cutLevel(0.04){
   mFileNameBase = FileNameBase;
 
@@ -233,6 +233,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hvzvpdvzdiff =new TH1F("hvzvpdvzdiff","hvzvpdvzdiff",1000,-150,150);
   htofvsref = new TH2F("htofvsref","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
   htofmatchvsref=new TH2F("htofmatchvsref","",1500,0.0,1500.0,1500,0.0,1500.0);
+  h_epdhits = new TH1F("h_epdhits","",1000,-0.5,999.5);
   hvr = new TH2F("h_vr","vy_vs_vx",1000,-10,10,1000,-10,10);
   hbtofYLocal = new TH1F("hbtofYLocal","",600,-6.,6.);
   hbtofYLocalvsMass2 = new TH2F("hbtofYLocalvsMass2","",800,-0.1,1.5,600,-6.,6.);
@@ -500,7 +501,7 @@ short PicoAnalyzer::Make(int iEvent){
 
   /*double d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
        0.67352165, 0.59120378, 0.44391744, 0.27105964};
-*/  
+*/
 double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.52842022,
        0.54077169, 0.48401103, 0.35439984, 0.18964124};
   int VzBin;
@@ -729,6 +730,8 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     mTPCPsiDisShifted[CentId][i]->Fill(TPCPsiShifted[i]);
   }
 //--------------Begin loop over EPD hits---------------------------------
+h_epdhits -> Fill(mEpdHits->GetEntries());
+if(mEpdHits->GetEntries() < 5) continue;
   for(int hit=0;hit<mEpdHits->GetEntries();hit++){
     int tileId, ring, TT, PP, EW, ADC;
     float nMip;

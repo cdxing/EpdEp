@@ -147,6 +147,7 @@ double mDCAcut;
 int mFourierOrder;
 int mNTPCSubEvents;
 int mNEPDSubEvents;
+int mMinEPDhits;
 double mpTbound;//For looking at low/high pT tracks
 double mPionSigma;//1/beta sigma
 double mKaonSigma;//1/beta sigma
@@ -159,7 +160,7 @@ double dip_angle_cutLevel;//for v1 analysis
 
 //histos for QA
 TH1F *href_vz, *hvz_b, *hvzvpdvzdiff, *hvzvpdvzdiff_b;
-TH1F *href, *hvz, *hbtofYLocal;
+TH1F *href, *hvz, *hbtofYLocal, *h_epdhits;
 TH2F *hvzvpdvz_b, *hvr_b, *hvzvpdvz, *hvr, *hmassvsp, *hdedxvsp, *htofvsref_b, *htofvsref, *hbtofYLocalvsMass2;
 TH2F *htofmatchvsref, *htofmatchvsref_b;
 TH2F *hbetavsp;

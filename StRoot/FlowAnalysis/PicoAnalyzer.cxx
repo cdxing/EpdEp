@@ -731,7 +731,7 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
   }
 //--------------Begin loop over EPD hits---------------------------------
 h_epdhits -> Fill(mEpdHits->GetEntries());
-if(mEpdHits->GetEntries() < 5) continue;
+if(mEpdHits->GetEntries() < 5) return 0;
   for(int hit=0;hit<mEpdHits->GetEntries();hit++){
     int tileId, ring, TT, PP, EW, ADC;
     float nMip;

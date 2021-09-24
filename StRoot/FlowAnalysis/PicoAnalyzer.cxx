@@ -568,6 +568,7 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     if (dca>mDCAcut) continue;
     if (track->nHitsFit()<mNhitsfit) continue;
     if (nHitsFitRatio<mNhitsfitratio) continue;//get rid of the nhitsfitratio cut, Prithwish said it is a very old cut used by STAR. 06/18/2020
+    if (nHitsFitRatio > 1.0) continue; // test
     h_eta_phi->Fill(pMom.Phi(),pMom.PseudoRapidity());
     h_eta->Fill(pMom.PseudoRapidity());
 

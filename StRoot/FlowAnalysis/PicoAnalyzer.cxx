@@ -420,6 +420,12 @@ short PicoAnalyzer::Make(int iEvent){
   //----------------- get data --------------
   mPicoDst->GetEntry(iEvent);
   StPicoEvent* mPicoEvent = (StPicoEvent*)((*mEventClonesArray)[0]);
+  if( !mPicoEvent ) {
+      std::cout << "Something went wrong, my Lord! Event is hiding from me..."
+      << std::endl;
+      return 0;
+  }
+
   if (mPicoEvent->runId()!=mRunId){
     NewRun(mPicoEvent->runId());        // some things should be reset when there is a new run loaded
     cout << "New run detected: " << mRunId << " and it is collision system #" << mRunCollisionSystem << endl;
@@ -433,8 +439,10 @@ short PicoAnalyzer::Make(int iEvent){
   // }
   // cout <<endl;
   // cout << !(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))  << endl;
-  if(!(mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))) return 0;
-  // cout << "test 1 ! "  << endl;
+  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032))) return 0;
+  //if(!(mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))) return 0;
+  
+// cout << "test 1 ! "  << endl;
   //  StThreeVectorF primaryVertex = mPicoEvent->primaryVertex();
   //  TVector3 vertexPos(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
   TVector3 vertexPos = mPicoEvent->primaryVertex();

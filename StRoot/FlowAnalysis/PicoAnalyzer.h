@@ -166,7 +166,7 @@ TH2F *htofmatchvsref, *htofmatchvsref_b;
 TH2F *hbetavsp;
 TH2F *h_eta_phi;
 TH2F *h_eta_phi_before;
-TH1F *h_counter;
+TH1F *h_counter_evt ,*h_counter_trk;
 
 TProfile *h_runidvstofmult_b, *h_runidvsrefmult_b;
 TProfile *h_runidvstofmult, *h_runidvsrefmult;

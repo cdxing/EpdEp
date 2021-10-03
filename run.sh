@@ -1,3 +1,4 @@
 #!/bin/sh
 cons
-root4star -l -q -b Analysis.C\(1,\"test.list\",\"test\"\)
+starver SL21c
+root4star -l -q -b Analysis.C\(1,\"files.list\",\"test\"\)

@@ -124,14 +124,16 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   mEpFinder->SetMaxTileWeight(2.0);
   mEpFinder->SetEpdHitFormat(2);     // 2=pico
 
-  double lin[9] = {-1.23078, -2.14392, -2.90788, -3.47494, -3.6696, -3.50018, -3.04427, -2.48817, -1.53515};
-  double cub[9] = {0.156391, 0.244697, 0.330155, 0.406341, 0.448467, 0.447128, 0.40198, 0.333107, 0.190221};
+  double lin[9] = {-3.7286, -5.02949, -7.02416, -8.91113, -9.06769, -7.79373, -5.39571, -3.10517, -1.22354};
+  double cub[9] = {0.594755, 0.7849, 1.11847, 1.48872, 1.58093, 1.4346, 1.04064, 0.609144, 0.209527};
+  double qui[9] = {-0.0136257, -0.0170564, -0.0253106, -0.0358911, -0.0387576, -0.0359148, -0.0261776, -0.0161105, -0.00530582};
+
   TH2D wt("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
   for (int ix=1; ix<101; ix++){
     for (int iy=1; iy<10; iy++){
       double eta = wt.GetXaxis()->GetBinCenter(ix);
-      wt.SetBinContent(ix,iy,lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
-      cout<< "eta = "<< eta << " (ix, iy): ("<< ix << ", "<<iy << "): " << "etaweight = " << lin[iy-1]*eta+cub[iy-1]*pow(eta,3) << endl;
+      wt.SetBinContent(ix,iy,lin[iy-1]*eta+cub[iy-1]*pow(eta,3)+qui[iy-1]*pow(eta,5));
+    //  cout<< "eta = "<< eta << " (ix, iy): ("<< ix << ", "<<iy << "): " << "etaweight = " << lin[iy-1]*eta+cub[iy-1]*pow(eta,3) << endl;
     }
   }
   for (int ix=1; ix<101; ix++){
@@ -140,9 +142,9 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
       cout<< "eta = "<< eta << " (ix, iy): ("<< ix << ", "<<iy << "): " << "wt BinContent = " << wt.GetBinContent(ix,iy)  << endl;
     }
   }
-  mEpFinder->SetEtaWeights(1,wt);
-  cout<<"etaweight set"<<endl;
-  // cout<<"etaweight disabled"<<endl;
+  //mEpFinder->SetEtaWeights(1,wt);
+  //cout<<"etaweight set"<<endl;
+   cout<<"etaweight disabled"<<endl;
   // --------------------------------------------------------
 
   TString OutputRootFileName = mFileNameBase;
@@ -439,7 +441,7 @@ short PicoAnalyzer::Make(int iEvent){
   // }
   // cout <<endl;
   // cout << !(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))  << endl;
-  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032))) return 0;
+  //if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032))) return 0;
   //if(!(mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))) return 0;
   
 // cout << "test 1 ! "  << endl;
@@ -466,10 +468,11 @@ short PicoAnalyzer::Make(int iEvent){
   // if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
   // ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
   // if(ISRefMultCorrBadRun) return 0;
-  for(int ii=0;ii<83;ii++)
+ /* for(int ii=0;ii<83;ii++)
   {
     if(mRunId == badrun[ii]) return 0;
   }
+*/
   //mRefMultCorr->initEvent(refMult,vertexPos.Z(),mPicoEvent->ZDCx());
   //refMult = mRefMultCorr->getRefMultCorr();
   CentId = Centrality(mPicoEvent->refMult());//An integer between 0 (70-80%) and 8 (0-5%)
@@ -1061,8 +1064,9 @@ int PicoAnalyzer::FindTrackId(int Trkch,double TrkVz,double TrkEta,double TrkpT)
 int Centrality(int gRefMult )
 {
     int centrality;
-    int centFull[9]={4,9,17,32,57,94,150,233,290};
+    int centFull[9]={4,8,14,28,50,82,130,204,256};
     // https://drupal.star.bnl.gov/STAR/system/files/19.6_GeV_bad_run_centrality.pdf
+    //file:///C:/Users/pjska/Documents/Backup%20and%20Sync/Slides/UCDavis/Most%20Recent%20Hardness%20Slides.pdf
     if      (gRefMult>=centFull[8]) centrality=8; // 0 - 5%
     else if (gRefMult>=centFull[7]) centrality=7; // 5 - 10%
     else if (gRefMult>=centFull[6]) centrality=6; // 10 - 20%

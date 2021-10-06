@@ -139,7 +139,7 @@ double mEPDthresh;
 int mNpTbin;
 int mNVzbin;
 int mNEtabin;
-int mNumberOfTrackTypes;
+// int mNumberOfTrackTypes;
 double mVtxR;
 double mDiffVzVPD;
 int mNhitsfit;
@@ -251,7 +251,9 @@ TH2D *hist_mass_kaonMinus;
   TH3D* mEPDPhiWeights[2];//e/w
 
   // TFiles (to store histograms and data)
+*/
   TFile* mHistoFile;
+/*
   TFile* mTPCWeightFile;
   TFile* mTPCShiftFile;
   TFile* mEPDPhiWeightFile;

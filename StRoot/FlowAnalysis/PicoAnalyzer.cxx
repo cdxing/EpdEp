@@ -154,12 +154,13 @@ short PicoAnalyzer::Init(/*char const* TPCWeightFile, char const* TPCShiftFile, 
   //mHisto1D[0] = new TH1D("Vz","Vz",100,-80,80);
   // mHisto1D[1] = new TH1D("RefMult","RefMult",100,-10,600);
   //mHisto1D[2] = new TH1D("dNdeta","dNdeta",100,-5.5,5.5);
+/*
   for(int cent=0;cent<9;cent++){
     mVz[cent]= new TH1D(Form("VzCent%d",cent),Form("VzCent%d",cent),16,-40,40);
   }
-
+*/
 //--------------Prepare the constant for weighting the TPC tracks------------
-  mNumberOfTrackTypes =mNpTbin*mNVzbin*mNEtabin*2;
+  // mNumberOfTrackTypes =mNpTbin*mNVzbin*mNEtabin*2;
 
 /*
 //---------------- Make histograms for phi meson analysis --------------
@@ -427,8 +428,9 @@ else{
 }
   cout << "Init done\n";
   return 0;
-}
 */
+}
+
 //==============================================
 // some things might need resetting when there is a new run
 void PicoAnalyzer::NewRun(int runId){

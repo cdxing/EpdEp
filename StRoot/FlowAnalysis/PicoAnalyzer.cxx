@@ -72,8 +72,8 @@ mProtonSigma(0.012),d_KaonM2low(0.16),d_KaonM2high(0.36),mEtaMaxv1(2.0),mEtaMinv
 
   mEpdGeom = new StEpdGeom;
   mBbcGeom = new StBbcGeom;
-  mRan = new TRandom3;
-  mRan->GetSeed();
+  // mRan = new TRandom3;
+  // mRan->GetSeed();
 }
 
 //=================================================
@@ -113,8 +113,8 @@ void PicoAnalyzer::SetPicoDst(TChain* PicoDst){
 }
 
 //=================================================
-short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, char const* EPDPhiWeightFile){
-
+short PicoAnalyzer::Init(/*char const* TPCWeightFile, char const* TPCShiftFile, char const* EPDPhiWeightFile*/){
+/*
   // ------------------- for the EP finder ------------------
   TString EpFinderOutputName = mFileNameBase;
   EpFinderOutputName += "EpFinderCorrectionsOUTPUT.root";
@@ -144,7 +144,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   cout<<"etaweight set"<<endl;
   // cout<<"etaweight disabled"<<endl;
   // --------------------------------------------------------
-
+*/
   TString OutputRootFileName = mFileNameBase;
   OutputRootFileName += "_FlowHists.root";
 
@@ -152,7 +152,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 
   // Miscellaneous One-dimensional histograms
   //mHisto1D[0] = new TH1D("Vz","Vz",100,-80,80);
-  mHisto1D[1] = new TH1D("RefMult","RefMult",100,-10,600);
+  // mHisto1D[1] = new TH1D("RefMult","RefMult",100,-10,600);
   //mHisto1D[2] = new TH1D("dNdeta","dNdeta",100,-5.5,5.5);
   for(int cent=0;cent<9;cent++){
     mVz[cent]= new TH1D(Form("VzCent%d",cent),Form("VzCent%d",cent),16,-40,40);
@@ -161,7 +161,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 //--------------Prepare the constant for weighting the TPC tracks------------
   mNumberOfTrackTypes =mNpTbin*mNVzbin*mNEtabin*2;
 
-
+/*
 //---------------- Make histograms for phi meson analysis --------------
   h2px = new TH2D("h2px","pMomX vs. P_vecX",600,-3.,3.,600,-3.,3.);
   h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
@@ -217,7 +217,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
         mProfile_flow_reso_rap_cent[rap_bin][cent]->GetYaxis()->SetTitle("<cos(1(#phi - #psi_{1}))>/R_{1}^{EPD}");
       }
   }
-
+*/
 //----------------Make histograms for QA ----------------------------------
   href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
   hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
@@ -247,6 +247,17 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 
   h_counter_evt = new TH1F("h_counter_evt","events counter",11,-0.5,10.5);
   h_counter_trk = new TH1F("h_counter_trk","track counter",11,-0.5,10.5);
+  h_counter_evt ->GetXaxis()->SetBinLabel(1,"No cuts");
+  h_counter_evt ->GetXaxis()->SetBinLabel(2,"Trigger cut");
+  h_counter_evt ->GetXaxis()->SetBinLabel(3,"Badrun cut");
+  h_counter_evt ->GetXaxis()->SetBinLabel(4,"Vertex cut");
+  h_counter_evt ->GetXaxis()->SetBinLabel(5,"Low-Mult cut");
+  // h_counter_evt ->GetXaxis()->SetBinLabel(6,"Low-EPD hits cuts");
+
+  h_counter_trk ->GetXaxis()->SetBinLabel(1,"No cuts");
+  h_counter_trk ->GetXaxis()->SetBinLabel(2,"QA cuts");
+  // h_counter_trk ->GetXaxis()->SetBinLabel(3,"Eta cuts");
+  // h_counter_trk ->GetXaxis()->SetBinLabel(4,"Pt (for TPC psi) cuts");
 
   h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 40000, 20056031, 20096031,"");
   h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 40000, 20056031, 20096031,"");
@@ -262,6 +273,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h_nhitratio=new TH1F("h_nhitratio","",1000,-0.5,1.5);
   h_dca = new TH1F("h_dca","",1000,0.,5.);
   h_phi = new TH1F("h_phi","",1000,-6.28,6.28);
+/*
   //========================= Kaon PID ==========================================
   hist_pt_kaonPlus = new TH1D("hist_pt_kaonPlus","p_{T} [GeV/c]",1000,0.0,5.0);
   hist_eta_kaonPlus = new TH1D("hist_eta_kaonPlus","#eta",500,-1.5,1.5);
@@ -283,13 +295,17 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   hist_dEdx_kaonMinus = new TH2D("hist_dEdx_kaonMinus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
   hist_beta_kaonMinus = new TH2D("hist_beta_kaonMinus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
   hist_mass_kaonMinus = new TH2D("hist_mass_kaonMinus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
+*/
+/*
 //----------------Make histograms for shifting Psi_TPC--------------------
   mTPCCosShift = new TProfile3D("TPCCosShift","TPCCosShift",9,-0.5,8.5,mFourierOrder,0.5,0.5+mFourierOrder,_PsiOrderMax,0.5,(double)_PsiOrderMax+0.5);
   mTPCCosShift->Sumw2();
   mTPCSinShift = new TProfile3D("TPCSinShift","TPCSinShift",9,-0.5,8.5,mFourierOrder,0.5,0.5+mFourierOrder,_PsiOrderMax,0.5,(double)_PsiOrderMax+0.5);
   mTPCSinShift->Sumw2();
 //---------------Make histograms for checking the flattening of EP---------
+*/
 //---------------and calculate the resolution------------------------------
+/*
   mHisto2D[0] = new TH2D("EPDPsiEvsPsiW","EPDPsiEvsPsiW",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
 
   for(int cent=0;cent<9;cent++){
@@ -307,12 +323,13 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
       mTPCPsiDisShifted[cent][i] = new TH1D(Form("TPCPsiDisShiftedCent%dTT%d",cent,i),Form("TPCPsiDisShiftedCent%dTT%d",cent,i),100,-TMath::Pi(),TMath::Pi());
     }//3 types of Psi_TPC:Full, pos, neg
     */
+    /*
     for(int ew=0;ew<2;ew++){
       mAveEta[cent][ew] = new TProfile2D(Form("AveEtaCent%dEW%d",cent,ew),Form("AveEtaCent%dEW%d",cent,ew),16,0.5,16.5,16,0,16);
       mAveEta[cent][ew]->Sumw2();
     }
   }
-
+*/
 //---------------Make histograms for measuring dNdphi--------------------
   /*
   for(int cent=0;cent<9;cent++){
@@ -349,6 +366,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     }
   }
   */
+  /*
   //Making TProfiles for the vn analysis
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
@@ -360,8 +378,8 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
       mEPDvn[1][cent][iorder]->Sumw2();
     }
   }
-
-
+*/
+/*
 //---------------Open histograms for getting TPCPhiWeight-----------------
   mTPCWeightFile = new TFile(TPCWeightFile,"READ");
 
@@ -377,6 +395,8 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     //mTPCPhiAveragedInput->RebinX();
     mTPCPhiWeightInput->Divide(mTPCPhiAveragedInput);
   }
+*/
+/*
 //----------------Open histograms for the TPC Psi-shifting----------------
   mTPCShiftFile = new TFile(TPCShiftFile,"READ");
 
@@ -389,7 +409,8 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     mTPCCosShift_Input = (TProfile3D*)mTPCShiftFile->Get("TPCCosShift");
     mTPCSinShift_Input = (TProfile3D*)mTPCShiftFile->Get("TPCSinShift");
   }
-
+*/
+/*
 //----------opening histos for getting the EPD Phi weights-------------
 mEPDPhiWeightFile = new TFile(EPDPhiWeightFile,"READ");
 
@@ -407,7 +428,7 @@ else{
   cout << "Init done\n";
   return 0;
 }
-
+*/
 //==============================================
 // some things might need resetting when there is a new run
 void PicoAnalyzer::NewRun(int runId){
@@ -517,6 +538,7 @@ short PicoAnalyzer::Make(int iEvent){
   /*double d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
        0.67352165, 0.59120378, 0.44391744, 0.27105964};
 */
+/*
 double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.52842022,
        0.54077169, 0.48401103, 0.35439984, 0.18964124};
   int VzBin;
@@ -527,9 +549,9 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
       break;
     }
   }
-
+*/
   // if(VzBin!=7) return 0;
-
+/*
   StEpdEpInfo result = mEpFinder->Results(mEpdHits,vertexPos,CentId);  // and now you have all the EP info you could ever want :-)
   //StEpdEpInfo result = mEpFinder->Results(mEpdHits,vertexPos,1);  // testing. and now you have all the EP info you could ever want :-)
   double EpAngle[_PsiOrderMax][3];//EP order,east/west/full
@@ -546,7 +568,8 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     mEPDFullPsiWeighted[CentId][iorder]->Fill(result.FullPhiWeightedPsi(iorder+1));
     mEPDFullPsiShifted[CentId][iorder]->Fill(result.FullPhiWeightedAndShiftedPsi(iorder+1));
   }
-
+*/
+/*
   //------------Prepare Qvectors for TPC EP (used in v1EPD)--------------
   TH1D* PCosPhi;
   TH1D* PSinPhi;
@@ -554,9 +577,10 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
   //PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),3,0.5,3.5);//x is three types of Psi_TPC
   PCosPhi = new TH1D(Form("PCosPhi"),Form("PCosPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
-  const Float_t   mField = mPicoEvent->bField(); // Magnetic field
   std::vector<StPicoTrack *> v_KaonPlus_tracks;
   std::vector<StPicoTrack *> v_KaonMinus_tracks;
+*/
+  const Float_t   mField = mPicoEvent->bField(); // Magnetic field
   //------------Begin loop over TPC tracks--------------------------
   for(int itrk=0; itrk<mTracks->GetEntries(); itrk++){
     StPicoTrack* track = (StPicoTrack*)((*mTracks)[itrk]);
@@ -635,6 +659,7 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     double rig=Tch*pMom.Mag();
     // double dEdx=track->dEdx();
 
+/*
     // Kaons PID: require both TPC and TOF
     TLorentzVector ltrackk;
     if(
@@ -672,6 +697,8 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
         hist_mass_kaonMinus->Fill(rig,mass2);
       }
     }
+*/
+/*
     if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
     //mHisto1D[3]->Fill(TPt);
     h_counter_trk->AddBinContent(3); // eta cut
@@ -702,10 +729,11 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     for(int iorder=0;iorder<2;iorder++){
       mTPCvn[CentId][iorder]->Fill(Teta,cos((double)(iorder+1)*(Tphi-EpAngle[iorder][2])));
     }
-
+*/
   }
 //-------------End loop over TPC tracks and get kaon track vectors-----------------------
 
+/*
 //-------------Now let's play with the EP---------------------
   //double TPCPsi1[3]={0.0};// Three types of Psi_TPC: 0_Full, 1_pos, 2_neg
   double TPCPsi[_PsiOrderMax]={0.0};
@@ -752,7 +780,11 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     mTPCPsiDisWeighted[CentId][i]->Fill(TPCPsi[i]);
     mTPCPsiDisShifted[CentId][i]->Fill(TPCPsiShifted[i]);
   }
+*/
+
+/*
 //--------------Begin loop over EPD hits---------------------------------
+
 h_epdhits -> Fill(mEpdHits->GetEntries());
 if(mEpdHits->GetEntries() < 5) return 0;
 h_counter_evt->AddBinContent(6); // low epd hits cut
@@ -825,10 +857,11 @@ h_counter_evt->AddBinContent(6); // low epd hits cut
     //if(EW==0) RingId=-1.0*(double)ring;
     //else RingId=(double)ring;
     //mTwoD[CentId]->Fill(nMip,RingId);
-
+/*
   }
+*/
   //-----------------End looping over EPD hits------------------------
-
+/*
   // ------------------ Phi meson flow analysis ----------------------
   TLorentzVector ltrackA, ltrackB;
   for(unsigned int i = 0; i < v_KaonPlus_tracks.size(); i++){
@@ -1016,24 +1049,25 @@ h_counter_evt->AddBinContent(6); // low epd hits cut
   delete PSinPhi;
   v_KaonPlus_tracks.clear();
   v_KaonMinus_tracks.clear();
+*/
   return 0;
 }
 //=================================================
 short PicoAnalyzer::Finish(){
 
   // subtraction
-  for(int cent=0;cent<4;cent++){
-    hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
-    hist_SE_pt_y_Phi_tight_Sig[cent]->Add(hist_SE_pt_y_Phi_tight_Bkg[cent],-1.);
-  }
+  // for(int cent=0;cent<4;cent++){
+  //   hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
+  //   hist_SE_pt_y_Phi_tight_Sig[cent]->Add(hist_SE_pt_y_Phi_tight_Bkg[cent],-1.);
+  // }
   cout << "In PicoAnalyzer::Finish - calling StEpdEpFinder::Finish()\n";
   mEpFinder->Finish();
 
   cout << "I have called it\n";
 
-  mTPCWeightFile->Close();
-  mTPCShiftFile->Close();
-  mEPDPhiWeightFile->Close();
+  // mTPCWeightFile->Close();
+  // mTPCShiftFile->Close();
+  // mEPDPhiWeightFile->Close();
   cout<<"Hello, I just want some weighting hisots"<<endl;
 
   mHistoFile->Write();
@@ -1057,6 +1091,7 @@ bool PicoAnalyzer::Runlist(int runId){
 }
 */
 
+/*
 //TrackId starts at 1!
 int PicoAnalyzer::FindTrackId(int Trkch,double TrkVz,double TrkEta,double TrkpT){
   int TrackId=0;
@@ -1074,7 +1109,7 @@ int PicoAnalyzer::FindTrackId(int Trkch,double TrkVz,double TrkEta,double TrkpT)
 
   return TrackId;
 }
-
+*/
 int Centrality(int gRefMult )
 {
     int centrality;

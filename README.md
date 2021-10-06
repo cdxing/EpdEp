@@ -13,3 +13,7 @@ https://drupal.star.bnl.gov/STAR/blog/lisa/using-epd-event-plane-finder
 - Update:
 	- use hlt_good trigger, Minbias trigger events have some issues
 	- Ding, Oct 5, 2021
+
+- Update:
+	- Use basic QA to check the results of plots, check the function of input correction files
+	- Ding, Oct 6, 2021

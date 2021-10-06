@@ -38,7 +38,7 @@ class PicoAnalyzer : public TObject {
   ~PicoAnalyzer();
 
   void SetPicoDst(TChain*);
-  short Init(char const* TPCweightFileName="TPCWeightFile.root",char const*  TPCShiftFileName="TPCShiftFile.root",char const* EPDPhiWeightFile="EPDcorrection.root");
+  short Init(/*char const* TPCweightFileName="TPCWeightFile.root",char const*  TPCShiftFileName="TPCShiftFile.root",char const* EPDPhiWeightFile="EPDcorrection.root"*/);
   short Make(int iEvent);
   short Finish();
 
@@ -60,9 +60,10 @@ class PicoAnalyzer : public TObject {
   TClonesArray* mTraits;
 
   // ntuples
+/*
   TNtuple* mQ1vectorNtuple;      // Q1 vectors ring-by-ring. For offline weight optimization
   TNtuple* mQ2vectorNtuple;      // Q2 vectors ring-by-ring. For offline weight optimization
-
+*/
   int mRunId;                         // when this changes, refresh some information.
   int mRunEt;                    //Run entry
   short mRunCollisionSystem;
@@ -111,7 +112,7 @@ class PicoAnalyzer : public TObject {
   TProfile* mEastLongDecorProfile[mNumberOfEpdSubEvents][4];    // second index is order of event plane
   TProfile* mWestLongDecorProfile[mNumberOfEpdSubEvents][4];
   */
-
+/*
   // ---------- Now, my histograms, ntuples, TFiles, etc.  All stuff particular to my analysis
   // 1D histograms
   TH1D* mHisto1D[40];            // miscellaneous 1D histograms
@@ -123,7 +124,7 @@ class PicoAnalyzer : public TObject {
   TH2D* mTPCPhiAveraged;        // this is just used for the normalization of the above. - not ever saved.  Only internal use
   TH2D* mTPCPhiWeightInput;     // "phi weighting" correction factors that were calculated and saved in a PREVIOUS run
   TH2D* mTPCPhiAveragedInput;
-
+*/
 double mpTMin;
 double mpTMax;
 double mpTMink;
@@ -173,6 +174,7 @@ TProfile *h_runidvstofmult, *h_runidvsrefmult;
 
 TH1F *h_pt, *h_eta_b, *h_eta, *h_nhitfit, *h_nhitmax, *h_nhitratio, *h_dca, *h_phi;
 
+/*
 // Kaon PID
 TH1D *hist_pt_kaonPlus;
 TH1D *hist_eta_kaonPlus;
@@ -195,7 +197,8 @@ TH2D *hist_pt_eta_kaonMinus;
 TH2D *hist_dEdx_kaonMinus;
 TH2D *hist_beta_kaonMinus;
 TH2D *hist_mass_kaonMinus;
-
+*/
+/*
 //histos for checking the phi-weighted eta-phi distribution for the TPC tracks
   TH2D* mEtaPhiDisPhiWeighted[9];//phi-weighted eta phi distribution for 9 centralitites.
   TH2D* mEtaPhiDisRaw[9];
@@ -235,6 +238,7 @@ TH2D *hist_mass_kaonMinus;
   TProfile* mTPC1TPC2[9];
   TProfile* mPhiPsievent3[2][9];//indicies are e/w and 9 centrality windows
 */
+/*
   TProfile3D* mTPCCosShift;
   TProfile3D* mTPCSinShift;
 
@@ -252,7 +256,8 @@ TH2D *hist_mass_kaonMinus;
   TFile* mTPCShiftFile;
   TFile* mEPDPhiWeightFile;
   //TFile* mRecenQFile;
-
+*/
+/*
   // Phi meson analysis plots
   TH2D *h2px;
   TH2D *h2py;
@@ -279,7 +284,7 @@ TH2D *hist_mass_kaonMinus;
   TH1F *mHist_SE_InvM_rap_cent[8][4];
   TH1F *mHist_rotation_InvM_rap_cent[8][4];
   TProfile *mProfile_flow_reso_rap_cent[8][4];
-
+*/
   static const int mEPTPCMaxTerm = 6;
   ClassDef(PicoAnalyzer, 1)                     //  Macro for CINT compatability
 

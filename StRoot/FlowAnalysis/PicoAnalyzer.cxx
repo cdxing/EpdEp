@@ -535,7 +535,7 @@ short PicoAnalyzer::Make(int iEvent){
 	  if (CentId<0) return 0;            // 80-100% - very peripheral
   h_counter_evt->AddBinContent(5); // low mult cut
 
-  mVz[CentId]->Fill(vertexPos.Z());
+  // mVz[CentId]->Fill(vertexPos.Z());
 
   /*double d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
        0.67352165, 0.59120378, 0.44391744, 0.27105964};

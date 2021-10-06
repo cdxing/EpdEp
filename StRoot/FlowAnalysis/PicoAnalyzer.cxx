@@ -427,8 +427,8 @@ else{
   }
 }
   cout << "Init done\n";
-  return 0;
 */
+  return 0;
 }
 
 //==============================================
@@ -478,7 +478,7 @@ short PicoAnalyzer::Make(int iEvent){
   // int RunDay = floor( (mRunId - (RUNYear-2000)*pow(10,6))/pow(10,3) );
   // int DayBinId = RunDay-89;
 
-  double pi = TMath::Pi();
+  // double pi = TMath::Pi();
 
 //-----------------Get the multiplicity by the StRefMulCorr class--------------
   int CentId=-1;
@@ -593,9 +593,9 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     //cout<<nHitsFitRatio<<endl;
     TVector3 pMom = track->pMom();//track->gMom() if I want to look at the global tracks.
     StPicoPhysicalHelix helix = track->helix(mField);
-    double Tphi = pMom.Phi();
-    double Teta = pMom.Eta();
-    double TPt = pMom.Pt();//
+    // double Tphi = pMom.Phi();
+    // double Teta = pMom.Eta();
+    // double TPt = pMom.Pt();//
     double dca = track->gDCA(vertexPos).Mag();
 
     h_pt->Fill(pMom.Perp());
@@ -658,7 +658,7 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     hdedxvsp->Fill(pMom.Mag()/track->charge(),track->dEdx());
     /* above from Shaowei lan */
     int Tch=track->charge();
-    double rig=Tch*pMom.Mag();
+    // double rig=Tch*pMom.Mag();
     // double dEdx=track->dEdx();
 
 /*

@@ -16,7 +16,7 @@ void Analysis(Int_t nRootFilesToProcess=1, TString FileListName, TString JobIdNa
   gSystem->Load("StEpdUtil.so");  // malisa
   gSystem->Load("FlowAnalysis.so");  // note that the flow code requires StEpdUtil library to be loaded first.
   gSystem->Load("StRefMultCorr");
-    
+
   PicoAnalyzer* pA = new PicoAnalyzer(JobIdName);
   pA->Init();                                  // this also calls init of EP finder
 
@@ -34,8 +34,9 @@ void Analysis(Int_t nRootFilesToProcess=1, TString FileListName, TString JobIdNa
     picoDst->Add(rootFileName.Data());
   }
   pA->SetPicoDst(picoDst);
-
+  std::cout << "test 0 "<< std::endl;
   int NeventsToAnalyze = picoDst->GetEntries();
+  std::cout << "test 1 "<< std::endl;
   std::cout << "Preparing to analyze " << NeventsToAnalyze << " events...\n";
   for (int ievent=0; ievent<picoDst->GetEntries(); ievent++){
     if (ievent%1000==0) std::cout << "Processed " << ievent << " events - " << 100.0*(double)ievent/(double)NeventsToAnalyze << "% \n";
@@ -78,7 +79,7 @@ void Analysis(Int_t nRootFilesToProcess=1, TString FileListName, TString JobIdNa
   */
 
   /*
-  if( chain->Init()==kStErr ){ 
+  if( chain->Init()==kStErr ){
     cout<<"chain->Init();"<<endl;
     return;
   }
@@ -91,10 +92,10 @@ void Analysis(Int_t nRootFilesToProcess=1, TString FileListName, TString JobIdNa
 
     if(i%1000==0)
     cout << "Working on eventNumber " << i << endl;
-    
+
     chain->Clear();
     int iret = chain->Make(i);
-    
+
     if (iret) { cout << "Bad return code!" << iret << endl; break;}
 
     total++;
@@ -108,7 +109,7 @@ void Analysis(Int_t nRootFilesToProcess=1, TString FileListName, TString JobIdNa
   cout << "****************************************** " << endl;
   cout << "total number of events  " << nEvents << endl;
   cout << "****************************************** " << endl;
-  
+
   delete AnalysisCode;
   delete picoMaker;
   delete chain;

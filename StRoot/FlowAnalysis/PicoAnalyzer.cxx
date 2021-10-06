@@ -1062,8 +1062,8 @@ short PicoAnalyzer::Finish(){
   //   hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
   //   hist_SE_pt_y_Phi_tight_Sig[cent]->Add(hist_SE_pt_y_Phi_tight_Bkg[cent],-1.);
   // }
-  cout << "In PicoAnalyzer::Finish - calling StEpdEpFinder::Finish()\n";
-  mEpFinder->Finish();
+  // cout << "In PicoAnalyzer::Finish - calling StEpdEpFinder::Finish()\n";
+  // mEpFinder->Finish();
 
   cout << "I have called it\n";
 

@@ -85,9 +85,9 @@ class PicoAnalyzer : public TObject {
   // useful objects kept by PicoAnalyzer
   StEpdGeom* mEpdGeom;
   StBbcGeom* mBbcGeom;
-  StEpdEpFinder* mEpFinder;
+  // StEpdEpFinder* mEpFinder;
   StRefMultCorr* mRefMultCorr;
-  TRandom3* mRan;//seems like RCF only likes TRandom3
+  // TRandom3* mRan;//seems like RCF only likes TRandom3
   char mCollidingSystem[365][500];    // index1=day of year;  index2=run of day
 
   static const int mTPCphibin = 80;

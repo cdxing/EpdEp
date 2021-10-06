@@ -464,7 +464,7 @@ short PicoAnalyzer::Make(int iEvent){
   // }
   // cout <<endl;
   // cout << !(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))  << endl;
-  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032))) return 0;
+  // if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032))) return 0;
   //if(!(mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))) return 0;
   h_counter_evt->AddBinContent(2); // trigger ID cut
 

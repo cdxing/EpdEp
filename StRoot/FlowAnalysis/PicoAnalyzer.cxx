@@ -12,6 +12,8 @@
 #include "StPicoEvent/StPicoBbcHit.h"
 #include "StPicoEvent/StPicoEvent.h"
 #include "StPicoEvent/StPicoTrack.h"
+#include "StThreeVectorF.hh"
+
 #include "StEpdUtil/StEpdGeom.h"
 #include "StEpdUtil/StBbcGeom.h"
 #include "StEpdUtil/StEpdEpFinder.h"
@@ -25,6 +27,7 @@
 //#include "TTree.h"
 //#include "TLeaf.h"
 #include "TMath.h"
+#include "StBTofUtil/tofPathLength.hh"
 #include "TClonesArray.h"
 #include "TH1D.h"
 #include "TH2D.h"
@@ -40,15 +43,21 @@
 
 #include <iostream>
 #include <fstream>
+
+#include "../run/badrun.h"
+
 using namespace std;
 
 ClassImp(PicoAnalyzer)                     //  Macro for CINT compatability
-
+int Centrality(int gRefMult );
 
 //=================================================
-PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mEtaMin(-1.2),mEtaMax(1.2),mNpTbin(20),mNVzbin(4),mNEtabin(60),
-mNPhibin(100),mVzMin(-40.0),mVzMax(40.0),mVtxR(1.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
-mNTPCSubEvents(2),mNEPDSubEvents(10),mEPDMax(2.0),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(0.012),mProtonSigma(0.012),mEtaMaxv1(1.0),mEtaMinv1(-1.0){
+PicoAnalyzer::PicoAnalyzer(TString FileNameBase):mpTMin(0.15),mpTMax(2.0),mpTMink(0.2),mpTMaxk(2.0),mEtaMin(-1.2),mEtaMax(1.2),
+mNPhibin(100),mVzMin(-70.0),mVzMax(70.0),
+mNpTbin(20),mNVzbin(4),mNEtabin(60),
+mVtxR(2.0),mDiffVzVPD(3.0),mNhitsfit(15),mNhitsfitratio(0.52),mDCAcut(3.0),mFourierOrder(8),
+mNTPCSubEvents(2),mEPDMax(2.0),mNEPDSubEvents(10),mMinEPDhits(5),mEPDthresh(0.3),mpTbound(0.425),mPionSigma(0.012),mKaonSigma(2.0),
+mProtonSigma(0.012),d_KaonM2low(0.16),d_KaonM2high(0.36),mEtaMaxv1(2.0),mEtaMinv1(-2.0),dip_angle_cutLevel(0.04){
   mFileNameBase = FileNameBase;
 
   mPicoDst=0;
@@ -115,18 +124,25 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   mEpFinder->SetMaxTileWeight(2.0);
   mEpFinder->SetEpdHitFormat(2);     // 2=pico
 
-  double lin[9] = {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700};
-  double cub[9] = {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700};
+  double lin[9] = {-1.23078, -2.14392, -2.90788, -3.47494, -3.6696, -3.50018, -3.04427, -2.48817, -1.53515};
+  double cub[9] = {0.156391, 0.244697, 0.330155, 0.406341, 0.448467, 0.447128, 0.40198, 0.333107, 0.190221};
   TH2D wt("Order1etaWeight","Order1etaWeight",100,1.5,6.5,9,0,9);
   for (int ix=1; ix<101; ix++){
     for (int iy=1; iy<10; iy++){
       double eta = wt.GetXaxis()->GetBinCenter(ix);
       wt.SetBinContent(ix,iy,lin[iy-1]*eta+cub[iy-1]*pow(eta,3));
+      cout<< "eta = "<< eta << " (ix, iy): ("<< ix << ", "<<iy << "): " << "etaweight = " << lin[iy-1]*eta+cub[iy-1]*pow(eta,3) << endl;
+    }
+  }
+  for (int ix=1; ix<101; ix++){
+    for (int iy=1; iy<10; iy++){
+      double eta = wt.GetXaxis()->GetBinCenter(ix);
+      cout<< "eta = "<< eta << " (ix, iy): ("<< ix << ", "<<iy << "): " << "wt BinContent = " << wt.GetBinContent(ix,iy)  << endl;
     }
   }
   mEpFinder->SetEtaWeights(1,wt);
   cout<<"etaweight set"<<endl;
-
+  // cout<<"etaweight disabled"<<endl;
   // --------------------------------------------------------
 
   TString OutputRootFileName = mFileNameBase;
@@ -145,6 +161,128 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 //--------------Prepare the constant for weighting the TPC tracks------------
   mNumberOfTrackTypes =mNpTbin*mNVzbin*mNEtabin*2;
 
+
+//---------------- Make histograms for phi meson analysis --------------
+  h2px = new TH2D("h2px","pMomX vs. P_vecX",600,-3.,3.,600,-3.,3.);
+  h2py = new TH2D("h2py","pMomY vs. P_vecY",600,-3.,3.,600,-3.,3.);
+  h2pz = new TH2D("h2pz","pMomZ vs. P_vecZ",600,-3.,3.,600,-3.,3.);
+  h_dip_angle = new TH1D("h_dip_angle","h_dip_angle",1000,-1.,9.);
+  h_Mass  = new TH1D("h_Mass","Same event invariant mass",200,0.98,1.08);
+  h_Mass_rot  = new TH1D("h_Mass_rot","K+K- rotated invariant mass",200,0.98,1.08);
+  hist_SE_PhiMeson_pT  = new TH1D("hist_SE_PhiMeson_pT","pT distribution of #phi",200,0.0,10);
+  hist_SE_PhiMeson_mT  = new TH1D("hist_SE_PhiMeson_mT","mT distribution of #phi",200,0.0,10);
+  hist_SE_PhiMeson_rap  = new TH1D("hist_SE_PhiMeson_rap","y distribution of #phi",200,-10.,10);
+  hist_SE_PhiMeson_eta  = new TH1D("hist_SE_PhiMeson_eta","eta distribution of #phi",200,-10.,10);
+  TString HistName = "Mass2_pt", HistName_rot = "Mass2_rot_pt";
+  TString HistName_ptEta = "pT_eta", HistName_ptY = "pT_y";
+  h_Mass2 = new TH2F(HistName.Data(),HistName.Data(),20,0.,5.0,200,0.98,1.08);
+  h_Mass2_rot = new TH2F(HistName_rot.Data(),HistName_rot.Data(),20,0.,5.0,200,0.98,1.08);
+  h2_pT_eta = new TH2F(HistName_ptEta.Data(),HistName_ptEta.Data(),200,-2.0,2.0,20,0.,5.0);
+  h2_pT_y = new TH2F(HistName_ptY.Data(),HistName_ptY.Data(),200,-2.0,2.0,20,0.,5.0);
+
+
+  hist_SE_pt_y_PhiMeson[0] = new TH2D("hist_SE_pt_y_PhiMeson_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",200,-2.0,2.0,20,0.,5.0);
+  hist_SE_pt_y_Phi_tight_SigBkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_SigBkg_0","p_{T} [GeV/c] vs. y of #phi, 0-60% ",40,-2.,2.,35,0.0,3.5);
+  hist_SE_pt_y_Phi_tight_Bkg[0] = new TH2D("hist_SE_pt_y_Phi_tight_Bkg_0","p_{T} [GeV/c] vs. y of #phi^{Bkg}, 0-60% ",40,-2.,2.,35,0.0,3.5);
+  hist_SE_pt_y_Phi_tight_Sig[0] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[0]->Clone("hist_SE_pt_y_Phi_tight_Sig_0");
+  int centBES[4] = {0,10,40,80};
+  for(int cent = 1; cent<4;cent++){
+    hist_SE_pt_y_PhiMeson[cent] = new TH2D(Form("hist_SE_pt_y_PhiMeson_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),200,-2.0,2.0,20,0.,5.0);
+    hist_SE_pt_y_Phi_tight_SigBkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_SigBkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
+    hist_SE_pt_y_Phi_tight_Bkg[cent] = new TH2D(Form("hist_SE_pt_y_Phi_tight_Bkg_%d",cent),Form("p_{T} [GeV/c] vs. y of #phi^{Bkg}, %d-%d%%",centBES[cent-1],centBES[cent]),40,-2.,2.,35,0.0,3.5);
+    hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
+  }
+  TString Centrality_01[4] = {"0080","0010","1040","4080"};
+
+  for(Int_t cent = 0; cent < Bin_Centrality_01; cent++)
+  {
+      for(Int_t rap_bin = 0; rap_bin < Bin_rap; rap_bin++)
+      {
+        TString hist_name_SE = Form("InvMass_SE_rapbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        mHist_SE_InvM_rap_cent[rap_bin][cent] = new TH1F(hist_name_SE.Data() ,
+        hist_name_SE.Data() ,
+        200,0.98,1.08);
+        mHist_SE_InvM_rap_cent[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        TString hist_name_rot = Form("InvMass_rot_rapbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        mHist_rotation_InvM_rap_cent[rap_bin][cent] = new TH1F(hist_name_rot.Data() ,
+        hist_name_rot.Data() ,
+        200,0.98,1.08);
+        mHist_rotation_InvM_rap_cent[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        TString hist_name_profile = Form("flow_InvMass_rapbin%d_cent%s",rap_bin+1,Centrality_01[cent].Data());
+        mProfile_flow_reso_rap_cent[rap_bin][cent] = new TProfile(hist_name_profile.Data(),
+        hist_name_profile.Data(),
+        100,0.98,1.08,
+        0,0,"");
+        mProfile_flow_reso_rap_cent[rap_bin][cent]->GetXaxis()->SetTitle("m_{inv} [GeV/c^{2}]");
+        mProfile_flow_reso_rap_cent[rap_bin][cent]->GetYaxis()->SetTitle("<cos(1(#phi - #psi_{1}))>/R_{1}^{EPD}");
+      }
+  }
+
+//----------------Make histograms for QA ----------------------------------
+  href_vz = new TH1F("h_ref_vz","refmult_vz",1000,0.,1000.);
+  hvz_b = new TH1F("h_vz_b","vz_dis_b",1000,-150,150);
+  hvzvpdvz_b =new TH2F("h_vz_vpd_b","vz_vs_vpd_b",1000,-150,150,1000,-150,150);
+  hvzvpdvzdiff_b =new TH1F("hvzvpdvzdiff_b","hvzvpdvzdiff_b",1000,-150,150);
+  hvr_b = new TH2F("h_vr_b","vy_vs_vx_b",1000,-10,10,1000,-10,10);
+  htofvsref_b = new TH2F("htofvsref_b","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
+  htofmatchvsref_b=new TH2F("htofmatchvsref_b","",1500,0.0,1500.0,1500,0.0,1500.0);
+
+  href = new TH1F("h_ref","refmult_dis",1000,0.,1000.);
+  hvz = new TH1F("h_vz","vz_dis",1000,-100,100);
+  hvzvpdvz =new TH2F("h_vz_vpd","vz_vs_vpd",1000,-150,150,1000,-150,150);
+  hvzvpdvzdiff =new TH1F("hvzvpdvzdiff","hvzvpdvzdiff",1000,-150,150);
+  htofvsref = new TH2F("htofvsref","ref_vs_tof",2000,0.0,2000.0,2000,0.0,2000.0);
+  htofmatchvsref=new TH2F("htofmatchvsref","",1500,0.0,1500.0,1500,0.0,1500.0);
+  h_epdhits = new TH1F("h_epdhits","",1000,-0.5,999.5);
+  hvr = new TH2F("h_vr","vy_vs_vx",1000,-10,10,1000,-10,10);
+  hbtofYLocal = new TH1F("hbtofYLocal","",600,-6.,6.);
+  hbtofYLocalvsMass2 = new TH2F("hbtofYLocalvsMass2","",800,-0.1,1.5,600,-6.,6.);
+
+  hbetavsp =new TH2F("hbetavsp","beta_vs_p",1000,0,6,1000,0,10);
+  hmassvsp =new TH2F("hmassvsp","m2_vs_p*q",3000,-6.,6.,2000,-0.2,15.8);
+  hdedxvsp =new TH2F("hdedxvsp","dedx_vs_p*q",4000,-6.,6.,2000,0.,50.);
+
+  h_eta_phi =new TH2F("h_etaphi","eta_vs_phi",1000,-6.3,6.3,300,-1.5,1.5);
+  h_eta_phi_before =new TH2F("h_etaphi_before","eta_vs_phi w/o cut",1000,-6.3,6.3,300,-1.8,1.8);
+
+  h_counter_evt = new TH1F("h_counter_evt","events counter",11,-0.5,10.5);
+  h_counter_trk = new TH1F("h_counter_trk","track counter",11,-0.5,10.5);
+
+  h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 40000, 20056031, 20096031,"");
+  h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 40000, 20056031, 20096031,"");
+
+  h_runidvstofmult = new TProfile("runidvstofmult", "", 40000, 20056031, 20096031,"");
+  h_runidvsrefmult = new TProfile("runidvsrefmult", "", 40000, 20056031, 20096031,"");
+
+  h_pt = new TH1F("h_pt","",1000,0.,10.);
+  h_eta_b= new TH1F("h_eta_b","",1000,-2.,2.);
+  h_eta= new TH1F("h_eta","",1000,-2.,2.);
+  h_nhitfit=new TH1F("h_nhitfit","",80,-0.5,79.5);
+  h_nhitmax=new TH1F("h_nhitmax","",80,-0.5,79.5);
+  h_nhitratio=new TH1F("h_nhitratio","",1000,-0.5,1.5);
+  h_dca = new TH1F("h_dca","",1000,0.,5.);
+  h_phi = new TH1F("h_phi","",1000,-6.28,6.28);
+  //========================= Kaon PID ==========================================
+  hist_pt_kaonPlus = new TH1D("hist_pt_kaonPlus","p_{T} [GeV/c]",1000,0.0,5.0);
+  hist_eta_kaonPlus = new TH1D("hist_eta_kaonPlus","#eta",500,-1.5,1.5);
+  hist_y_kaonPlus = new TH1D("hist_y_kaonPlus","y",500,-1.5,1.5);
+  hist_phi_kaonPlus = new TH1D("hist_phi_kaonPlus","#phi [Radian]",1000,-1.5*TMath::Pi(),2.5*TMath::Pi());
+  hist_rap_eta_kaonPlus = new TH2D("hist_rap_eta_kaonPlus","kaonPlus y versus #eta",500,-1.5,1.5,500,-1.5,1.5);
+  hist_pt_y_kaonPlus = new TH2D("hist_pt_y_kaonPlus","p_{T} [GeV/c] vs. y",200,-2.0,2.0,20,0.,5.0);
+  hist_pt_eta_kaonPlus = new TH2D("hist_pt_eta_kaonPlus","p_{T} [GeV/c] vs. #eta",200,-2.0,2.0,20,0.,5.0);
+  hist_dEdx_kaonPlus = new TH2D("hist_dEdx_kaonPlus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
+  hist_beta_kaonPlus = new TH2D("hist_beta_kaonPlus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
+  hist_mass_kaonPlus = new TH2D("hist_mass_kaonPlus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
+  hist_pt_kaonMinus = new TH1D("hist_pt_kaonMinus","p_{T} [GeV/c]",1000,0.0,5.0);
+  hist_eta_kaonMinus = new TH1D("hist_eta_kaonMinus","#eta",500,-1.5,1.5);
+  hist_y_kaonMinus = new TH1D("hist_y_kaonMinus","y",500,-1.5,1.5);
+  hist_phi_kaonMinus = new TH1D("hist_phi_kaonMinus","#phi [Radian]",1000,-1.5*TMath::Pi(),2.5*TMath::Pi());
+  hist_rap_eta_kaonMinus = new TH2D("hist_rap_eta_kaonMinus","kaonMinus y versus #eta",500,-1.5,1.5,500,-1.5,1.5);
+  hist_pt_y_kaonMinus = new TH2D("hist_pt_y_kaonMinus","p_{T} [GeV/c] vs. y",200,-2.0,2.0,20,0.,5.0);
+  hist_pt_eta_kaonMinus = new TH2D("hist_pt_eta_kaonMinus","p_{T} [GeV/c] vs. #eta",200,-2.0,2.0,20,0.,5.0);
+  hist_dEdx_kaonMinus = new TH2D("hist_dEdx_kaonMinus","dE/dx vs q*|p|",500,-3.0,3.0,500,0.0,10.0);
+  hist_beta_kaonMinus = new TH2D("hist_beta_kaonMinus","1/#beta vs q*|p|",1000,-5.0,5.0,500,0.0,5.0);
+  hist_mass_kaonMinus = new TH2D("hist_mass_kaonMinus","m^{2} vs q*|p|",1000,-5.0,5.0,1000,-0.6,4.0);
 //----------------Make histograms for shifting Psi_TPC--------------------
   mTPCCosShift = new TProfile3D("TPCCosShift","TPCCosShift",9,-0.5,8.5,mFourierOrder,0.5,0.5+mFourierOrder,_PsiOrderMax,0.5,(double)_PsiOrderMax+0.5);
   mTPCCosShift->Sumw2();
@@ -152,16 +290,16 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   mTPCSinShift->Sumw2();
 //---------------Make histograms for checking the flattening of EP---------
 //---------------and calculate the resolution------------------------------
-  //mHisto2D[0] = new TH2D("EPDPsiEvsPsiW","EPDPsiEvsPsiW",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
+  mHisto2D[0] = new TH2D("EPDPsiEvsPsiW","EPDPsiEvsPsiW",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
 
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
-      mEPDFullPsiWeighted[cent][iorder] = new TH1D(Form("EPDFullPsi%dWeightedCent%d",iorder,cent),Form("EPDFullPsi%dWeightedCent%d",iorder,cent),100,0.0,2.0*TMath::Pi()/(iorder+1.0));
-      mEPDFullPsiShifted[cent][iorder] = new TH1D(Form("EPDFullPsi%dShiftedCent%d",iorder,cent),Form("EPDFullPsi%dShiftedCent%d",iorder,cent),100,0.0,2.0*TMath::Pi()/(iorder+1.0));
+      mEPDFullPsiWeighted[cent][iorder] = new TH1D(Form("EPDFullPsi%dWeightedCent%d",iorder,cent),Form("EPDFullPsi%dWeightedCent%d",iorder,cent),200,-0.5*TMath::Pi()/(iorder+1.0),2.5*TMath::Pi()/(iorder+1.0));
+      mEPDFullPsiShifted[cent][iorder] = new TH1D(Form("EPDFullPsi%dShiftedCent%d",iorder,cent),Form("EPDFullPsi%dShiftedCent%d",iorder,cent),200,-0.5*TMath::Pi()/(iorder+1.0),2.5*TMath::Pi()/(iorder+1.0));
       mResolution[cent][iorder] = new TProfile(Form("ResolutionPsi%dCent%d",iorder,cent),Form("ResolutionPsi%dCent%d",iorder,cent),10,0.5,10.5);//x axis corresponds to the <cos()> of different combinations of EP
       mResolution[cent][iorder]->Sumw2();
-      mTPCPsiDisWeighted[cent][iorder] = new TH1D(Form("TPCPsi%dDisWeightedCent%d",iorder,cent),Form("TPCPsi%dDisWeightedCent%d",iorder,cent),100,-TMath::Pi()/(iorder+1.0),TMath::Pi()/(iorder+1.0));
-      mTPCPsiDisShifted[cent][iorder] = new TH1D(Form("TPCPsi%dDisShiftedCent%d",iorder,cent),Form("TPCPsi%dDisShifteddCent%d",iorder,cent),100,-TMath::Pi()/(iorder+1.0),TMath::Pi()/(iorder+1.0));
+      mTPCPsiDisWeighted[cent][iorder] = new TH1D(Form("TPCPsi%dDisWeightedCent%d",iorder,cent),Form("TPCPsi%dDisWeightedCent%d",iorder,cent),200,-1.5*TMath::Pi()/(iorder+1.0),1.5*TMath::Pi()/(iorder+1.0));
+      mTPCPsiDisShifted[cent][iorder] = new TH1D(Form("TPCPsi%dDisShiftedCent%d",iorder,cent),Form("TPCPsi%dDisShifteddCent%d",iorder,cent),200,-1.5*TMath::Pi()/(iorder+1.0),1.5*TMath::Pi()/(iorder+1.0));
     }
     /*
     for(int i=0;i<3;i++){
@@ -201,7 +339,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
     //mTwoD[cent]->Sumw2();
   }
   */
-
+  /*
   for(int ew=0;ew<2;ew++){
     mThreeD[ew] = new TH3D(Form("dNdphidnMIPdetaCent%dEW%dPsi%dRR%dVz%d",5,ew,0,0,7),Form("dNdphidnMIPdetaCent%dEW%dPsi%dRR%dVz%d",5,ew,0,0,7),24,-1.0*TMath::Pi(),TMath::Pi(),80,0.0,8.0,16,0.5,16.5);//(phi-EP),nMIP,Ring Id
     mThreeD[ew]->Sumw2();
@@ -210,7 +348,7 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
       mThreeDTile[ew][tt]->Sumw2();
     }
   }
-
+  */
   //Making TProfiles for the vn analysis
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
@@ -282,64 +420,119 @@ void PicoAnalyzer::NewRun(int runId){
 short PicoAnalyzer::Make(int iEvent){
   //----------------- get data --------------
   mPicoDst->GetEntry(iEvent);
-  StPicoEvent* event = (StPicoEvent*)((*mEventClonesArray)[0]);
-  if (event->runId()!=mRunId){
-    NewRun(event->runId());        // some things should be reset when there is a new run loaded
+  StPicoEvent* mPicoEvent = (StPicoEvent*)((*mEventClonesArray)[0]);
+  if( !mPicoEvent ) {
+      std::cout << "Something went wrong, my Lord! Event is hiding from me..."
+      << std::endl;
+      return 0;
+  }
+
+  if (mPicoEvent->runId()!=mRunId){
+    NewRun(mPicoEvent->runId());        // some things should be reset when there is a new run loaded
     cout << "New run detected: " << mRunId << " and it is collision system #" << mRunCollisionSystem << endl;
     //cout<<"RunEntry"<<mRunEt<<endl;
   }
+  h_counter_evt->AddBinContent(1); // no cut
 
   //----- done getting data; have fun! ------
-  if(!(event->isTrigger(610001)||event->isTrigger(610011)||event->isTrigger(610021)||event->isTrigger(610031)||event->isTrigger(610041)||event->isTrigger(610051))) return 0;
+  // if(!(mPicoEvent->isTrigger(610001)||mPicoEvent->isTrigger(610011)||mPicoEvent->isTrigger(610021)||mPicoEvent->isTrigger(610031)||mPicoEvent->isTrigger(610041)||mPicoEvent->isTrigger(610051))) return 0;
+  // for(unsigned int i = 0 ; i< mPicoEvent->triggerIds().size();i++){
+  //   cout << "trigger id: "<< mPicoEvent->triggerIds().at(i)<< ", ";
+  // }
+  // cout <<endl;
+  // cout << !(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))  << endl;
+  if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032))) return 0;
+  //if(!(mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))) return 0;
+  h_counter_evt->AddBinContent(2); // trigger ID cut
 
-  //  StThreeVectorF primaryVertex = event->primaryVertex();
-  //  TVector3 PV(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
-  TVector3 PV = event->primaryVertex();
-  int mRunId = event->runId();
-  int RUNYear = 2018;
-  float RUNEnergy = 27.;
-  int RunDay = floor( (mRunId - (RUNYear-2000)*pow(10,6))/pow(10,3) );
-  int DayBinId = RunDay-89;
+// cout << "test 1 ! "  << endl;
+  //  StThreeVectorF primaryVertex = mPicoEvent->primaryVertex();
+  //  TVector3 vertexPos(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
+  TVector3 vertexPos = mPicoEvent->primaryVertex();
+  int mRunId = mPicoEvent->runId();
+  // int RUNYear = 2018;
+  // float RUNEnergy = 27.;
+  // int RunDay = floor( (mRunId - (RUNYear-2000)*pow(10,6))/pow(10,3) );
+  // int DayBinId = RunDay-89;
 
   double pi = TMath::Pi();
 
 //-----------------Get the multiplicity by the StRefMulCorr class--------------
   int CentId=-1;
-  int mRefMult=event->refMult();
-
-  bool ISRefMultCorrBadRun=false;
-  mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
+  int tofMult=mPicoEvent->btofTrayMultiplicity();
+  int tofmatch=mPicoEvent->nBTOFMatch();
+  int refMult=mPicoEvent->refMult();
+  // bool ISRefMultCorrBadRun=false;
+  // mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
   //mRefMultCorr = new StRefMultCorr();
-  mRefMultCorr->init(mRunId);
-  if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
-  ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
-  if(ISRefMultCorrBadRun) return 0;
-  mRefMultCorr->initEvent(mRefMult,PV.Z(),event->ZDCx());
-  mRefMult = mRefMultCorr->getRefMultCorr();
-  CentId = mRefMultCorr->getCentralityBin9();//An integer between 0 (70-80%) and 8 (0-5%)
-  //int CentIdmy = FindCent(event->refMult());   // returns an integer between 0 (70-80%) and 8 (0-5%)
+  // mRefMultCorr->init(mRunId);
+  // if(mRefMultCorr->getBeginRun(RUNEnergy,RUNYear)==-1) return 0;
+  // ISRefMultCorrBadRun=mRefMultCorr->isBadRun(mRunId);
+  // if(ISRefMultCorrBadRun) return 0;
+  for(int ii=0;ii<83;ii++)
+  {
+    if(mRunId == badrun[ii]) return 0;
+  }
+  h_counter_evt->AddBinContent(3); // badrun
+
+  //mRefMultCorr->initEvent(refMult,vertexPos.Z(),mPicoEvent->ZDCx());
+  //refMult = mRefMultCorr->getRefMultCorr();
+  CentId = Centrality(mPicoEvent->refMult());//An integer between 0 (70-80%) and 8 (0-5%)
+  //int CentIdmy = FindCent(mPicoEvent->refMult());   // returns an integer between 0 (70-80%) and 8 (0-5%)
   //-------------remove the pile-up events-----------------
-  if(mRefMultCorr->passnTofMatchRefmultCut(1.*event->refMult(), 1.*event->nBTOFMatch())!=1) return 0;
-  if (fabs(PV.Z())>=mVzMax) return 0;
-  if (sqrt(pow(PV.X(),2)+pow(PV.Y(),2))>mVtxR) return 0;
-  //if (abs(PV.Z()-event->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020
-  if (CentId<0) return 0;            // 80-100% - very peripheral
+  //if(mRefMultCorr->passnTofMatchRefmultCut(1.*mPicoEvent->refMult(), 1.*mPicoEvent->nBTOFMatch())!=1) return 0;
 
-  mVz[CentId]->Fill(PV.Z());
+  hvz_b->Fill(vertexPos.Z());
+  // cout << "vertex z = "<<vertexPos.Z()<<endl;
+  hvr_b->Fill(vertexPos.X(),vertexPos.Y());
+  hvzvpdvz_b->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
+  hvzvpdvzdiff_b->Fill(vertexPos.Z()-mPicoEvent->vzVpd());
+  htofvsref_b->Fill(refMult,tofMult);
+  htofmatchvsref_b->Fill(refMult,tofmatch);
+  h_runidvstofmult_b->Fill(mRunId,tofMult);
+  h_runidvsrefmult_b->Fill(mRunId,refMult);
+  if (fabs(vertexPos.Z())>=mVzMax) return 0;
+  if (sqrt(pow(vertexPos.X(),2)+pow(vertexPos.Y(),2))>mVtxR) return 0;
+  //if (abs(vertexPos.Z()-mPicoEvent->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020
+  h_counter_evt->AddBinContent(4); // vertex cut
 
+  if(TMath::Abs(vertexPos.Z()) < 10 ){
+      href_vz->Fill(mPicoEvent->refMult());
+  }
+  href->Fill(mPicoEvent->refMult());
+  hvz->Fill(vertexPos.Z());
+  hvr->Fill(vertexPos.X(),vertexPos.Y());
+  hvzvpdvz->Fill(vertexPos.Z(),mPicoEvent->vzVpd());
+  hvzvpdvzdiff->Fill(vertexPos.Z()-mPicoEvent->vzVpd());
+  htofvsref->Fill(refMult,tofMult);
+  htofmatchvsref->Fill(refMult,tofmatch);
+
+  h_runidvstofmult->Fill(mRunId,tofMult);
+  h_runidvsrefmult->Fill(mRunId,refMult);
+	  if (CentId<0) return 0;            // 80-100% - very peripheral
+  h_counter_evt->AddBinContent(5); // low mult cut
+
+  mVz[CentId]->Fill(vertexPos.Z());
+
+  /*double d_resolution_EPD[9] = {0.26618012, 0.39441821, 0.53429421, 0.63668343, 0.68304687,
+       0.67352165, 0.59120378, 0.44391744, 0.27105964};
+*/
+double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.52842022,
+       0.54077169, 0.48401103, 0.35439984, 0.18964124};
   int VzBin;
   double VzArr[17]={-40,-35,-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40};
   for(int i=0;i<17;i++){
-    if(PV.Z()>VzArr[i]&&PV.Z()<=VzArr[i+1]){
+    if(vertexPos.Z()>VzArr[i]&&vertexPos.Z()<=VzArr[i+1]){
       VzBin=i;
       break;
     }
   }
 
   // if(VzBin!=7) return 0;
+if(mEpdHits->GetEntries() < 5) return 0;
 
-  StEpdEpInfo result = mEpFinder->Results(mEpdHits,PV,CentId);  // and now you have all the EP info you could ever want :-)
-  //StEpdEpInfo result = mEpFinder->Results(mEpdHits,PV,1);  // testing. and now you have all the EP info you could ever want :-)
+  StEpdEpInfo result = mEpFinder->Results(mEpdHits,vertexPos,CentId);  // and now you have all the EP info you could ever want :-)
+  //StEpdEpInfo result = mEpFinder->Results(mEpdHits,vertexPos,1);  // testing. and now you have all the EP info you could ever want :-)
   double EpAngle[_PsiOrderMax][3];//EP order,east/west/full
   for(int iorder=0;iorder<_PsiOrderMax;iorder++){
     EpAngle[iorder][0]=result.EastPhiWeightedAndShiftedPsi(iorder+1);
@@ -347,11 +540,16 @@ short PicoAnalyzer::Make(int iEvent){
     EpAngle[iorder][2]=result.FullPhiWeightedAndShiftedPsi(iorder+1);
   }
 
-  //mHisto2D[0]->Fill(EpAngle[1],EpAngle[0]);//East vs. West
 
+  mHisto2D[0]->Fill((double)EpAngle[0][1],(double)EpAngle[0][0]);//East vs. West
   //-----------Check the flattening of Psi_EPDFull----------
   for(int iorder=0;iorder<_PsiOrderMax;iorder++){
+//    if(mEpdHits->GetEntries() < 5) break;
     mEPDFullPsiWeighted[CentId][iorder]->Fill(result.FullPhiWeightedPsi(iorder+1));
+    if(mEpdHits->GetEntries()==0){
+    	cout << "# of EPD hits = " << mEpdHits->GetEntries()<<endl; 
+	cout << "Weighted Psi= " << result.FullPhiWeightedPsi(iorder+1);
+    }
     mEPDFullPsiShifted[CentId][iorder]->Fill(result.FullPhiWeightedAndShiftedPsi(iorder+1));
   }
 
@@ -362,31 +560,136 @@ short PicoAnalyzer::Make(int iEvent){
   //PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),3,0.5,3.5);//x is three types of Psi_TPC
   PCosPhi = new TH1D(Form("PCosPhi"),Form("PCosPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
   PSinPhi = new TH1D(Form("PSinPhi"),Form("PSinPhi"),_PsiOrderMax,0.5,_PsiOrderMax+0.5);
-
+  const Float_t   mField = mPicoEvent->bField(); // Magnetic field
+  std::vector<StPicoTrack *> v_KaonPlus_tracks;
+  std::vector<StPicoTrack *> v_KaonMinus_tracks;
   //------------Begin loop over TPC tracks--------------------------
   for(int itrk=0; itrk<mTracks->GetEntries(); itrk++){
     StPicoTrack* track = (StPicoTrack*)((*mTracks)[itrk]);
-    if ((track->nHitsFit()<mNhitsfit)||(!track->isPrimary())) continue; // I should check DCA too, but am confused how
+    if (!track->isPrimary()) continue; // I should check DCA too, but am confused how
+    h_counter_trk->AddBinContent(1); // no cut
+
     double nHitsFitRatio = track->nHitsFit()*1.0/track->nHitsMax();
     //cout<<nHitsFitRatio<<endl;
-    //if (nHitsFitRatio<mNhitsfitratio) continue;//get rid of the nhitsfitratio cut, Prithwish said it is a very old cut used by STAR. 06/18/2020
     TVector3 pMom = track->pMom();//track->gMom() if I want to look at the global tracks.
+    StPicoPhysicalHelix helix = track->helix(mField);
     double Tphi = pMom.Phi();
     double Teta = pMom.Eta();
     double TPt = pMom.Pt();//
-    double dca = track->gDCA(PV).Mag();
+    double dca = track->gDCA(vertexPos).Mag();
+
+    h_pt->Fill(pMom.Perp());
+    h_eta_b->Fill(pMom.PseudoRapidity());
+    h_nhitfit->Fill(track->nHitsFit());
+    h_nhitmax->Fill(track->nHitsMax());
+    h_nhitratio->Fill((float)track->nHitsFit()/(float)track->nHitsMax());
+    h_dca->Fill(dca);
+    h_phi->Fill(pMom.Phi());
+    h_eta_phi_before->Fill(pMom.Phi(),pMom.PseudoRapidity());
+
+    if(pMom.Perp() < 0.15) continue;
+    if(pMom.Mag() > 10.0) continue;
     if (dca>mDCAcut) continue;
-    if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
-    //mHisto1D[3]->Fill(TPt);
+    if (track->nHitsFit()<mNhitsfit) continue;
+    if (nHitsFitRatio<mNhitsfitratio) continue;//get rid of the nhitsfitratio cut, Prithwish said it is a very old cut used by STAR. 06/18/2020
+    if (nHitsFitRatio > 1.0) continue; // test
+    h_counter_trk->AddBinContent(2); // QA cuts
+
+    h_eta_phi->Fill(pMom.Phi(),pMom.PseudoRapidity());
+    h_eta->Fill(pMom.PseudoRapidity());
+
+    /* from Shaowei lan */
+    int tofIndex = track->bTofPidTraitsIndex();
+    Int_t   btofMatchFlag =  0;
+    Float_t btofYLocal    =  -999;
+    float tof = 0, L=0, beta=0.0, mass2= 0.0;
+    if(tofIndex>=0) {
+        StPicoBTofPidTraits *tofPid = (StPicoBTofPidTraits*)((*mTraits)[tofIndex]);
+        btofMatchFlag = tofPid->btofMatchFlag();
+        btofYLocal    = tofPid->btofYLocal();
+        if(tofPid) {
+            beta = tofPid->btofBeta();
+            tof = tofPid->btof();
+            if(beta<1e-4) {
+              TVector3 btofHitPos_ = tofPid->btofHitPos();
+              const StThreeVectorF *btofHitPos = new StThreeVectorF(btofHitPos_.X(),btofHitPos_.Y(),btofHitPos_.Z());
+              const StThreeVectorF *vertexPos_ = new StThreeVectorF(vertexPos.X(), vertexPos.Y(), vertexPos.Z());
+              L = tofPathLength(vertexPos_, btofHitPos, helix.curvature());
+                if(tof>0) beta = L/(tof*(TMath::C()/1.e7));
+                else beta = -1;
+            }
+            // cout << "L = " << L << endl;
+            // cout << "time of flight = " <<  tof << endl;
+            // cout << "tof xpostion = " <<  tofPid->btofHitPos().X() << endl;
+            // cout << "tof*(TMath::C()/1.e7 = " << (tof*(TMath::C()/1.e7)) << endl;
+            // cout << "beta = " << beta << endl;
+        }
+    }
+    bool isGoodTof = btofMatchFlag >0 && beta > 0 /*&& fabs(btofYLocal) < 1.8*/;
+    if(isGoodTof){
+      hbtofYLocal -> Fill(btofYLocal);
+      mass2 = pMom.Mag()*pMom.Mag()*(1./pow(beta,2)-1);
+      hbtofYLocalvsMass2 -> Fill(mass2,btofYLocal);
+    }  else mass2 = -999;
+
+    if(TMath::Abs(beta)>1e-5)  hbetavsp->Fill(pMom.Mag(), 1/beta);
+    else hbetavsp->Fill(pMom.Mag(), 0);
+    hmassvsp->Fill(pMom.Mag()/track->charge(), mass2);
+    hdedxvsp->Fill(pMom.Mag()/track->charge(),track->dEdx());
+    /* above from Shaowei lan */
     int Tch=track->charge();
     double rig=Tch*pMom.Mag();
-    double dEdx=track->dEdx();
+    // double dEdx=track->dEdx();
+
+    // Kaons PID: require both TPC and TOF
+    TLorentzVector ltrackk;
+    if(
+      TMath::Abs(track->nSigmaKaon()) < mKaonSigma &&
+      isGoodTof && mass2 > d_KaonM2low && mass2 < d_KaonM2high
+      && TPt >= mpTMink
+      && TPt <= mpTMaxk
+    ){
+      ltrackk.SetXYZM(pMom.X(),pMom.Y(),pMom.Z(),_massKaon);
+      if(Tch > 0){
+        v_KaonPlus_tracks.push_back(track); // push back kp tracks
+        // Fill histograms
+        hist_pt_kaonPlus->Fill(TPt);
+        hist_eta_kaonPlus->Fill(Teta);
+        hist_y_kaonPlus->Fill(ltrackk.Rapidity());
+        hist_phi_kaonPlus->Fill(Tphi);
+        hist_rap_eta_kaonPlus->Fill(Teta,ltrackk.Rapidity());
+        hist_pt_y_kaonPlus->Fill(ltrackk.Rapidity(),TPt,1);
+        hist_pt_eta_kaonPlus->Fill(Teta,TPt,1);
+        hist_dEdx_kaonPlus->Fill(rig,track->dEdx());
+        hist_beta_kaonPlus->Fill(rig,1.0/beta);
+        hist_mass_kaonPlus->Fill(rig,mass2);
+      } else { // charge < 0
+        v_KaonMinus_tracks.push_back(track); // push back km tracks
+        // Fill histograms
+        hist_pt_kaonMinus->Fill(TPt);
+        hist_eta_kaonMinus->Fill(Teta);
+        hist_y_kaonMinus->Fill(ltrackk.Rapidity());
+        hist_phi_kaonMinus->Fill(Tphi);
+        hist_rap_eta_kaonMinus->Fill(Teta,ltrackk.Rapidity());
+        hist_pt_y_kaonMinus->Fill(ltrackk.Rapidity(),TPt,1);
+        hist_pt_eta_kaonMinus->Fill(Teta,TPt,1);
+        hist_dEdx_kaonMinus->Fill(rig,track->dEdx());
+        hist_beta_kaonMinus->Fill(rig,1.0/beta);
+        hist_mass_kaonMinus->Fill(rig,mass2);
+      }
+    }
+    if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
+    //mHisto1D[3]->Fill(TPt);
+    h_counter_trk->AddBinContent(3); // eta cut
 
     if(TPt<=mpTMin||TPt>=mpTMax) continue;//pT range [0.15,2.0] for Psi_TPC
+    h_counter_trk->AddBinContent(4); // pt cut
+
     //----------Prepare Q to calculate the Psi_TPC-----------------
-    int TtrId=FindTrackId(Tch,PV.Z(),Teta,TPt);
+    int TtrId=FindTrackId(Tch,vertexPos.Z(),Teta,TPt);
     if(TtrId<=0||TtrId>mNumberOfTrackTypes){
-      cout<<"Ah-oh, invalid TrackId :("<<endl;
+      // cout<<"Ah-oh, invalid TrackId :("<<endl;
+      // cout <<"track id: " << TtrId << endl;
     }
     double TrackPhiWeight=1.0;
     if(mTPCPhiWeightInput!=0) TrackPhiWeight=1.0/mTPCPhiWeightInput->GetBinContent(mTPCPhiWeightInput->FindBin(Tphi,TtrId));
@@ -407,7 +710,7 @@ short PicoAnalyzer::Make(int iEvent){
     }
 
   }
-//-------------End loop over TPC tracks-----------------------
+//-------------End loop over TPC tracks and get kaon track vectors-----------------------
 
 //-------------Now let's play with the EP---------------------
   //double TPCPsi1[3]={0.0};// Three types of Psi_TPC: 0_Full, 1_pos, 2_neg
@@ -456,6 +759,10 @@ short PicoAnalyzer::Make(int iEvent){
     mTPCPsiDisShifted[CentId][i]->Fill(TPCPsiShifted[i]);
   }
 //--------------Begin loop over EPD hits---------------------------------
+h_epdhits -> Fill(mEpdHits->GetEntries());
+//if(mEpdHits->GetEntries() < 5) return 0;
+h_counter_evt->AddBinContent(6); // low epd hits cut
+
   for(int hit=0;hit<mEpdHits->GetEntries();hit++){
     int tileId, ring, TT, PP, EW, ADC;
     float nMip;
@@ -481,8 +788,8 @@ short PicoAnalyzer::Make(int iEvent){
     }
 
     //if (nMip<mEPDthresh) continue;
-    double TileWeight = (nMip<3.0)?nMip:3.0;//Note: here a different nMIPMax from the EpFinder was used
-    TVector3 StraightLine = mEpdGeom->RandomPointOnTile(tileId) - PV;
+    double TileWeight = (nMip<4.0)?nMip:4.0;//Note: here a different nMIPMax from the EpFinder was used
+    TVector3 StraightLine = mEpdGeom->RandomPointOnTile(tileId) - vertexPos;
     double Hphi = StraightLine.Phi();
     double Heta = StraightLine.Eta();
 
@@ -515,25 +822,216 @@ short PicoAnalyzer::Make(int iEvent){
       }
     }
     */
+    /*
     mThreeD[EW]->Fill(deltaphi[0][0],nMip,ring);
     mThreeDTile[EW][TTxyId-1]->Fill(deltaphi[0][0],nMip,ring);
-
+    */
 
     //double RingId=0.0;
     //if(EW==0) RingId=-1.0*(double)ring;
     //else RingId=(double)ring;
     //mTwoD[CentId]->Fill(nMip,RingId);
+
   }
   //-----------------End looping over EPD hits------------------------
 
+  // ------------------ Phi meson flow analysis ----------------------
+  TLorentzVector ltrackA, ltrackB;
+  for(unsigned int i = 0; i < v_KaonPlus_tracks.size(); i++){
+    StPicoTrack * picoTrackA = v_KaonPlus_tracks.at(i); // i-th K+ track
+    if(!picoTrackA) continue;
+    // K+ Variables
+    StPicoPhysicalHelix   trackhelixA = picoTrackA->helix(mField);
+    TVector3 p_vecA = picoTrackA->pMom();  // primary momentum
+    // TVector3 p_vecA = trackhelixA.cat(trackhelixA.pathLength(vertexPos));  // primary momentum
+    // p_vecA *= (double)picoTrackA->pMom().Mag();  // primary momentum
+    ltrackA.SetXYZM(p_vecA.X(),p_vecA.Y(),p_vecA.Z(),_massKaon);
+    double d_chargeA  = picoTrackA->charge();
+    h2px  -> Fill(picoTrackA->pMom().X(),p_vecA.X());
+    h2py  -> Fill(picoTrackA->pMom().Y(),p_vecA.Y());
+    h2pz  -> Fill(picoTrackA->pMom().Z(),p_vecA.Z());
+    Double_t d_ptA = ltrackA.Perp(), d_pzA = ltrackA.Pz(), d_momA = ltrackA.P();
+    // StPicoBTofPidTraits *traitA = NULL;
+    // double d_tofBeta0    = -999.;
+    // double d_inv_tofBeta0    = -999.;
+    // if(picoTrackA->isTofTrack()) traitA = (StPicoBTofPidTraits*)((*mTraits)[picoTrackA->bTofPidTraitsIndex()]);
+    // if(traitA)        d_tofBeta0 = traitA->btofBeta();
+    // double d_M0   = _massKaon;
+    // double d_E0   = sqrt((d_pxA*d_pxA+d_pyA*d_pyA+d_pzA*d_pzA)+_massKaon*_massKaon);
+    // double d_y0   = ((d_E0-d_pzA) != 0.0) ? 0.5*TMath::Log( (d_E0 + d_pzA) / (d_E0 - d_pzA) ) : -999.0;
+    // double eta0   = ((d_momA - d_pzA) != 0.0) ? 0.5*TMath::Log( (d_momA + d_pzA) / (d_momA - d_pzA) ) : -999.0;
+    // double d_mT0  = sqrt(d_ptA*d_ptA + d_M0*d_M0);
+    // double d_pq0   = fabs(d_momA) * d_chargeA;
+    for(unsigned int j = 0; j < v_KaonMinus_tracks.size(); j++){
+      StPicoTrack * picoTrackB = v_KaonMinus_tracks.at(j); // j-th K- track
+      if(!picoTrackB) continue;
+      // K- Variables
+      double d_chargeB  = picoTrackB->charge();
+      if(d_chargeA == d_chargeB) continue; // same charge cut
+      TVector3 p_vecB = picoTrackB->pMom();  // primary momentum
+      ltrackB.SetXYZM(p_vecB.X(),p_vecB.Y(),p_vecB.Z(),_massKaon);
+      Double_t d_ptB = ltrackB.Perp(), d_pzB = ltrackB.Pz(), d_momB = ltrackB.P();
+
+      // StPicoBTofPidTraits *traitB = NULL;
+      // double d_tofBeta1    = -999.;
+      // double d_inv_tofBeta1    = -999.;
+      // if(picoTrackB->isTofTrack()) traitB = (StPicoBTofPidTraits*)((*mTraits)[picoTrackB->bTofPidTraitsIndex()]);
+      // if(traitB)        d_tofBeta1 = traitB->btofBeta();
+      // double d_M1   = _massKaon;
+      // double d_E1   = sqrt((d_px1*d_px1+d_py1*d_py1+d_pzB*d_pzB)+_massKaon*_massKaon);
+      // double d_y1   = ((d_E1-d_pzB) != 0.0) ? 0.5*TMath::Log( (d_E1 + d_pzB) / (d_E1 - d_pzB) ) : -999.0;
+      // double eta1   = ((d_momB - d_pzB) != 0.0) ? 0.5*TMath::Log( (d_momB + d_pzB) / (d_momB - d_pzB) ) : -999.0;
+      // double d_mT1  = sqrt(d_ptB*d_ptB + d_M1*d_M1);
+      // double d_pq1   = fabs(d_momA) * d_chargeA;
+      // phi Variables
+      TLorentzVector trackAB      = ltrackA+ltrackB;
+      Double_t InvMassAB          = trackAB.M();
+      Double_t d_dip_angle = TMath::ACos((d_ptA*d_ptB+d_pzA*d_pzB) / (d_momA*d_momB) );
+
+      Double_t pt = trackAB.Perp();
+      Double_t eta = trackAB.Eta();
+      Double_t rap = trackAB.Rapidity();
+      Double_t d_mT_phi = sqrt(pt*pt + _massPhi*_massPhi );
+
+      Double_t randomNumber = gRandom->Uniform(1);
+      // std::cout << "randomNumber " << randomNumber  << std::endl;
+      double d_randAngle = TMath::Pi()*randomNumber;
+      // std::cout << "randomAngle " << d_randAngle  << std::endl;
+      TLorentzVector ltrackB_rot = ltrackB;
+      ltrackB_rot.RotateZ(d_randAngle);
+      TLorentzVector trackAB_rot      = ltrackA+ltrackB_rot;
+      Double_t InvMassAB_rot          = trackAB_rot.M();
+      Double_t pt_rot = trackAB_rot.Perp();
+      Double_t rap_rot =  trackAB_rot.Rapidity(); // Rotation don't  influence y
+
+      h_Mass    ->Fill(InvMassAB);
+      h_Mass_rot    ->Fill(InvMassAB_rot);
+      h_Mass2    ->Fill(pt,InvMassAB);
+      h_Mass2_rot    ->Fill(pt_rot,InvMassAB_rot);
+      hist_SE_PhiMeson_pT ->Fill(pt);
+      h2_pT_eta->Fill(eta,pt);
+      h2_pT_y->Fill(rap,pt);
+      hist_SE_PhiMeson_mT ->Fill(d_mT_phi);
+      hist_SE_PhiMeson_rap ->Fill(rap);
+      hist_SE_PhiMeson_eta ->Fill(eta);
+      if(CentId >= 7 && CentId <= 8){ // 0-10%
+        hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
+        hist_SE_pt_y_PhiMeson[1] ->Fill(rap,pt);
+        if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_SigBkg[0] -> Fill(rap,pt);
+          hist_SE_pt_y_Phi_tight_SigBkg[1] -> Fill(rap,pt);
+        }
+        if(InvMassAB_rot >= 1.005 && InvMassAB_rot <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_Bkg[0] -> Fill(rap_rot,pt_rot);
+          hist_SE_pt_y_Phi_tight_Bkg[1] -> Fill(rap_rot,pt_rot);
+        }
+      }
+      if(CentId >= 4 && CentId <= 6){ // 10-40%
+        hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
+        hist_SE_pt_y_PhiMeson[2] ->Fill(rap,pt);
+        if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_SigBkg[0] -> Fill(rap,pt);
+          hist_SE_pt_y_Phi_tight_SigBkg[2] -> Fill(rap,pt);
+        }
+        if(InvMassAB_rot >= 1.005 && InvMassAB_rot <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_Bkg[0] -> Fill(rap_rot,pt_rot);
+          hist_SE_pt_y_Phi_tight_Bkg[2] -> Fill(rap_rot,pt_rot);
+        }
+      }
+      if(CentId >= 0 && CentId <= 3){ // 40-80%
+        hist_SE_pt_y_PhiMeson[0] ->Fill(rap,pt);
+        hist_SE_pt_y_PhiMeson[3] ->Fill(rap,pt);
+        if(InvMassAB >= 1.005 && InvMassAB <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_SigBkg[0] -> Fill(rap,pt);
+          hist_SE_pt_y_Phi_tight_SigBkg[3] -> Fill(rap,pt);
+        }
+        if(InvMassAB_rot >= 1.005 && InvMassAB_rot <= 1.033){ // tight phi-mass cut
+          hist_SE_pt_y_Phi_tight_Bkg[0] -> Fill(rap_rot,pt_rot);
+          hist_SE_pt_y_Phi_tight_Bkg[3] -> Fill(rap_rot,pt_rot);
+        }
+      }
+      // ---------------- phi-meson cuts: decay length, dip angle ------------
+      StPicoPhysicalHelix    trackhelixB = picoTrackB->helix(mField);
+      pair<double,double> pairLengths = trackhelixA.pathLengths(trackhelixB);
+      TVector3 v3D_x_daughterA = trackhelixA.at(pairLengths.first);
+      TVector3 v3D_x_daughterB = trackhelixB.at(pairLengths.second);
+      TVector3 v3D_x_AB    = (v3D_x_daughterA+v3D_x_daughterB)*0.5;
+      TVector3 v3D_xvec_decayl = v3D_x_AB - vertexPos;
+      // double d_AB_decay_length =  v3D_xvec_decayl.Mag();
+      // hist_AB_decay_length->Fill(d_AB_decay_length);
+      // if(d_AB_decay_length > d_cut_AB_decay_length_PHI) continue; //decay length cut
+
+      h_dip_angle         ->Fill(d_dip_angle);
+      if(d_dip_angle <= dip_angle_cutLevel) continue; // dip-angle cut
+      // --------------------- phi-meson flows -------------------------------
+      TVector3 v3D_p_daughterA = trackhelixA.momentumAt(pairLengths.first, mField*kilogauss);
+      TVector3 v3D_p_daughterB = trackhelixB.momentumAt(pairLengths.second, mField*kilogauss);
+      TVector3 v3D_p_AB    = v3D_p_daughterA+v3D_p_daughterB;
+      // double d_pmom = v3D_xvec_decayl.Dot(v3D_p_AB);
+      // double d_dca_AB = sqrt(v3D_xvec_decayl.Mag2() - (d_pmom*d_pmom/v3D_p_AB.Mag2()) );
+      double d_phi_azimuth = v3D_p_AB.Phi();
+      if(d_phi_azimuth < 0.0            ) d_phi_azimuth += 2.0*TMath::Pi();
+      if(d_phi_azimuth > 2.0*TMath::Pi()) d_phi_azimuth -= 2.0*TMath::Pi();
+      double d_flow_PHI_raw[2] = {-999.0,-999.0}; // v1, v2 raw flow
+      double d_flow_PHI_resolution[2] = {-999.0,-999.0}; // v1, v2 flow corrected by resolution
+      if(EpAngle[0][2]!=-999.0){// Using EPD-full
+        for(int km=0;km<2;km++){ // km - flow order
+          d_flow_PHI_raw[km]        = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]));
+          d_flow_PHI_resolution[km] = TMath::Cos((double)(km+1.) * (d_phi_azimuth - EpAngle[0][2]))/(d_resolution_EPD[CentId]); // km {0,1}, centrality [1,9]
+          // d_flow_PHI_resolution[km] = d_flow_PHI_raw[km];
+        }
+      }
+      int cent_low[4] = {0,7,4,0}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
+      int cent_up[4]  = {8,8,6,3}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
+      double rap_low_phi[8] = {-1.0, -0.6, -0.3, -0.1, 0., 0.1, 0.3, 0.6};
+      double rap_up_phi[8]  = {-0.6, -0.3, -0.1, 0.,  0.1, 0.3, 0.6, 1.0};
+
+
+      for(Int_t cent = 0; cent < Bin_Centrality_01; cent++)
+      {
+          for(Int_t rap_bin = 0; rap_bin < Bin_rap; rap_bin++)
+          {
+            if(cent_low[cent]<= CentId && CentId <= cent_up[cent] &&
+               rap_low_phi[rap_bin] <= rap && rap < rap_up_phi[rap_bin])
+               {
+                 mHist_SE_InvM_rap_cent[rap_bin][cent]->Fill(InvMassAB);
+                 // std::cout << "invM = " << InvMassAB << std::endl;
+                 if(!(EpAngle[0][2] == -999.0 || d_flow_PHI_resolution[0] == -999.0))
+                 {
+                   // if(rap_bin==0)std::cout << "EpAngle  = " << EpAngle << std::endl;
+                   // if(rap_bin==0)std::cout << "Res_EP  = " << Res_EP << std::endl;
+                   // if(rap_bin==0)std::cout << "ptbin1 d_flow_PHI_resolution[0] = " << d_flow_PHI_resolution[0] << std::endl;
+                   mProfile_flow_reso_rap_cent[rap_bin][cent]->Fill(InvMassAB,d_flow_PHI_resolution[0]);
+                 }
+               }
+            if(cent_low[cent]<= CentId && CentId <= cent_up[cent] &&
+               rap_low_phi[rap_bin] <= rap_rot && rap_rot <= rap_up_phi[rap_bin])
+               {
+                 // std::cout << "invM rot = " << InvMassAB_rot << std::endl;
+                 mHist_rotation_InvM_rap_cent[rap_bin][cent]->Fill(InvMassAB_rot);
+               }
+
+          }
+      }
+
+    }
+  }
+
+
   delete PCosPhi;
   delete PSinPhi;
-
+  v_KaonPlus_tracks.clear();
+  v_KaonMinus_tracks.clear();
   return 0;
 }
 //=================================================
 short PicoAnalyzer::Finish(){
 
+  // subtraction
+  for(int cent=0;cent<4;cent++){
+    hist_SE_pt_y_Phi_tight_Sig[cent] = (TH2D*) hist_SE_pt_y_Phi_tight_SigBkg[cent]->Clone(Form("hist_SE_pt_y_Phi_tight_Sig_%d",cent));
+    hist_SE_pt_y_Phi_tight_Sig[cent]->Add(hist_SE_pt_y_Phi_tight_Bkg[cent],-1.);
+  }
   cout << "In PicoAnalyzer::Finish - calling StEpdEpFinder::Finish()\n";
   mEpFinder->Finish();
 
@@ -581,4 +1079,23 @@ int PicoAnalyzer::FindTrackId(int Trkch,double TrkVz,double TrkEta,double TrkpT)
   TrackId=chId*mNpTbin*mNVzbin*mNEtabin+VzId*mNpTbin*mNEtabin+EtaId*mNpTbin+pTId+1;
 
   return TrackId;
+}
+
+int Centrality(int gRefMult )
+{
+    int centrality;
+    int centFull[9]={4,9,17,32,57,94,150,233,290};
+    // https://drupal.star.bnl.gov/STAR/system/files/19.6_GeV_bad_run_centrality.pdf
+    if      (gRefMult>=centFull[8]) centrality=8; // 0 - 5%
+    else if (gRefMult>=centFull[7]) centrality=7; // 5 - 10%
+    else if (gRefMult>=centFull[6]) centrality=6; // 10 - 20%
+    else if (gRefMult>=centFull[5]) centrality=5; // 20 - 30%
+    else if (gRefMult>=centFull[4]) centrality=4; // 30 - 40%
+    else if (gRefMult>=centFull[3]) centrality=3; // 40 - 50%
+    else if (gRefMult>=centFull[2]) centrality=2; // 50 - 60%
+    else if (gRefMult>=centFull[1]) centrality=1; // 60 - 70%
+    else if (gRefMult>=centFull[0]) centrality=0; // 70 - 80%
+    else centrality = -1;
+    //else centrality = 9;
+    return centrality;
 }

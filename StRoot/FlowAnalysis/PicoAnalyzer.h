@@ -10,6 +10,7 @@ class TH1D;
 class TH2D;
 class TH3D;
 class TH1F;
+class TH2F;
 class TProfile;
 class TProfile2D;
 class TProfile3D;
@@ -18,7 +19,7 @@ class TFile;
 class StEpdGeom;
 class StBbcGeom;
 class TRandom3;
-class StPicoEpdHit; 
+class StPicoEpdHit;
 class StEpdEpFinder;
 class TLorentzVector;
 class StRefMultCorr;
@@ -26,7 +27,10 @@ class StRefMultCorr;
 #include "TString.h"
 #include "TMath.h"
 
-#define _PsiOrderMax 1 //Maximum order of EP to worry about 
+#define _PsiOrderMax 1 //Maximum order of EP to worry about
+
+const Double_t _massKaon     = 0.493677;
+const Double_t _massPhi = 1.019461;
 
 class PicoAnalyzer : public TObject {
  public:
@@ -84,10 +88,20 @@ class PicoAnalyzer : public TObject {
   StRefMultCorr* mRefMultCorr;
   TRandom3* mRan;//seems like RCF only likes TRandom3
   char mCollidingSystem[365][500];    // index1=day of year;  index2=run of day
-  
+
   static const int mTPCphibin = 80;
   double mTPCphibinwidth = TMath::Pi()/40;
-  
+
+  int Bin_Centrality_01 = 4;
+  int Bin_rap = 8;
+  // Centrality bin
+
+  // int cent_low[4] = {0,7,4,0}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
+  // int cent_up[4]  = {8,8,6,3}; // 0 = 0-80%, 1 = 0-10%, 2 = 10-40%, 3 = 40-80%
+  // double rap_low_phi[8] = {-1.0, -0.6, -0.3, -0.1, 0., 0.1, 0.3, 0.6};
+  // double rap_up_phi[8]  = {-0.6, -0.3, -0.1, 0.,  0.1, 0.3, 0.6, 1.0};
+  // TString Centrality_01[4] = {"0080","0010","1040","4080"};
+
   /*
   //  static const int mNumberOfEpdSubEvents = 6;
   //  double mEpdEtaBbounds[mNumberOfEpdSubEvents+1] = {2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};
@@ -101,17 +115,19 @@ class PicoAnalyzer : public TObject {
   // ---------- Now, my histograms, ntuples, TFiles, etc.  All stuff particular to my analysis
   // 1D histograms
   TH1D* mHisto1D[40];            // miscellaneous 1D histograms
-  
+
   // 2D histograms
   TH2D* mHisto2D[40];           // miscellaneous 2D histograms
 
-  TH2D* mTPCPhiWeightOutput;    // this is used for "phi weighting" TPC tracks 
+  TH2D* mTPCPhiWeightOutput;    // this is used for "phi weighting" TPC tracks
   TH2D* mTPCPhiAveraged;        // this is just used for the normalization of the above. - not ever saved.  Only internal use
   TH2D* mTPCPhiWeightInput;     // "phi weighting" correction factors that were calculated and saved in a PREVIOUS run
   TH2D* mTPCPhiAveragedInput;
 
 double mpTMin;
 double mpTMax;
+double mpTMink;
+double mpTMaxk;
 double mEtaMin;//for phi-weighting, used in FindTrackId() and when MakeWeight
 double mEtaMax;////for phi-weighting
 int mNPhibin;
@@ -131,22 +147,64 @@ double mDCAcut;
 int mFourierOrder;
 int mNTPCSubEvents;
 int mNEPDSubEvents;
+int mMinEPDhits;
 double mpTbound;//For looking at low/high pT tracks
-double mPionSigma;//1/beta sigma 
+double mPionSigma;//1/beta sigma
 double mKaonSigma;//1/beta sigma
-double mProtonSigma;//1/beta sigma 
+double mProtonSigma;//1/beta sigma
+double d_KaonM2low;//1/beta sigma
+double d_KaonM2high;//1/beta sigma
 double mEtaMaxv1;//for v1 analysis
-double mEtaMinv1;//for v1 analysis 
+double mEtaMinv1;//for v1 analysis
+double dip_angle_cutLevel;//for v1 analysis
 
-//histos for checking the phi-weighted eta-phi distribution for the TPC tracks 
+//histos for QA
+TH1F *href_vz, *hvz_b, *hvzvpdvzdiff, *hvzvpdvzdiff_b;
+TH1F *href, *hvz, *hbtofYLocal, *h_epdhits;
+TH2F *hvzvpdvz_b, *hvr_b, *hvzvpdvz, *hvr, *hmassvsp, *hdedxvsp, *htofvsref_b, *htofvsref, *hbtofYLocalvsMass2;
+TH2F *htofmatchvsref, *htofmatchvsref_b;
+TH2F *hbetavsp;
+TH2F *h_eta_phi;
+TH2F *h_eta_phi_before;
+TH1F *h_counter_evt ,*h_counter_trk;
+
+TProfile *h_runidvstofmult_b, *h_runidvsrefmult_b;
+TProfile *h_runidvstofmult, *h_runidvsrefmult;
+
+TH1F *h_pt, *h_eta_b, *h_eta, *h_nhitfit, *h_nhitmax, *h_nhitratio, *h_dca, *h_phi;
+
+// Kaon PID
+TH1D *hist_pt_kaonPlus;
+TH1D *hist_eta_kaonPlus;
+TH1D *hist_y_kaonPlus;
+TH1D *hist_phi_kaonPlus;
+TH2D *hist_rap_eta_kaonPlus;
+TH2D *hist_pt_y_kaonPlus;
+TH2D *hist_pt_eta_kaonPlus;
+TH2D *hist_dEdx_kaonPlus;
+TH2D *hist_beta_kaonPlus;
+TH2D *hist_mass_kaonPlus;
+
+TH1D *hist_pt_kaonMinus;
+TH1D *hist_eta_kaonMinus;
+TH1D *hist_y_kaonMinus;
+TH1D *hist_phi_kaonMinus;
+TH2D *hist_rap_eta_kaonMinus;
+TH2D *hist_pt_y_kaonMinus;
+TH2D *hist_pt_eta_kaonMinus;
+TH2D *hist_dEdx_kaonMinus;
+TH2D *hist_beta_kaonMinus;
+TH2D *hist_mass_kaonMinus;
+
+//histos for checking the phi-weighted eta-phi distribution for the TPC tracks
   TH2D* mEtaPhiDisPhiWeighted[9];//phi-weighted eta phi distribution for 9 centralitites.
   TH2D* mEtaPhiDisRaw[9];
-//histos for checking the pT distribution 
-  TH1F* mPtRaw[9];//9 centralities 
+//histos for checking the pT distribution
+  TH1F* mPtRaw[9];//9 centralities
   //TH1D* mpTPhiWeighted[9][10];
   //TH1F* mPtRaw;
   TH1D* mVz[9];//Vz dis for nine centralites
-  TH1D* mdNdeta[9];//dNdeta for nine centralities 
+  TH1D* mdNdeta[9];//dNdeta for nine centralities
 
 //histos for checking the flattening of the TPC Psi
   TH1D* mTPCPsiDisWeighted[9][3];//Entry is the centrality and "TrackType", e.g sometimes I want to look at low pT or high pT tracks.
@@ -156,20 +214,20 @@ double mEtaMinv1;//for v1 analysis
   TH1D* mEPDFullPsiShifted[9][_PsiOrderMax];
 
 //TProfile for calculating the resolutions.
-  TProfile* mResolution[9][_PsiOrderMax];//Indicies are cent. 
+  TProfile* mResolution[9][_PsiOrderMax];//Indicies are cent.
 
 //TProfile for vn(TPC) w/ respect to Psi_EPDfull and vn(EPD) w/ respect to Psi_TPC using trucated nMIP(0.3,3.0)
   TProfile* mTPCvn[9][_PsiOrderMax];//cent, Psi order
-  TProfile* mEPDvn[2][9][_PsiOrderMax];//EPD vn of E/W EPD, cent, Psi order 
+  TProfile* mEPDvn[2][9][_PsiOrderMax];//EPD vn of E/W EPD, cent, Psi order
 
 //TH3D for measuring dNdphi
   //TH3D* mThreeD[9][2];//centralities, ew
-  //TH3D* mThreeD[9][2][_PsiOrderMax][2][16];//centralities, ew, order of harmonics, reference: 0-TPC, 1-the other side of EPD, 16 Vz bins in [-60,60] 
-  TH3D* mThreeD[2];//centralities, ew, order of harmonics, reference: 0-TPC, 1-the other side of EPD, 16 Vz bins in [-60,60] 
-  TH3D* mThreeDTile[2][24];//centralities, ew, order of harmonics, reference: 0-TPC, 1-the other side of EPD, 16 Vz bins in [-60,60] 
-  
-  //Looking at the percentage of differnt nMIPs 
-  //TH2D* mTwoD[9];//centralities, X:nMIp, Y:RingId (West-1, East-0)  
+  //TH3D* mThreeD[9][2][_PsiOrderMax][2][16];//centralities, ew, order of harmonics, reference: 0-TPC, 1-the other side of EPD, 16 Vz bins in [-60,60]
+  TH3D* mThreeD[2];//centralities, ew, order of harmonics, reference: 0-TPC, 1-the other side of EPD, 16 Vz bins in [-60,60]
+  TH3D* mThreeDTile[2][24];//centralities, ew, order of harmonics, reference: 0-TPC, 1-the other side of EPD, 16 Vz bins in [-60,60]
+
+  //Looking at the percentage of differnt nMIPs
+  //TH2D* mTwoD[9];//centralities, X:nMIp, Y:RingId (West-1, East-0)
 /*
 //TProfiles for flow decorrelation analysis
   TProfile* mRefMultvsVz;
@@ -195,7 +253,34 @@ double mEtaMinv1;//for v1 analysis
   TFile* mEPDPhiWeightFile;
   //TFile* mRecenQFile;
 
-  static const int mEPTPCMaxTerm = 6; 
+  // Phi meson analysis plots
+  TH2D *h2px;
+  TH2D *h2py;
+  TH2D *h2pz;
+
+  TH1D * h_dip_angle;
+  TH1D * h_Mass;
+  TH1D * h_Mass_rot;
+  TH1D *hist_SE_PhiMeson_pT;
+  TH1D *hist_SE_PhiMeson_mT;
+  TH1D *hist_SE_PhiMeson_rap;
+  TH1D *hist_SE_PhiMeson_eta;
+  TH2F *h_Mass2;
+  TH2F *h_Mass2_rot;
+  TH2F *h2_pT_eta;
+  TH2F *h2_pT_y;
+
+
+  TH2D *hist_SE_pt_y_PhiMeson[8];
+  TH2D *hist_SE_pt_y_Phi_tight_SigBkg[8];
+  TH2D *hist_SE_pt_y_Phi_tight_Bkg[8];
+  TH2D *hist_SE_pt_y_Phi_tight_Sig[8];
+
+  TH1F *mHist_SE_InvM_rap_cent[8][4];
+  TH1F *mHist_rotation_InvM_rap_cent[8][4];
+  TProfile *mProfile_flow_reso_rap_cent[8][4];
+
+  static const int mEPTPCMaxTerm = 6;
   ClassDef(PicoAnalyzer, 1)                     //  Macro for CINT compatability
 
 };

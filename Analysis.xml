@@ -1,36 +1,39 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
- <job minFilesPerProcess="5" maxFilesPerProcess="10" simulateSubmission="false" fileListSyntax="xrootd">
-  
+ <job minFilesPerProcess="5" maxFilesPerProcess="100" filesPerHour="10" simulateSubmission="false" fileListSyntax="xrootd">
+
  <stdout discard="true" />
 
  <command>
    setenv NODEBUG yes
-   root4star -l -q -b Analysis.C\(0,\"$FILELIST\",\"$JOBID\"\) &gt;&amp; ${JOBID}.log 
+   starver SL21c
+   grep -v "root://" $FILELIST > mynewile.list
+   setenv FILELIST mynewile.list
+   root4star -l -q -b Analysis.C\(0,\"$FILELIST\",\"$JOBID\"\) &gt;&amp; ${JOBID}.log
  </command>
 
  <SandBox installer="ZIP">
    <Package>
      <File>file:./Analysis.xml </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/Analysis.C </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/StRoot </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/.sl73_gcc485 </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/Analysis.C </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/StRoot </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/.sl73_gcc485 </File>
+     <File>file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/EPDcorrection.root </File>
    </Package>
   </SandBox>
 
-  <input URL="catalog:star.bnl.gov?production=P19ib,filetype=daq_reco_picoDst,trgsetupname=27GeV_production_2018,filename~st_physics,storage!=HPSS,runnumber[]19144013-19144033" nFiles="all"/>
-    
-  <stdout URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/out/$JOBID.out"/>
-  <stderr URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/err/$JOBID.err"/>
- 
-  <output fromScratch="*.root" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/production/" /> 
-  <output fromScratch="*.log" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/log/" />
+  <input URL="filelist:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep/EpdEp/files.list" nFiles="all" />
+  <!--<input URL="catalog:star.bnl.gov?production=P21ic,library=SL21c,filetype=daq_reco_picoDst,trgsetupname=production_19GeV_2019,tpx=1,filename~st_physics,sanity=1,storage!=HPSS" nFiles="all"/>-->
+  <stdout URL="file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/out/$JOBID.out"/>
+  <stderr URL="file:/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/err/$JOBID.err"/>
+
+
+  <output fromScratch="*.root" toURL="/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/production/" />
+  <output fromScratch="*.log" toURL="/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/log/" />
 
   <Generator>
-    <Location>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/list/</Location>
-    <ReportLocation>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep/v1_xiaoyu/report/</ReportLocation>
-  </Generator>    
+    <Location>/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/list/</Location>
+    <ReportLocation>/star/data01/pwg/dchen/Ana/19p6GeV/epd_ep_flow/test1/EpdEp/report/</ReportLocation>
+  </Generator>
 
 </job>
-
-

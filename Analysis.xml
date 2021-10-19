@@ -12,24 +12,24 @@
  <SandBox installer="ZIP">
    <Package>
      <File>file:./Analysis.xml </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/Analysis.C </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/StRoot </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/.sl73_gcc485 </File>
-     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/EPDcorrection.root </File>
+     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/Analysis.C </File>
+     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/StRoot </File>
+     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/.sl73_gcc485 </File>
+     <File>file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/EPDcorrection.root </File>
    </Package>
   </SandBox>
 
   <input URL="filelist:/star/u/slan/pwg/fastoffline/7p7gev/list/7p7_fast_pico.list" nFiles="all"/>
-  <stdout URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/out/$JOBID.out"/>
-  <stderr URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/err/$JOBID.err"/>
+  <stdout URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/out/$JOBID.out"/>
+  <stderr URL="file:/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/err/$JOBID.err"/>
 
  
-  <output fromScratch="*.root" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/production/" /> 
-  <output fromScratch="*.log" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/log/" />
+  <output fromScratch="*.root" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/production/" /> 
+  <output fromScratch="*.log" toURL="/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/log/" />
 
   <Generator>
-    <Location>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/list/</Location>
-    <ReportLocation>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_weighted/EpdEp/report/</ReportLocation>
+    <Location>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/list/</Location>
+    <ReportLocation>/star/data01/pwg/dchen/fastoffline/7p7gev/epd_ep_flow/EpdEp/report/</ReportLocation>
   </Generator>    
 
 </job>

@@ -245,7 +245,8 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
   h_eta_phi =new TH2F("h_etaphi","eta_vs_phi",1000,-6.3,6.3,300,-1.5,1.5);
   h_eta_phi_before =new TH2F("h_etaphi_before","eta_vs_phi w/o cut",1000,-6.3,6.3,300,-1.8,1.8);
 
-  h_counter = new TH1F("h_counter","event_counter",58,-8,50.);
+  h_counter_evt = new TH1F("h_counter_evt","events counter",11,-0.5,10.5);
+  h_counter_trk = new TH1F("h_counter_trk","track counter",11,-0.5,10.5);
 
   h_runidvstofmult_b = new TProfile("runidvstofmult_b", "", 40000, 20056031, 20096031,"");
   h_runidvsrefmult_b = new TProfile("runidvsrefmult_b", "", 40000, 20056031, 20096031,"");
@@ -293,12 +294,12 @@ short PicoAnalyzer::Init(char const* TPCWeightFile, char const* TPCShiftFile, ch
 
   for(int cent=0;cent<9;cent++){
     for(int iorder=0;iorder<_PsiOrderMax;iorder++){
-      mEPDFullPsiWeighted[cent][iorder] = new TH1D(Form("EPDFullPsi%dWeightedCent%d",iorder,cent),Form("EPDFullPsi%dWeightedCent%d",iorder,cent),100,0.0,2.0*TMath::Pi()/(iorder+1.0));
-      mEPDFullPsiShifted[cent][iorder] = new TH1D(Form("EPDFullPsi%dShiftedCent%d",iorder,cent),Form("EPDFullPsi%dShiftedCent%d",iorder,cent),100,0.0,2.0*TMath::Pi()/(iorder+1.0));
+      mEPDFullPsiWeighted[cent][iorder] = new TH1D(Form("EPDFullPsi%dWeightedCent%d",iorder,cent),Form("EPDFullPsi%dWeightedCent%d",iorder,cent),200,-0.5*TMath::Pi()/(iorder+1.0),2.5*TMath::Pi()/(iorder+1.0));
+      mEPDFullPsiShifted[cent][iorder] = new TH1D(Form("EPDFullPsi%dShiftedCent%d",iorder,cent),Form("EPDFullPsi%dShiftedCent%d",iorder,cent),200,-0.5*TMath::Pi()/(iorder+1.0),2.5*TMath::Pi()/(iorder+1.0));
       mResolution[cent][iorder] = new TProfile(Form("ResolutionPsi%dCent%d",iorder,cent),Form("ResolutionPsi%dCent%d",iorder,cent),10,0.5,10.5);//x axis corresponds to the <cos()> of different combinations of EP
       mResolution[cent][iorder]->Sumw2();
-      mTPCPsiDisWeighted[cent][iorder] = new TH1D(Form("TPCPsi%dDisWeightedCent%d",iorder,cent),Form("TPCPsi%dDisWeightedCent%d",iorder,cent),100,-TMath::Pi()/(iorder+1.0),TMath::Pi()/(iorder+1.0));
-      mTPCPsiDisShifted[cent][iorder] = new TH1D(Form("TPCPsi%dDisShiftedCent%d",iorder,cent),Form("TPCPsi%dDisShifteddCent%d",iorder,cent),100,-TMath::Pi()/(iorder+1.0),TMath::Pi()/(iorder+1.0));
+      mTPCPsiDisWeighted[cent][iorder] = new TH1D(Form("TPCPsi%dDisWeightedCent%d",iorder,cent),Form("TPCPsi%dDisWeightedCent%d",iorder,cent),200,-1.5*TMath::Pi()/(iorder+1.0),1.5*TMath::Pi()/(iorder+1.0));
+      mTPCPsiDisShifted[cent][iorder] = new TH1D(Form("TPCPsi%dDisShiftedCent%d",iorder,cent),Form("TPCPsi%dDisShifteddCent%d",iorder,cent),200,-1.5*TMath::Pi()/(iorder+1.0),1.5*TMath::Pi()/(iorder+1.0));
     }
     /*
     for(int i=0;i<3;i++){
@@ -431,6 +432,7 @@ short PicoAnalyzer::Make(int iEvent){
     cout << "New run detected: " << mRunId << " and it is collision system #" << mRunCollisionSystem << endl;
     //cout<<"RunEntry"<<mRunEt<<endl;
   }
+  h_counter_evt->AddBinContent(1); // no cut
 
   //----- done getting data; have fun! ------
   // if(!(mPicoEvent->isTrigger(610001)||mPicoEvent->isTrigger(610011)||mPicoEvent->isTrigger(610021)||mPicoEvent->isTrigger(610031)||mPicoEvent->isTrigger(610041)||mPicoEvent->isTrigger(610051))) return 0;
@@ -441,7 +443,8 @@ short PicoAnalyzer::Make(int iEvent){
   // cout << !(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032)||mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))  << endl;
   if(!(mPicoEvent->isTrigger(640002)||mPicoEvent->isTrigger(640012)||mPicoEvent->isTrigger(640022)||mPicoEvent->isTrigger(640032))) return 0;
   //if(!(mPicoEvent->isTrigger(640001)||mPicoEvent->isTrigger(640011)||mPicoEvent->isTrigger(640021)||mPicoEvent->isTrigger(640031)||mPicoEvent->isTrigger(640041)||mPicoEvent->isTrigger(640051))) return 0;
-  
+  h_counter_evt->AddBinContent(2); // trigger ID cut
+
 // cout << "test 1 ! "  << endl;
   //  StThreeVectorF primaryVertex = mPicoEvent->primaryVertex();
   //  TVector3 vertexPos(primaryVertex.x(),primaryVertex.y(),primaryVertex.z());
@@ -470,6 +473,8 @@ short PicoAnalyzer::Make(int iEvent){
   {
     if(mRunId == badrun[ii]) return 0;
   }
+  h_counter_evt->AddBinContent(3); // badrun
+
   //mRefMultCorr->initEvent(refMult,vertexPos.Z(),mPicoEvent->ZDCx());
   //refMult = mRefMultCorr->getRefMultCorr();
   CentId = Centrality(mPicoEvent->refMult());//An integer between 0 (70-80%) and 8 (0-5%)
@@ -489,6 +494,8 @@ short PicoAnalyzer::Make(int iEvent){
   if (fabs(vertexPos.Z())>=mVzMax) return 0;
   if (sqrt(pow(vertexPos.X(),2)+pow(vertexPos.Y(),2))>mVtxR) return 0;
   //if (abs(vertexPos.Z()-mPicoEvent->vzVpd())>mDiffVzVPD) return 0;//Get rid of the VPD cut, Prithwish said it does no good at low energy 06/18/2020
+  h_counter_evt->AddBinContent(4); // vertex cut
+
   if(TMath::Abs(vertexPos.Z()) < 10 ){
       href_vz->Fill(mPicoEvent->refMult());
   }
@@ -502,7 +509,8 @@ short PicoAnalyzer::Make(int iEvent){
 
   h_runidvstofmult->Fill(mRunId,tofMult);
   h_runidvsrefmult->Fill(mRunId,refMult);
-  if (CentId<0) return 0;            // 80-100% - very peripheral
+	  if (CentId<0) return 0;            // 80-100% - very peripheral
+  h_counter_evt->AddBinContent(5); // low mult cut
 
   mVz[CentId]->Fill(vertexPos.Z());
 
@@ -521,6 +529,7 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
   }
 
   // if(VzBin!=7) return 0;
+if(mEpdHits->GetEntries() < 5) return 0;
 
   StEpdEpInfo result = mEpFinder->Results(mEpdHits,vertexPos,CentId);  // and now you have all the EP info you could ever want :-)
   //StEpdEpInfo result = mEpFinder->Results(mEpdHits,vertexPos,1);  // testing. and now you have all the EP info you could ever want :-)
@@ -535,7 +544,12 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
   mHisto2D[0]->Fill((double)EpAngle[0][1],(double)EpAngle[0][0]);//East vs. West
   //-----------Check the flattening of Psi_EPDFull----------
   for(int iorder=0;iorder<_PsiOrderMax;iorder++){
+//    if(mEpdHits->GetEntries() < 5) break;
     mEPDFullPsiWeighted[CentId][iorder]->Fill(result.FullPhiWeightedPsi(iorder+1));
+    if(mEpdHits->GetEntries()==0){
+    	cout << "# of EPD hits = " << mEpdHits->GetEntries()<<endl; 
+	cout << "Weighted Psi= " << result.FullPhiWeightedPsi(iorder+1);
+    }
     mEPDFullPsiShifted[CentId][iorder]->Fill(result.FullPhiWeightedAndShiftedPsi(iorder+1));
   }
 
@@ -553,6 +567,8 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
   for(int itrk=0; itrk<mTracks->GetEntries(); itrk++){
     StPicoTrack* track = (StPicoTrack*)((*mTracks)[itrk]);
     if (!track->isPrimary()) continue; // I should check DCA too, but am confused how
+    h_counter_trk->AddBinContent(1); // no cut
+
     double nHitsFitRatio = track->nHitsFit()*1.0/track->nHitsMax();
     //cout<<nHitsFitRatio<<endl;
     TVector3 pMom = track->pMom();//track->gMom() if I want to look at the global tracks.
@@ -577,6 +593,8 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     if (track->nHitsFit()<mNhitsfit) continue;
     if (nHitsFitRatio<mNhitsfitratio) continue;//get rid of the nhitsfitratio cut, Prithwish said it is a very old cut used by STAR. 06/18/2020
     if (nHitsFitRatio > 1.0) continue; // test
+    h_counter_trk->AddBinContent(2); // QA cuts
+
     h_eta_phi->Fill(pMom.Phi(),pMom.PseudoRapidity());
     h_eta->Fill(pMom.PseudoRapidity());
 
@@ -662,8 +680,11 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
     }
     if(TMath::Abs(Teta)>=mEtaMaxv1) continue;
     //mHisto1D[3]->Fill(TPt);
+    h_counter_trk->AddBinContent(3); // eta cut
 
     if(TPt<=mpTMin||TPt>=mpTMax) continue;//pT range [0.15,2.0] for Psi_TPC
+    h_counter_trk->AddBinContent(4); // pt cut
+
     //----------Prepare Q to calculate the Psi_TPC-----------------
     int TtrId=FindTrackId(Tch,vertexPos.Z(),Teta,TPt);
     if(TtrId<=0||TtrId>mNumberOfTrackTypes){
@@ -739,7 +760,9 @@ double d_resolution_EPD[9] = {0.18626603, 0.2818204 , 0.37871216, 0.46914114, 0.
   }
 //--------------Begin loop over EPD hits---------------------------------
 h_epdhits -> Fill(mEpdHits->GetEntries());
-if(mEpdHits->GetEntries() < 5) return 0;
+//if(mEpdHits->GetEntries() < 5) return 0;
+h_counter_evt->AddBinContent(6); // low epd hits cut
+
   for(int hit=0;hit<mEpdHits->GetEntries();hit++){
     int tileId, ring, TT, PP, EW, ADC;
     float nMip;
